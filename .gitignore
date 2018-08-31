@@ -1,0 +1,48 @@
+# =============================================================================
+# .GITIGNORE FILE - Specification of files ignored by git.
+# =============================================================================
+# Project Specific Files
+merge.sh
+
+# Folders
+[Oo]bj
+[Ll]ogs
+[Dd]ata
+[Ff]igures
+
+# Data files
+*.dat
+*.mat
+
+# Excecutables
+*.bin
+*.exe
+*.dmg
+
+# Object files
+*.o
+*.obj
+
+# Temporary and autosave files
+*.swp
+*.asv
+*.tmp
+*.m~
+._*
+
+# Windows Files
+[Dd]esktop.ini
+
+# Apple Files
+Icon
+.DS_Store
+.LSOverride
+
+# Linux Files
+
+# IDE's and other programs
+.vscode
+*.code-workspace
+
+# END OF FILE
+# =============================================================================
