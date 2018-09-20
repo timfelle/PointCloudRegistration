@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 	*/
+	cout << "This is just a crude test" << endl;
 	
 	return EXIT_SUCCESS;
 }

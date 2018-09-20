@@ -19,7 +19,7 @@ CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 # -- File definitions and macros
 
 # - Excecutable
-EXEC    = registration.bin
+EXEC    = registration.exe
 
 # - Source files
 FRAME   = main
