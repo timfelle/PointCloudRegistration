@@ -2,6 +2,7 @@
 // INCLUDES
 
 #include <iostream>
+#include <pcl>
 
 using namespace std;
 

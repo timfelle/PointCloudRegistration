@@ -6,7 +6,7 @@ CXX	= g++
 
 # - C Flags
 OPTIM   =-O3
-WARN    =-Wall -Wno-maybe-uninitialized
+WARN    =-Wall
 LIBS    =
 CHIP    =
 PARA    =
