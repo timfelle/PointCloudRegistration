@@ -39,11 +39,11 @@ struct PLYModel {
 	glm::vec3 *normals;
 	glm::vec3 *colors;*/
 
-    int vertexCount; //number of vertices
-    float bvWidth, bvHeight, bvDepth; //bounding volume dimensions
-    float bvAspectRatio; //bounding volume aspect ratio
-	int faceCount; //number of faces; if reading meshes
-	bool isMesh; // To tell if this is a mesh or not
+    int vertexCount; 					//number of vertices
+    float bvWidth, bvHeight, bvDepth; 	//bounding volume dimensions
+    float bvAspectRatio; 				//bounding volume aspect ratio
+	int faceCount; 						//number of faces; if reading meshes
+	bool isMesh; 						// To tell if this is a mesh or not
 	bool ifColor,ifNormal;
 
     glm::vec3 min, max, center;

@@ -1,6 +1,6 @@
-/**************************************
+/***************************************
 * Copyright (c) <2014> <Vishesh Gupta> *
-**************************************
+****************************************
 
 The MIT / X Window System License
 =================================
@@ -117,10 +117,7 @@ PLYModel::PLYModel(const char* filename, bool isNormal, bool isColor) {
 	while(line.compare("vertex")!=0)
 	{
 		getline(inputPly, line,' ');
-		cout<<line<<"\n";
 	}
-	inputPly>>vertexCount; // 3rd line
-	cout<<vertexCount;
 	
 	//getline(inputPly,line);
 	//bool visit=0;
@@ -129,18 +126,15 @@ PLYModel::PLYModel(const char* filename, bool isNormal, bool isColor) {
 		if(line.find("red")==0) ifColor=1;
 		if(line.find("nx")==0) ifNormal=1;
 		getline(inputPly, line,' ');
-		cout<<line<<endl;		
 	}
 
 	inputPly>>faceCount;
-	cout<<faceCount;
 	if(faceCount>0)
 		isMesh=1;
 
 	while(line.compare("end_header")!=0)
 	{
 		getline(inputPly, line);
-		cout<<line<<endl;
 	}
 	
 
@@ -333,7 +327,40 @@ PLYModel::PLYModel(const char* filename, bool isNormal, bool isColor) {
 
 void PLYModel :: PLYWrite(const char* filename, bool isNormal, bool isColor)
 {
-	if(!isColor && isNormal)
+	if( !isColor && !isNormal)
+	{
+		FILE *outputPly;
+		outputPly=fopen(filename,"wb");
+		
+		fprintf(outputPly,"ply\n");
+		fprintf(outputPly,"format binary_little_endian 1.0\n");
+		fprintf(outputPly,"comment This contains a Splatted Point Cloud\n");
+		fprintf(outputPly,"element vertex %d\n",vertexCount);
+		fprintf(outputPly,"property float x\n");
+		fprintf(outputPly,"property float y\n");
+		fprintf(outputPly,"property float z\n");
+		fprintf(outputPly,"property float nx\n");
+		fprintf(outputPly,"property float ny\n");
+		fprintf(outputPly,"property float nz\n");
+		fprintf(outputPly,"element face %d\n",faceCount);
+		fprintf(outputPly,"property list uchar int vertex_indices\n");
+		fprintf(outputPly,"end_header\n");
+
+		//write vertices and normals
+		for(long int i = 0; i < vertexCount ; i++) 
+		{
+			fwrite(&positions[i],sizeof(glm::vec3),1,outputPly);
+		}
+		// write faces
+		unsigned char sides=3;
+		for(int i=0;i<faceCount;i++)
+		{
+			fwrite(&sides,sizeof(unsigned char),1,outputPly);
+			fwrite(&faces[i],sizeof(glm::ivec3),1,outputPly);
+		}
+		fclose(outputPly);
+	}
+	else if( !isColor && isNormal)
 	{
 		FILE *outputPly;
 		outputPly=fopen(filename,"wb");
