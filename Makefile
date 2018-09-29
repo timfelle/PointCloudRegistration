@@ -19,10 +19,10 @@ CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 # -- File definitions and macros
 
 # - Excecutable
-EXEC    = registration.exe
+EXEC    = registration.bin
 
 # - Source files
-FRAME   = main
+FRAME   = main plyloader
 
 # - Directories
 SRCDIR	= src
@@ -53,7 +53,8 @@ $(OBJDIR)/%.o: $(FDIR)/%.cpp | $(OBJDIR)
 # -- End of compilations
 #==============================================================================
 # -- Utility commands
-
+run	: $(EXEC)
+	./$(EXEC)
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)
 clean :
