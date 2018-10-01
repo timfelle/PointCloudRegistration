@@ -22,7 +22,7 @@ CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 EXEC    = registration.bin
 
 # - Source files
-FRAME   = main plyloader
+FRAME   = main plyloader utility_functions point_cloud_utility
 
 # - Directories
 SRCDIR	= src

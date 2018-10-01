@@ -28,7 +28,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <cstdlib>
 #include <fstream>
 #include <string>
-#include "plyloader.h"
+#include "point_cloud_utility.h"
 
 using namespace std;
 using namespace glm;
