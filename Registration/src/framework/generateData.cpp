@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 			"This function accepts the following arguments,\n"
 			"	S1,	name of the surface which should be altered.\n"
 			"The surface is altered based on the environment variables set,\n"
-			"	NOISE_TYPE		=[gaussian,salt]\n"
+			"	NOISE_TYPE		=[none,gaussian,salt]\n"
 			"	NOISE_STRENGTH	=float\n\n"
 			"See README for additional information.\n"
 		);
@@ -35,16 +35,23 @@ int main(int argc, char *argv[])
 
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
-	const char* output_path, *input_path, *noise_type, *noise_strength;
+	const char *output_path, *input_path, *noise_type, *noise_strength;
+	const char *rotation, *translation;
 	if ( (input_path = getenv("INPUT_PATH")) == NULL )
 		input_path = "data/";
 	if ( (output_path = getenv("OUTPUT_PATH")) == NULL )
 		output_path = "data/";
 	if ( (noise_type = getenv("NOISE_TYPE")) == NULL )
-		noise_type = "gaussian";
+		noise_type = "none";
 	if ( (noise_strength = getenv("NOISE_STRENGTH")) == NULL )
-		noise_strength = "2.0";
+		noise_strength = "0.0";
+	if ( (rotation = getenv("ROTATION")) == NULL )
+		rotation = "0.1,0.01,0.40";
+	if ( (translation = getenv("TRANSLATION")) == NULL )
+		translation = "0.0,0,0.0";
+		
 
+	
 	
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
@@ -87,7 +94,10 @@ int main(int argc, char *argv[])
 
 	// ------------------------------------------------------------------------
 	// Transform model
-	
+	vector<double> rot;
+	charToVec(rotation, rot);
+	for (int i = 0; i < 3; i++)
+		cout << rot[i] << endl;
 
 	// ------------------------------------------------------------------------
 	// Save the results
