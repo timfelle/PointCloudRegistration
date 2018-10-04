@@ -19,22 +19,19 @@ CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 # -- File definitions and macros
 
 # - Excecutable
-EXEC    = registration.bin
+EXEC    = generateData.bin
 
 # - Source files
-FRAME   = main plyloader utility_functions point_cloud_utility
+SRC     = generateData plyloader utility_functions point_cloud_utility
 
 # - Directories
-SRCDIR	= src
+SRCDIR	= src/framework
 LIBDIR	= lib
 OBJDIR	= obj
-FDIR 	= $(SRCDIR)/framework
 
 # - Combining files to their correct directory
-SOURCES	 = $(addprefix $(FDIR)/, $(addsuffix .cpp, $(FRAME)))
-# SOURCES	+= $(addprefix $(FDIR)/, $(addsuffix .cu, $(CUJOBJS)))
-
-OBJECTS	 = $(addprefix $(OBJDIR)/, $(addsuffix .o, $(FRAME)))
+SOURCES	 = $(addprefix $(SRCDIR)/, $(addsuffix .cpp, $(SRC)))
+OBJECTS	 = $(addprefix $(OBJDIR)/, $(addsuffix .o, $(SRC)))
 
 # -- End of File definitions
 #==============================================================================
@@ -47,7 +44,7 @@ $(EXEC) : $(OBJECTS)
 
 # - C Files
 .SUFFIXES: .cpp
-$(OBJDIR)/%.o: $(FDIR)/%.cpp | $(OBJDIR)
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CXX) -o $@ -c $< -I$(LIBDIR) $(CFLAGS)
 
 # -- End of compilations

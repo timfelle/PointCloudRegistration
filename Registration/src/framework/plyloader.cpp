@@ -92,10 +92,8 @@ struct colorData
 	}
 };
 
-PLYModel::PLYModel(const char* filename, bool isNormal, bool isColor) {
-    
-	long nvertices;
-	int position;
+PLYModel::PLYModel(const char* filename, bool isNormal, bool isColor) 
+{
 	struct faceData F;
 	isMesh=0;
 
@@ -118,9 +116,8 @@ PLYModel::PLYModel(const char* filename, bool isNormal, bool isColor) {
 	{
 		getline(inputPly, line,' ');
 	}
+	inputPly>>vertexCount; // 3rd line
 	
-	//getline(inputPly,line);
-	//bool visit=0;
 	while(line.compare("face")!=0)
 	{
 		if(line.find("red")==0) ifColor=1;
@@ -135,8 +132,7 @@ PLYModel::PLYModel(const char* filename, bool isNormal, bool isColor) {
 	while(line.compare("end_header")!=0)
 	{
 		getline(inputPly, line);
-	}
-	
+	}	
 
 	// This runs if the file has both COLOR and NORMAL information
 	if(isNormal && isColor)
@@ -156,7 +152,7 @@ PLYModel::PLYModel(const char* filename, bool isNormal, bool isColor) {
 
 		inputPly.read((char *)&Values,sizeof(Values));
 
-		//cout<<"\n"<<Values._x <<"\t"<< Values._y <<"\t"<< Values._z <<"\t"<< Values._nx <<"\t"<< Values._ny <<"\t"<< Values._nz <<"\t"<< Values._r <<"\t"<< Values._g <<"\t"<< Values._b <<"\t"<< Values._a;
+		cout<<"\n"<<Values._x <<"\t"<< Values._y <<"\t"<< Values._z <<"\t"<< Values._nx <<"\t"<< Values._ny <<"\t"<< Values._nz <<"\t"<< Values._r <<"\t"<< Values._g <<"\t"<< Values._b <<"\t"<< Values._a;
 		min = max = vec3(Values._x, Values._y, Values._z);
 
 		positions.push_back(vec3(Values._x, Values._y, Values._z));
@@ -166,7 +162,7 @@ PLYModel::PLYModel(const char* filename, bool isNormal, bool isColor) {
 		for (long int i = 1; i < vertexCount; i++) 
 		{
 			inputPly.read((char *)&Values,sizeof(Values));
-			//cout<<"\n"<<Values._x <<"\t"<< Values._y <<"\t"<< Values._z <<"\t"<< Values._nx <<"\t"<< Values._ny <<"\t"<< Values._nz <<"\t"<< (int)Values._r <<"\t"<< (int)Values._g <<"\t"<< (int)Values._b <<"\t"<< (int)Values._a;
+			cout<<"\n"<<Values._x <<"\t"<< Values._y <<"\t"<< Values._z <<"\t"<< Values._nx <<"\t"<< Values._ny <<"\t"<< Values._nz <<"\t"<< (int)Values._r <<"\t"<< (int)Values._g <<"\t"<< (int)Values._b <<"\t"<< (int)Values._a;
         
 			if (Values._x < min.x) min.x = Values._x;
 			if (Values._y < min.y) min.y = Values._y;
@@ -284,7 +280,6 @@ PLYModel::PLYModel(const char* filename, bool isNormal, bool isColor) {
 		min = max = vec3(Value._x, Value._y, Value._z);
 
 		positions.push_back(vec3(Value._x, Value._y, Value._z));
-		
 		for (long int i = 1; i < vertexCount; i++) 
 		{
 			inputPly.read((char *)&Value,sizeof(Value));
@@ -339,9 +334,6 @@ void PLYModel :: PLYWrite(const char* filename, bool isNormal, bool isColor)
 		fprintf(outputPly,"property float x\n");
 		fprintf(outputPly,"property float y\n");
 		fprintf(outputPly,"property float z\n");
-		fprintf(outputPly,"property float nx\n");
-		fprintf(outputPly,"property float ny\n");
-		fprintf(outputPly,"property float nz\n");
 		fprintf(outputPly,"element face %d\n",faceCount);
 		fprintf(outputPly,"property list uchar int vertex_indices\n");
 		fprintf(outputPly,"end_header\n");

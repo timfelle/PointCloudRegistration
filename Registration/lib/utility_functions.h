@@ -6,6 +6,6 @@
 
 // ============================================================================
 // Function prototypes
-inline bool is_file_exist(std::string fileName);
+bool is_file_exist(std::string fileName);
 
 #endif	/* __UTILITY_FUNCTIONS__ */

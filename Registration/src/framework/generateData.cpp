@@ -4,11 +4,13 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <glm/glm.hpp>
 
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
 
 using namespace std;
+using namespace glm;
 
 // ============================================================================
 // MAIN FUNCTION
@@ -19,74 +21,79 @@ int main(int argc, char *argv[])
 	// Handle input numbers and help.
 	if (argc == 1){
 		printf(
-			"\n./registration.bin S1 S2 [S3 S4 ...]\n"
+			"\n./generateData.bin S1\n"
 			"This function accepts the following arguments,\n"
-			"	S1,	name of the first surface.\n"
-			"	S2,	name of the second surface.\n"
-			"	S3,	[Optional] name of the third surface.\n"
+			"	S1,	name of the surface which should be altered.\n"
+			"The surface is altered based on the environment variables set,\n"
+			"	NOISE_TYPE		=[gaussian,salt]\n"
+			"	NOISE_STRENGTH	=float\n\n"
 			"See README for additional information.\n"
 		);
 		return EXIT_SUCCESS;
 	}
-	else if (argc < 3) cerr << "Not enough input arguments." << endl;
+	else if (argc < 2) cerr << "Not enough input arguments." << endl;
 
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
-	const char* output_path, *input_path;
+	const char* output_path, *input_path, *noise_type, *noise_strength;
 	if ( (input_path = getenv("INPUT_PATH")) == NULL )
 		input_path = "data/";
 	if ( (output_path = getenv("OUTPUT_PATH")) == NULL )
 		output_path = "data/";
+	if ( (noise_type = getenv("NOISE_TYPE")) == NULL )
+		noise_type = "gaussian";
+	if ( (noise_strength = getenv("NOISE_STRENGTH")) == NULL )
+		noise_strength = "2.0";
 
 	
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
-	int nSurfaces = argc-1;
-	string dataName[nSurfaces];
 	int nErrors = 0;
-	for (int i = 0; i < nSurfaces; i++){
-		
-		// Read the input path and the name of the file.
-		dataName[i] = string(input_path) + string(argv[i+1]);
 
-		// Ensure files have the correct 
-		if ( ( dataName[i].find(".") ) == string::npos )
-			dataName[i] = dataName[i] + string(".ply");
+	// Read the input path and the name of the file.
+	string dataName = string(argv[1]);
+	string inputName = string(input_path) + dataName;
 
-		if( dataName[i].find(".ply")  == string::npos ){
-			cerr << "\nError in input " << i+1 << ": " << dataName[i] << endl;
-			cerr << "   Incorrect file extension." << endl;
-			nErrors++;
-		}
-		// Ensure the files exist
-		else if ( !is_file_exist( dataName[i] )){
-			cerr << "\nError in input " << i+1 << ": " << dataName[i] << endl;
-			cerr << "   File not found." << endl;
-			nErrors++;
-		}
+	// Ensure files have the correct 
+	if ( ( dataName.find(".") ) == string::npos )
+	{
+		dataName  += string(".ply");
+		inputName += string(".ply");
 	}
+		
+
+	if( dataName.find(".ply")  == string::npos ){
+		cerr << "\nError in input " << ": " << dataName << endl;
+		cerr << "   Incorrect file extension." << endl;
+		nErrors++;
+	}
+	// Ensure the files exist
+	else if ( !is_file_exist( inputName )){
+		cerr << "\nError in input " << ": " << inputName << endl;
+		cerr << "   File not found." << endl;
+		nErrors++;
+	}
+
 	if (nErrors > 0) return EXIT_FAILURE;
+	
 	// ------------------------------------------------------------------------
 	// Load the datafiles
-	PLYModel model[nSurfaces];
-	for (int i = 0; i < nSurfaces; i++)
-		model[i] = PLYModel( dataName[i].c_str(), false, false );
+	PLYModel model = PLYModel( inputName.c_str(), false, false );
 	
 	// ------------------------------------------------------------------------
-	// Compute normals
-	for (int i = 0; i<nSurfaces; i++)
-		computePointCloudNormals( &model[i] );
-	
+	// Apply noise
+
+	applyNoise(&model, string(noise_type), atof(noise_strength));
+
 	// ------------------------------------------------------------------------
-	// Compute surface registration
+	// Transform model
+	
 
 	// ------------------------------------------------------------------------
 	// Save the results
-	string resultName[nSurfaces];
-	for (int i = 0; i < nSurfaces; i++){
-		resultName[i] = string("result") + dataName[i];
-		model[i].PLYWrite( resultName[i].c_str(), false, false);
-	}
+	
+	string outputName = string(output_path) + string("modified") + dataName;
+	model.PLYWrite( outputName.c_str(), false, false);
 
 	// ------------------------------------------------------------------------
 	// Cleanup and delete variables

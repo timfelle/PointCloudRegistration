@@ -8,7 +8,7 @@
 // ============================================================================
 // FILE MANIPULATION
 
-inline bool is_file_exist(std::string fileName)
+bool is_file_exist(std::string fileName)
 {
     return (bool)std::ifstream(fileName);
 }

@@ -49,4 +49,7 @@ struct Light {
 // Function prototypes
 void computePointCloudNormals(PLYModel *model);
 
+void transformModel(PLYModel *model, glm::mat3 rot, glm::vec3 trans);
+void applyNoise(PLYModel *model, std::string type, double strength);
+
 #endif	/* __POINT_CLOUD_UTILITY__ */
