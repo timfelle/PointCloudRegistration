@@ -20,9 +20,6 @@
     <ClCompile Include="..\src\framework\point_cloud_utility.cpp">
       <Filter>Source Files\Framework</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\framework\plyloader.cpp">
-      <Filter>Source Files\Framework</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\framework\utility_functions.cpp">
       <Filter>Source Files\Framework</Filter>
     </ClCompile>

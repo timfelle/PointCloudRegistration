@@ -4,13 +4,16 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
-#include <glm/glm.hpp>
+
+#include <Core/Core.h>	// Open3D 
+#include <IO/IO.h>		// Open3D 
 
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
 
 using namespace std;
-using namespace glm;
+using namespace open3d;
+using namespace Eigen;
 
 // ============================================================================
 // MAIN FUNCTION
@@ -38,9 +41,9 @@ int main(int argc, char *argv[])
 	const char *output_path, *input_path, *noise_type, *noise_strength;
 	const char *rotation, *translation;
 	if ( (input_path = getenv("INPUT_PATH")) == NULL )
-		input_path = "../data/";
+		input_path = "data/";
 	if ( (output_path = getenv("OUTPUT_PATH")) == NULL )
-		output_path = "../data/";
+		output_path = "data/";
 	if ( (noise_type = getenv("NOISE_TYPE")) == NULL )
 		noise_type = "none";
 	if ( (noise_strength = getenv("NOISE_STRENGTH")) == NULL )
@@ -48,7 +51,7 @@ int main(int argc, char *argv[])
 	if ( (rotation = getenv("ROTATION")) == NULL )
 		rotation = "4.0,2.0,1.0";
 	if ( (translation = getenv("TRANSLATION")) == NULL )
-		translation = "0.0,0.0,1.0";
+		translation = "1.0,2.0,3.0";
 		
 
 	
@@ -85,28 +88,30 @@ int main(int argc, char *argv[])
 	
 	// ------------------------------------------------------------------------
 	// Load the datafiles
-	PLYModel model = PLYModel( inputName.c_str(), false, false );
+	PointCloud model;
+	ReadPointCloud(inputName, model);
 	
 	// ------------------------------------------------------------------------
 	// Apply noise
 
-	//applyNoise(&model, string(noise_type), atof(noise_strength));
+	applyNoise(&model, string(noise_type), atof(noise_strength));
 
 	// ------------------------------------------------------------------------
 	// Transform model
 	vector<double> rot, trans;
-	mat4 T;
+	
 	charToVec(rotation, rot);
 	charToVec(translation, trans);
-	transformationMatrix(T,rot,trans);
-	transformModel(&model, T);
+	Matrix4d T;
+	T = transformationMatrix(rot, trans);
+	model.Transform(T);
 
 	
 	// ------------------------------------------------------------------------
 	// Save the results
 	
 	string outputName = string(output_path) + string("modified") + dataName;
-	model.PLYWrite( outputName.c_str(), false, false);
+	WritePointCloud( outputName, model);
 
 	// ------------------------------------------------------------------------
 	// Cleanup and delete variables

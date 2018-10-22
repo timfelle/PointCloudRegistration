@@ -4,12 +4,13 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <glm/glm.hpp>
+#include <Core/Core.h>	// Open3D
+#include <IO/IO.h>		// Open3D
 
 #include "utility_functions.h"
 
 using namespace std;
-using namespace glm;
+using namespace Eigen;
 
 // ============================================================================
 // FILE MANIPULATION
@@ -22,13 +23,16 @@ bool is_file_exist(std::string fileName)
 // ============================================================================
 // VECTOR MANIPULATION
 
-glm::vec4 vec_to_hom(glm::vec3 vec)
+Vector4d vec_to_hom(Vector3d vec)
 {
-	return glm::vec4(vec, 1);
+	Vector4d hom;
+	hom << vec(0), vec(1), vec(2), 1.0;
+	return hom;
 }
-glm::vec3 hom_to_vec(glm::vec4 hom)
+Vector3d hom_to_vec(Vector4d hom)
 {
-	glm::vec3 vec = glm::vec3(hom);
+	Vector3d vec;
+	vec << hom(0) / hom(3), hom(1) / hom(3), hom(2) / hom(3);
 	return vec;
 }
 
@@ -49,28 +53,29 @@ void charToVec(const char *input, std::vector<double> &v)
 
 // Function used to convert vectors of rotation (pitch, roll, yaw) and transformation (x, y, z) 
 // to a 4 by 4 transformation matrix.
-void transformationMatrix(
-	glm::mat4 &T, std::vector<double> rot, std::vector<double> trans)
+Matrix4d transformationMatrix(std::vector<double> rot, std::vector<double> trans)
 {
-	mat3 Rx = mat3( 
-		1.0, 0.0, 0.0,					// Column 1
-		0.0, cos(rot[0]),sin(rot[0]),	// Column 2
-		0.0, -sin(rot[0]),cos(rot[0])	// Column 3
-	);
-	mat3 Ry = mat3(
-		cos(rot[1]), 0.0, -sin(rot[1]),	// Column 1
-		0.0, 1.0, 0.0,					// Column 2
-		sin(rot[1]), 0.0, cos(rot[1])	// Column 3
-	);
-	mat3 Rz = mat3(
-		cos(rot[2]), sin(rot[2]), 0.0,	// Column 1
-		-sin(rot[2]), cos(rot[2]),0.0,	// Column 2
-		0.0, 0.0, 1.0					// Column 3
-	);
+	Matrix4d T;
+	Matrix3d Rx, Ry, Rz;
+	Rx <<
+		1.0, 0.0, 0.0,
+		0.0, cos(rot[0]), -sin(rot[0]),
+		0.0, sin(rot[0]), cos(rot[0]);
+	Ry <<
+		cos(rot[1]), 0.0, sin(rot[1]),
+		0.0, 1.0, 0.0,
+		-sin(rot[1]), 0.0, cos(rot[1]);
+	Rz <<
+		cos(rot[2]), -sin(rot[2]), 0.0,
+		sin(rot[2]), cos(rot[2]), 0.0,
+		0.0, 0.0, 1.0;
 
-	mat3 R = (Rx * Ry) * Rz;
-	T = mat4(R);
-	T[3][0] = trans[0];
-	T[3][1] = trans[1];
-	T[3][2] = trans[2];
+	Matrix3d R = (Rx * Ry) * Rz;
+	T <<
+		R(0, 0), R(0, 1), R(0, 2), trans[0],
+		R(1, 0), R(1, 1), R(1, 2), trans[1],
+		R(2, 0), R(2, 1), R(2, 2), trans[2],
+		0.0, 0.0, 0.0, 0.0;
+
+	return T;
 }

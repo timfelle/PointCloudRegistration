@@ -5,42 +5,21 @@
 #include <iostream>
 #include <math.h>
 
-#include <glm/glm.hpp>
+#include <Core/Core.h>		// Open3D inclusion
 
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
 
 using namespace std;
-using namespace glm;
+using namespace open3d;
 
-// ============================================================================
-// computePointCloudNormals
-void computePointCloudNormals(PLYModel *model)
+void applyNoise(PointCloud *model, string type, double strength)
 {
-	int N = model->vertexCount;
-
+	int nPoints = model->points_.size();
+	Eigen::Vector3d minBound = model->GetMinBound();
+	Eigen::Vector3d maxBound = model->GetMaxBound();
 	
-
-}
-
-void transformModel(PLYModel *model, mat4 T)
-{
-	for (int i = 0; i < model->vertexCount; i++)
-	{
-		vec3 p_vec = model->positions[i];
-
-		vec4 p_hom = vec_to_hom(p_vec);
-		p_hom = T * p_hom;
-		model->positions[i] = hom_to_vec( p_hom );
-	}
-		
-}
-void applyNoise(PLYModel *model, string type, double strength)
-{
-	double radius = 0.5*sqrt(
-		model->bvWidth*model->bvWidth + 
-		model->bvDepth*model->bvDepth + 
-		model->bvHeight*model->bvHeight);
+	double radius = 0.5*(maxBound - minBound).norm();
 	
 	// Strength is the percentage of points altered for the "salt" version, and
 	// the std for gaussian noise.
@@ -48,12 +27,12 @@ void applyNoise(PLYModel *model, string type, double strength)
 	{
 		std::default_random_engine gen;
 		std::normal_distribution<double> randn(0.0,0.1*radius);
-		for (int i = 0; i < model->vertexCount*strength; i++)
+		for (int i = 0; i < nPoints*strength; i++)
 		{
-			int index = rand() % ( model->vertexCount + 1 );
-			model->positions[index].x += randn(gen);
-			model->positions[index].y += randn(gen);
-			model->positions[index].z += randn(gen);
+			int index = rand() % ( nPoints + 1 );
+			model->points_[index][0] += randn(gen);
+			model->points_[index][1] += randn(gen);
+			model->points_[index][2] += randn(gen);
 		}
 	}
 
@@ -63,11 +42,11 @@ void applyNoise(PLYModel *model, string type, double strength)
 	{
 		std::default_random_engine gen;
 		std::normal_distribution<double> randn(0.0,0.01*strength*radius);
-		for (int i = 0; i < model->vertexCount; i++)
+		for (int index = 0; index < nPoints; index++)
 		{
-			model->positions[i].x += randn(gen);
-			model->positions[i].y += randn(gen);
-			model->positions[i].z += randn(gen);
+			model->points_[index][0] += randn(gen);
+			model->points_[index][1] += randn(gen);
+			model->points_[index][2] += randn(gen);
 		}
 	}
 }

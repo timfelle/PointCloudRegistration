@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\framework\plyloader.cpp" />
     <ClCompile Include="..\src\framework\point_cloud_utility.cpp" />
     <ClCompile Include="..\src\framework\utility_functions.cpp" />
     <ClCompile Include="..\src\registration.cpp" />
@@ -105,12 +104,14 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Open3D\3rdparty\Eigen;C:\Program Files\Open3D\include\Open3D\3rdparty;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>C:\Program Files\Open3D\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -123,16 +124,16 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Open3D\3rdparty\Eigen;C:\Program Files\Open3D\include\Open3D\3rdparty;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Open3D\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile />
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -146,7 +147,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Open3D\3rdparty\Eigen;C:\Program Files\Open3D\include\Open3D\3rdparty;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,6 +155,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>C:\Program Files\Open3D\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,7 +170,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Open3D\3rdparty\Eigen;C:\Program Files\Open3D\include\Open3D\3rdparty;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -175,9 +178,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistrationVS\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Open3D\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile />
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
