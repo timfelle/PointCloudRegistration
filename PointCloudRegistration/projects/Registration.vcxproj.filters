@@ -12,6 +12,9 @@
     <Filter Include="Source Files\Framework">
       <UniqueIdentifier>{e7ed429f-99f3-4eb9-8803-aa8f3dd48a68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Registration">
+      <UniqueIdentifier>{a78dafd1-9e67-4692-8aa6-306fdf97bb2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\registration.cpp">
@@ -23,12 +26,18 @@
     <ClCompile Include="..\src\framework\utility_functions.cpp">
       <Filter>Source Files\Framework</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\registration\fast_point_feature_histograms.cpp">
+      <Filter>Source Files\Registration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\point_cloud_utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\lib\utility_functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\fast_point_feature_histograms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

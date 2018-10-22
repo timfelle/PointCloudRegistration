@@ -10,9 +10,11 @@
 
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
+#include "fast_point_feature_histograms.h"
 
 
 using namespace std; 
+using namespace Eigen;
 using namespace open3d;
 
 // ============================================================================
@@ -125,6 +127,10 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < nSurfaces; i++)
 		EstimateNormals(model[i]);
 	
+	// ------------------------------------------------------------------------
+	// Estimate Fast Point Feature Histograms and Correspondances.
+	vector<Vector2i> K = computeCorrespondancePair(model[0],model[1]);
+
 	// ------------------------------------------------------------------------
 	// Compute surface registration
 
