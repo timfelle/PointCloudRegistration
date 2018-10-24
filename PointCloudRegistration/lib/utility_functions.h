@@ -4,7 +4,8 @@
 // Includes
 #include <string>
 #include <vector>
-#include <Core/Core.h>	// Open3D
+#include <Open3D/Core/Core.h>
+#include <Eigen/Dense>
 // ============================================================================
 // Function prototypes
 bool is_file_exist(std::string fileName);

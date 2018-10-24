@@ -99,14 +99,15 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Program Files\Open3D\3rdparty\Eigen;C:\Program Files\Open3D\include\Open3D\3rdparty;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\Program Files\Eigen;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,7 +127,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Program Files\Open3D\3rdparty\Eigen;C:\Program Files\Open3D\include\Open3D\3rdparty;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Eigen;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -140,7 +141,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -148,8 +149,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Program Files\Open3D\3rdparty\Eigen;C:\Program Files\Open3D\include\Open3D\3rdparty;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\Program Files\Eigen;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -171,8 +173,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Program Files\Open3D\3rdparty\Eigen;C:\Program Files\Open3D\include\Open3D\3rdparty;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\Program Files\Eigen;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;C:\Users\Tim\Documents\Dropbox\Documents\School\Danmarks Tekniske Universitet\Kurser\Master Thesis\Code\PointCloudRegistration\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>

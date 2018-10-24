@@ -5,7 +5,7 @@
 #include <iostream>
 #include <math.h>
 
-#include <Core/Core.h>		// Open3D inclusion
+#include <Open3D/Core/Core.h>		// Open3D inclusion
 
 #include "point_cloud_utility.h"
 #include "utility_functions.h"

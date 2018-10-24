@@ -5,8 +5,9 @@
 #include <iostream>
 #include <string>
 
-#include <Core/Core.h>	// Open3D 
-#include <IO/IO.h>		// Open3D 
+#include <Open3D/Core/Core.h>	// Open3D 
+#include <Open3D/IO/IO.h>		// Open3D 
+#include <Eigen/Dense>
 
 #include "point_cloud_utility.h"
 #include "utility_functions.h"

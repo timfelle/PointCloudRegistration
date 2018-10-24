@@ -5,15 +5,16 @@
 #include <iostream>
 #include <string>
 
-#include <Core/Core.h>		// Open3D inclusion
-#include <IO/IO.h>			// Open3D inclusion
+#include <Eigen/Dense>
+#include <Open3D/Core/Core.h>
+#include <Open3D/IO/IO.h>
 
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
 #include "fast_point_feature_histograms.h"
 
 
-using namespace std; 
+using namespace std;
 using namespace Eigen;
 using namespace open3d;
 
@@ -113,7 +114,7 @@ int main(int argc, char *argv[])
 	// Load the datafiles
 
 
-	vector<open3d::PointCloud> model(nSurfaces);
+	vector<PointCloud> model(nSurfaces);
 	for (int i = 0; i < nSurfaces; i++)
 	{
 		cout << "Reading data from: " << dataName[i] << endl;
@@ -129,7 +130,8 @@ int main(int argc, char *argv[])
 	
 	// ------------------------------------------------------------------------
 	// Estimate Fast Point Feature Histograms and Correspondances.
-	vector<Vector2i> K = computeCorrespondancePair(model[0],model[1]);
+	vector<Vector2i> K;
+	K = computeCorrespondancePair(model[0], model[1]);
 
 	// ------------------------------------------------------------------------
 	// Compute surface registration

@@ -3,7 +3,7 @@
 // ============================================================================
 // Includes
 
-#include <Core/Core.h>		// Open3D inclusion
+#include <Open3D/Core/Core.h>		// Open3D inclusion
 
 // ============================================================================
 // Function prototypes

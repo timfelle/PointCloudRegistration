@@ -4,8 +4,8 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <Core/Core.h>	// Open3D
-#include <IO/IO.h>		// Open3D
+#include <Open3D/Core/Core.h>
+#include <Eigen/Dense>
 
 #include "utility_functions.h"
 
