@@ -51,9 +51,9 @@ int main(int argc, char *argv[])
 	if ((noise_strength = getenv("NOISE_STRENGTH")) == NULL)
 		noise_strength = "0.0";
 	if ((rotation = getenv("ROTATION")) == NULL)
-		rotation = "4.0,2.0,1.0";
+		rotation = "0.0,0.0,0.0";
 	if ((translation = getenv("TRANSLATION")) == NULL)
-		translation = "1.0,2.0,3.0";
+		translation = "0.0,0.0,0.0";
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
