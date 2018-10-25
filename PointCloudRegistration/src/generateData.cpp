@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 {
 	// ------------------------------------------------------------------------
 	// Handle input numbers and help.
-	if (argc == 1){
+	if ((argc > 1) && (string(argv[1]).compare("-h") == 0)) {
 		printf(
 			"\n./generateData.bin S1\n"
 			"This function accepts the following arguments,\n"
@@ -31,66 +31,138 @@ int main(int argc, char *argv[])
 			"The surface is altered based on the environment variables set,\n"
 			"	NOISE_TYPE		=[none,gaussian,salt]\n"
 			"	NOISE_STRENGTH	=float\n"
+			"   ROTATION        =pitch,yaw,roll\n"
+			"   TRANSLATION     =x,y,z\n"
 			"\nSee README for additional information.\n"
 		);
 		return EXIT_SUCCESS;
 	}
-	else if (argc < 2) cerr << "Not enough input arguments." << endl;
-
+	
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
 	const char *output_path, *input_path, *noise_type, *noise_strength;
 	const char *rotation, *translation;
-	if ( (input_path = getenv("INPUT_PATH")) == NULL )
-		input_path = "data/";
-	if ( (output_path = getenv("OUTPUT_PATH")) == NULL )
-		output_path = "data/";
-	if ( (noise_type = getenv("NOISE_TYPE")) == NULL )
+	if ((input_path = getenv("INPUT_PATH")) == NULL)
+		input_path = "../Data/";
+	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
+		output_path = "../Data/";
+	if ((noise_type = getenv("NOISE_TYPE")) == NULL)
 		noise_type = "none";
-	if ( (noise_strength = getenv("NOISE_STRENGTH")) == NULL )
+	if ((noise_strength = getenv("NOISE_STRENGTH")) == NULL)
 		noise_strength = "0.0";
-	if ( (rotation = getenv("ROTATION")) == NULL )
+	if ((rotation = getenv("ROTATION")) == NULL)
 		rotation = "4.0,2.0,1.0";
-	if ( (translation = getenv("TRANSLATION")) == NULL )
+	if ((translation = getenv("TRANSLATION")) == NULL)
 		translation = "1.0,2.0,3.0";
-		
 
-	
-	
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
-	int nErrors = 0;
+	string inputName, outputName;
+	int nSurfaces = 0;
 
-	// Read the input path and the name of the file.
-	string dataName = string(argv[1]);
-	string inputName = string(input_path) + dataName;
-
-	// Ensure files have the correct 
-	if ( ( dataName.find(".") ) == string::npos )
+	// Read the input from terminal.
+	if (argc >= 2)
 	{
-		dataName  += string(".ply");
-		inputName += string(".ply");
-	}
-		
+		int nErrors = 0;
+		inputName = string(input_path) + string(argv[1]);
 
-	if( dataName.find(".ply")  == string::npos ){
-		cerr << "\nError in input " << ": " << dataName << endl;
-		cerr << "   Incorrect file extension." << endl;
-		nErrors++;
+		// Ensure file name have the correct extension
+		if (inputName.find(".ply") != (inputName.size() - 4)) {
+			cerr << "\nERROR: Input 1: " << inputName << endl;
+			cerr << "   Incorrect file extension." << endl;
+			nErrors++;
+		}
+		// Ensure the files exist
+		else if (!is_file_exist(inputName)) {
+			cerr << "\nERROR: Input 1: " << inputName << endl;
+			cerr << "   File not found." << endl;
+			cerr << "   " << inputName << endl;
+			nErrors++;
+		}
+		if (nErrors != 0) inputName = string("");
 	}
-	// Ensure the files exist
-	else if ( !is_file_exist( inputName )){
-		cerr << "\nError in input : " << inputName << endl;
-		cerr << "   File not found." << endl;
-		nErrors++;
+	if (argc == 3)
+	{
+		int nErrors = 0;
+		outputName = string(output_path) + string(argv[2]);
+
+		// Ensure file name have the correct extension
+		if (outputName.find(".ply") != (outputName.size() - 4)) {
+			cerr << "\nERROR: Input 2: " << outputName << endl;
+			cerr << "   Incorrect file extension." << endl;
+			nErrors++;
+		}
+		if (nErrors != 0) outputName = string("");
 	}
 
-	if (nErrors > 0) return EXIT_FAILURE;
-	
+	// If input arguments is missing or invalid.
+	if (inputName.empty() || inputName.size() == 0 || 
+		outputName.empty() || outputName.size() == 0) 
+	{
+		cout << "File names are missing, please specify filenames bellow. " 
+			<< "Enter \"q\" to exit." << endl; 
+	}
+	// Prompt user for missing filenames.
+	while (inputName.empty() || inputName.size() == 0 || 
+		outputName.empty() || outputName.size() == 0)
+	{
+		if ( inputName.empty() || inputName.size() == 0 )
+			cout << "Input file: ";
+		else if ( outputName.empty() || outputName.size())
+			cout << "Output file: ";
+
+		string char_input;
+		cin >> char_input;
+
+		// Exit if the input is q
+		if ( string(char_input).compare("q") == 0 )
+			return EXIT_SUCCESS;
+
+		if (inputName.empty() || inputName.size() == 0)
+		{
+			inputName = string(input_path) + char_input;
+
+			int nErrors = 0;
+			// Ensure files have the correct extension
+			if (inputName.find(".ply") != (inputName.size() - 4)) {
+				cerr << "\nERROR: Input 1: " << inputName << endl;
+				cerr << "   Incorrect file extension." << endl;
+				nErrors++;
+			}
+			// Ensure the files exist
+			else if (!is_file_exist(string(input_path) + inputName)) {
+				cerr << "\nError in input " << ": " << char_input << endl;
+				cerr << "   File not found." << endl;
+				cerr << "   " << inputName << endl;
+				nErrors++;
+			}
+			if (nErrors != 0) inputName = string("");
+		}
+		else if (outputName.empty() || outputName.size() == 0)
+		{
+			outputName = string(output_path) + char_input;
+
+			int nErrors = 0;
+			// Ensure files have the correct extension
+			if (outputName.find(".ply") != (outputName.size() - 4)) {
+				cerr << "\nERROR: Input 2: " << outputName << endl;
+				cerr << "   Incorrect file extension." << endl;
+				nErrors++;
+			}
+			if (nErrors != 0) outputName = string("");
+		}
+	}
+
+	if (inputName.size() == 0 || outputName.size() == 0) {
+		cerr << "\nERROR: Must have both input and ouput names specified.";
+		cerr << endl;
+		return EXIT_FAILURE;
+	}
+
 	// ------------------------------------------------------------------------
 	// Load the datafiles
 	PointCloud model;
-	ReadPointCloud(inputName, model);
+	open3d::ReadPointCloud(inputName, model);
 	
 	// ------------------------------------------------------------------------
 	// Apply noise
@@ -110,9 +182,7 @@ int main(int argc, char *argv[])
 	
 	// ------------------------------------------------------------------------
 	// Save the results
-	
-	string outputName = string(output_path) + string("modified") + dataName;
-	WritePointCloud( outputName, model);
+	open3d::WritePointCloud( outputName, model);
 
 	// ------------------------------------------------------------------------
 	// Cleanup and delete variables
