@@ -5,48 +5,55 @@
 #include <iostream>
 #include <math.h>
 
-#include <Open3D/Core/Core.h>		// Open3D inclusion
+#include <Open3D/Core/Core.h>
+#include <Eigen/Dense>
 
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
 
 using namespace std;
+using namespace Eigen;
 using namespace open3d;
 
 void applyNoise(PointCloud *model, string type, double strength)
 {
 	int nPoints = model->points_.size();
-	Eigen::Vector3d minBound = model->GetMinBound();
-	Eigen::Vector3d maxBound = model->GetMaxBound();
+	Vector3d minBound = model->GetMinBound();
+	Vector3d maxBound = model->GetMaxBound();
 	
 	double radius = 0.5*(maxBound - minBound).norm();
 	
-	// Strength is the percentage of points altered for the "salt" version, and
+	// Strength is the percentage of points altered for the "outliers" version, and
 	// the std for gaussian noise.
-	if (type.compare("salt") == 0)
+	if (type.compare("outliers") == 0)
 	{
-		std::default_random_engine gen;
-		std::normal_distribution<double> randn(0.0,0.1*radius);
+		default_random_engine gen;
+		normal_distribution<double> randn(0.0,0.1*radius);
+		uniform_int_distribution<int> randi(0,nPoints);
 		for (int i = 0; i < nPoints*strength; i++)
 		{
-			int index = rand() % ( nPoints + 1 );
+			int index = randi(gen);
 			model->points_[index][0] += randn(gen);
 			model->points_[index][1] += randn(gen);
 			model->points_[index][2] += randn(gen);
 		}
 	}
-
 	// Gaussian noise with mean 0 and std 1% of bounding box radius 
 	// multiplied by the user defined strength.
 	else if (type.compare(string("gaussian")) == 0)
 	{
-		std::default_random_engine gen;
-		std::normal_distribution<double> randn(0.0,0.01*strength*radius);
+		default_random_engine gen;
+		normal_distribution<double> randn(0.0,0.01*radius*strength);
 		for (int index = 0; index < nPoints; index++)
 		{
 			model->points_[index][0] += randn(gen);
 			model->points_[index][1] += randn(gen);
 			model->points_[index][2] += randn(gen);
 		}
+	}
+	else if (type.compare(string("both")) == 0)
+	{
+		applyNoise(model, string("outliers"), strength);
+		applyNoise(model, string("gaussian"), strength);
 	}
 }
