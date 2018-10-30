@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <math.h>
+#include <numeric>
+#include <random>
 #include <Open3D/Core/Core.h>
 #include <Eigen/Dense>
 
@@ -19,28 +21,30 @@ vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &mode
 {
 	// Compute FPFH for the two surfaces
 	vector<int> P_0, P_1;
-	vector<VectorXd> FPFH_0, FPFH_1;
+	MatrixXd FPFH_0, FPFH_1;
 	computeFPFH(model_0, P_0, FPFH_0);
 	computeFPFH(model_1, P_1, FPFH_1);
 	
 	// Build the 2 search trees
-	KDTreeFlann KDTree_0, KDTree_1;
+	KDTreeFlann KDTree_0(FPFH_0);
+	KDTreeFlann KDTree_1(FPFH_1);
 
-	KDTree_0.SetFeature(FPFH_0);
-	KDTree_1.SetGeometry(model_1);
+	//KDTree_0.SetMatrixData(FPFH_0);
+	//KDTree_1.SetMatrixData(FPFH_1);
 
 	// Set up correspondances
-	vector<Vector2i> K_I, K_II, K_III;
-	// K_I   = nearestNeighbour(F_0, F_1);
-	// K_II  = mutualNearestNeighbour(K_I);
-	// K_III = tupletest(K_II)
+	vector<Vector2i> K_I_0, K_I_1, K_II, K_III;
+	K_I_0 = nearestNeighbour(P_0, P_1, FPFH_0, KDTree_1);
+	K_I_1 = nearestNeighbour(P_1, P_0, FPFH_1, KDTree_0);
+	K_II  = mutualNN(K_I_0, K_I_1);
+	K_III = tupleTest(K_II, model_0, model_1);
 
 	return K_III;
 }
 
 // ============================================================================
 // COMPUTE FPFH
-void computeFPFH(PointCloud &model, vector<int> &P, vector<VectorXd> &FPFH)
+void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 {
 	// ********************************************************************* \\
 	// Initialization of the different values used in the computations.
@@ -63,7 +67,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, vector<VectorXd> &FPFH)
 	for (double r = 0.01*R; r < tol_R*R; r *= 2)
 	{
 		// Allocate space for needed values
-		vector<VectorXd> SPFH(P.size());
+		MatrixXd SPFH(P.size(),6);
 		vector<vector<int>> Neighbours(P.size());
 
 		// ================================================================= \\
@@ -128,18 +132,18 @@ void computeFPFH(PointCloud &model, vector<int> &P, vector<VectorXd> &FPFH)
 				if (f_3 >= s3) spfh[5]++;
 			}
 
-			SPFH[idx] = spfh;
+			SPFH.row(idx) = spfh/neighbours.size();
 		}
 
 		// ================================================================= \\
 		// Compute the FPFH for each point
-		FPFH = vector<VectorXd>(P.size());
+		FPFH = MatrixXd(P.size(),6);
 		for (int idx = 0; idx < FPFH.size(); idx++)
 		{
 			int p_idx = P[idx];
 			Vector3d p = model.points_[p_idx];
 
-			FPFH[idx] = VectorXd::Zero(6);
+			VectorXd fpfh = VectorXd::Zero(6);
 			double Kinv = 1.0 / Neighbours[idx].size();
 
 			for (int k = 0; k < Neighbours[idx].size(); k++)
@@ -147,10 +151,10 @@ void computeFPFH(PointCloud &model, vector<int> &P, vector<VectorXd> &FPFH)
 				int pk_idx = Neighbours[idx][k];
 				Vector3d pk = model.points_[pk_idx];
 
-				FPFH[idx] +=  1.0 / (p - pk).norm() * SPFH[idx];
+				fpfh +=  1.0 / (p - pk).norm() * SPFH.row(pk_idx);
 			}
-			FPFH[idx] *= Kinv; 
-			FPFH[idx] += SPFH[idx];
+			fpfh *= Kinv; 
+			FPFH.row(idx) = fpfh + SPFH.row(idx);
 		}
 		
 		// ================================================================= \\
@@ -159,7 +163,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, vector<VectorXd> &FPFH)
 
 		// Mean
 		for (int id = 0; id < FPFH.size(); id++)
-			mu += FPFH[id];
+			mu += FPFH.row(id);
 		mu /= 1.0*FPFH.size();
 
 		// Standard Deviation
@@ -168,28 +172,29 @@ void computeFPFH(PointCloud &model, vector<int> &P, vector<VectorXd> &FPFH)
 			VectorXd p_f;
 			for (int id = 0; id < P.size(); id++)
 				p_f << model.points_[P[id]](f) - mu[f];
-			sigma(f) = p_f.norm() / sqrt(FPFH.size() - 1);
+			sigma(f) = p_f.norm() / sqrt(FPFH.rows() - 1);
 		}
 
 		// ================================================================= \\
 		// Determine which points have persistent features.
 		vector<int> P_new;
-		vector<VectorXd> FPFH_new;
+		MatrixXd FPFH_new;
 		for (int idx = 0; idx < P.size(); idx++)
 		{
 			int p_idx = P[idx];
-			double dist = (FPFH[idx] - mu).norm();
+			VectorXd dist = (FPFH.row(idx) - mu).cwiseAbs();
 			if (
-				dist > alpha*sigma(0) &&
-				dist > alpha*sigma(1) &&
-				dist > alpha*sigma(2) &&
-				dist > alpha*sigma(3) &&
-				dist > alpha*sigma(4) &&
-				dist > alpha*sigma(5)
+				dist(0) > alpha*sigma(0) &&
+				dist(1) > alpha*sigma(1) &&
+				dist(2) > alpha*sigma(2) &&
+				dist(3) > alpha*sigma(3) &&
+				dist(4) > alpha*sigma(4) &&
+				dist(5) > alpha*sigma(5)
 				)
 			{
 				P_new.push_back(p_idx);
-				FPFH_new.push_back(FPFH[idx]);
+				FPFH_new.conservativeResize(FPFH_new.size() + 1, NoChange);
+				FPFH_new.row(FPFH_new.size()-1) =  FPFH.row(idx);
 			}
 		}
 
@@ -198,4 +203,99 @@ void computeFPFH(PointCloud &model, vector<int> &P, vector<VectorXd> &FPFH)
 		P = P_new;
 		FPFH = FPFH_new;
 	}
+}
+
+// ============================================================================
+// LIST NEAREST NEIGHBOUR IN FPFH SPACE
+vector<Vector2i> nearestNeighbour(vector<int> P_mod, vector<int> P_q,
+	MatrixXd FPFH_mod, KDTreeFlann &KDTree_q)
+{
+	vector<Vector2i> K_near;
+
+
+	for (int i = 0; i < P_mod.size(); i++)
+	{
+		vector<int> index;
+		vector<double> dist;
+		Vector2i k;
+		//int knn = 1;
+		KDTreeSearchParamKNN knn(1);
+		KDTree_q.Search(FPFH_mod.row(i), knn, index, dist);
+
+		k(0) = P_mod[i];
+		k(1) = P_q[index[0]];
+
+		K_near.push_back(k);
+	}
+	return K_near;
+}
+
+// ============================================================================
+// COLLECT MUTUAL NEAREST NEIGHBOURS
+vector<Vector2i> mutualNN(vector<Vector2i> K_0, vector<Vector2i> K_1)
+{
+	vector<Vector2i> K_mutual;
+
+	for (int i = 0; i < K_0.size(); i++)
+	{
+		Vector2i k_0 = K_0[i];
+		for (int j = 0; j < K_1.size(); j++)
+		{
+			Vector2i k_1 = K_1[j];
+
+			if ((k_0(0) == k_1(1)) && (k_0(1) == k_1(0)))
+				K_mutual.push_back(k_0);
+		}
+	}
+	return K_mutual;
+}
+// ============================================================================
+// RUN TUPLE TEST
+vector<Vector2i> tupleTest(vector<Vector2i> K_II,PointCloud model_0, PointCloud model_1)
+{
+	// Initialize values
+	vector<Vector2i> K_III;
+	double tau = 0.9;
+	double tau_inv = 1.0 / tau;
+
+	// Fill index vector
+	std::vector<int> I(K_II.size());
+	std::iota(I.begin(), I.end(), 0);
+
+	// Do a random shuffle of I
+	std::random_device rd;
+	std::mt19937 g(rd());
+	shuffle(I.begin(), I.end(),g);
+
+	// Run through all points
+	for (size_t i = 0; i < K_II.size()-3; i += 3)
+	{
+		int idx = I[i];
+		double r01, r02, r12;
+
+		// Read the p and q points from the two models.
+		Vector3d p_0 = model_0.points_[K_II[idx    ](0)];
+		Vector3d p_1 = model_0.points_[K_II[idx + 1](0)];
+		Vector3d p_2 = model_0.points_[K_II[idx + 2](0)];
+		Vector3d q_0 = model_1.points_[K_II[idx    ](0)];
+		Vector3d q_1 = model_1.points_[K_II[idx + 1](0)];
+		Vector3d q_2 = model_1.points_[K_II[idx + 2](0)];
+
+		// Compute ratios
+		r01 = (p_0 - p_1).norm() / (q_0 - q_1).norm();
+		r02 = (p_0 - p_2).norm() / (q_0 - q_2).norm();
+		r12 = (p_1 - p_2).norm() / (q_1 - q_2).norm();
+
+		// Save correspondences if ratios are valid
+		if ((tau < r01 <= tau_inv) &&
+			(tau < r02 <= tau_inv) &&
+			(tau < r12 <= tau_inv))
+		{
+			K_III.push_back(K_II[idx    ]);
+			K_III.push_back(K_II[idx + 1]);
+			K_III.push_back(K_II[idx + 2]);
+		}
+	}
+
+	return K_III;
 }
