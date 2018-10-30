@@ -29,7 +29,7 @@ void applyNoise(PointCloud *model, string type, double strength)
 	{
 		default_random_engine gen;
 		normal_distribution<double> randn(0.0,0.1*radius);
-		uniform_int_distribution<int> randi(0,nPoints);
+		uniform_int_distribution<int> randi(0, (int)nPoints);
 		for (size_t i = 0; i < nPoints*strength; i++)
 		{
 			int index = randi(gen);

@@ -287,9 +287,9 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II,PointCloud model_0, PointCloud 
 		r12 = (p_1 - p_2).norm() / (q_1 - q_2).norm();
 
 		// Save correspondences if ratios are valid
-		if ((tau < r01 <= tau_inv) &&
-			(tau < r02 <= tau_inv) &&
-			(tau < r12 <= tau_inv))
+		if ((tau < r01 && r01 <= tau_inv) &&
+			(tau < r02 && r02 <= tau_inv) &&
+			(tau < r12 && r12 <= tau_inv))
 		{
 			K_III.push_back(K_II[idx    ]);
 			K_III.push_back(K_II[idx + 1]);
