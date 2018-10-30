@@ -17,7 +17,7 @@ using namespace open3d;
 
 void applyNoise(PointCloud *model, string type, double strength)
 {
-	int nPoints = model->points_.size();
+	size_t nPoints = model->points_.size();
 	Vector3d minBound = model->GetMinBound();
 	Vector3d maxBound = model->GetMaxBound();
 	
@@ -30,7 +30,7 @@ void applyNoise(PointCloud *model, string type, double strength)
 		default_random_engine gen;
 		normal_distribution<double> randn(0.0,0.1*radius);
 		uniform_int_distribution<int> randi(0,nPoints);
-		for (int i = 0; i < nPoints*strength; i++)
+		for (size_t i = 0; i < nPoints*strength; i++)
 		{
 			int index = randi(gen);
 			model->points_[index][0] += randn(gen);
@@ -44,7 +44,7 @@ void applyNoise(PointCloud *model, string type, double strength)
 	{
 		default_random_engine gen;
 		normal_distribution<double> randn(0.0,0.01*radius*strength);
-		for (int index = 0; index < nPoints; index++)
+		for (size_t index = 0; index < nPoints; index++)
 		{
 			model->points_[index][0] += randn(gen);
 			model->points_[index][1] += randn(gen);
