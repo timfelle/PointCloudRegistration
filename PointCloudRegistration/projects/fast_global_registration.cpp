@@ -67,7 +67,7 @@ Matrix4d fastGlobalRegistration(
 		}
 
 		// Update T and xi
-		xi = -(Je.transpose()*Je).inverse()*Je.transpose()*e;
+		xi = -(Je.transpose()*Je).inverse()*Je.transpose()*e; // MUST BE CHANGED
 		T = Xi(xi)*T;
 
 		// Update nu every forth time
