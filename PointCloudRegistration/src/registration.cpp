@@ -147,6 +147,8 @@ int main(int argc, char *argv[])
 
 	// ------------------------------------------------------------------------
 	// Compute surface registration
+	Matrix4d T;
+	T = fastGlobalRegistration(K, model[0], model[1]);
 
 	// ------------------------------------------------------------------------
 	// Save the results

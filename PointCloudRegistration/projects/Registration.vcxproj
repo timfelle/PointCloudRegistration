@@ -23,11 +23,13 @@
     <ClCompile Include="..\src\framework\utility_functions.cpp" />
     <ClCompile Include="..\src\registration.cpp" />
     <ClCompile Include="..\src\registration\fast_point_feature_histograms.cpp" />
+    <ClCompile Include="fast_global_registration.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\fast_point_feature_histograms.h" />
     <ClInclude Include="..\lib\point_cloud_utility.h" />
     <ClInclude Include="..\lib\utility_functions.h" />
+    <ClInclude Include="fast_global_registration.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
