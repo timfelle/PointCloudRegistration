@@ -58,12 +58,12 @@ EXEC="$EPATH/GenerateData.exe"
 mkdir -p $DPATH $FPATH $LPATH
 
 # Run the tests
-echo Running the following tests:
+echo "Running the following tests: "
 echo $TEST
 echo ' '
+echo "------------------------------------------------------------------"
 for test in $TEST
 do
-	echo "------------------------------------------------------------------"
 	echo "Running test: $test."; echo " "
 	if [ -f "$SPATH/$test.sh" ] ; then
 		# Create the folder needed
@@ -77,7 +77,6 @@ do
 		cd $LPATH/$test
 		./$test.sh >output.out 2>error.err
 		cd ../../
-		echo "Completed test: $test."
 	else
 		>&2 echo "File $SPATH/$test.sh was not found"
 	fi
