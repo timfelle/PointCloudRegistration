@@ -259,12 +259,12 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II,PointCloud model_0, PointCloud 
 	double tau_inv = 1.0 / tau;
 
 	// Fill index vector
-	std::vector<int> I(K_II.size());
-	std::iota(I.begin(), I.end(), 0);
+	vector<int> I(K_II.size());
+	iota(I.begin(), I.end(), 0);
 
 	// Do a random shuffle of I
-	std::random_device rd;
-	std::mt19937 g(rd());
+	random_device rd;
+	mt19937 g(rd());
 	shuffle(I.begin(), I.end(),g);
 
 	// Run through all points
