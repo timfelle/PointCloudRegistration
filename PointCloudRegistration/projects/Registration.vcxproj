@@ -111,14 +111,14 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Program Files\Eigen;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;$(SolutionDir)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Eigen3\include\eigen3;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;$(SolutionDir)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>C:\Program Files\Open3D\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -131,7 +131,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Program Files\Eigen;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;$(SolutionDir)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Eigen3\include\eigen3;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;$(SolutionDir)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -140,7 +140,7 @@
       <AdditionalLibraryDirectories>C:\Program Files\Open3D\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile />
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -155,7 +155,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Program Files\Eigen;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;$(SolutionDir)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Eigen3\include\eigen3;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;$(SolutionDir)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,7 +164,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <AdditionalLibraryDirectories>C:\Program Files\Open3D\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -179,7 +179,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Program Files\Eigen;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;$(SolutionDir)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Eigen3\include\eigen3;C:\Program Files\Open3D\include;C:\Program Files\Open3D\include\Open3D;$(SolutionDir)\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -190,7 +190,7 @@
       <AdditionalLibraryDirectories>C:\Program Files\Open3D\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile />
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew.lib;glfw3.lib;jpeg.lib;jsoncpp.lib;Open3D.lib;png.lib;tinyfiledialogs.lib;zlib.lib;Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
