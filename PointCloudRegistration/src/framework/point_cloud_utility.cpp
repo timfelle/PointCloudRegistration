@@ -15,22 +15,33 @@ using namespace std;
 using namespace Eigen;
 using namespace open3d;
 
-void applyNoise(PointCloud *model, string type, double strength)
+void applyNoise(PointCloud *model)
 {
+	// Read environment variables
+	char *noise_type, *noise_strength, *outlier_amount;
+	noise_type = getenv("NOISE_TYPE");
+	outlier_amount = getenv("OUTLIER_AMOUNT");
+	noise_strength = getenv("NOISE_STRENGTH");
+
+	// Save environment variables
+	string type		= string(noise_type);
+	double amount	= atof(outlier_amount)/100.0;
+	double strength = atof(noise_strength);
+
+	// Read variables from point cloud
 	size_t nPoints = model->points_.size();
 	Vector3d minBound = model->GetMinBound();
 	Vector3d maxBound = model->GetMaxBound();
 	
 	double radius = 0.5*(maxBound - minBound).norm();
 	
-	// Strength is the percentage of points altered for the "outliers" version, and
-	// the std for gaussian noise.
-	if (type.compare("outliers") == 0)
+	// Outlier amount is the percentage of point which should be altered
+	if (type.compare("outliers") == 0 || type.compare("both") == 0)
 	{
 		default_random_engine gen;
 		normal_distribution<double> randn(0.0,0.1*radius);
 		uniform_int_distribution<int> randi(0, (int)nPoints);
-		for (size_t i = 0; i < nPoints*strength; i++)
+		for (size_t i = 0; i < nPoints*amount; i++)
 		{
 			int index = randi(gen);
 			model->points_[index][0] += randn(gen);
@@ -38,9 +49,10 @@ void applyNoise(PointCloud *model, string type, double strength)
 			model->points_[index][2] += randn(gen);
 		}
 	}
+
 	// Gaussian noise with mean 0 and std 1% of bounding box radius 
 	// multiplied by the user defined strength.
-	else if (type.compare(string("gaussian")) == 0)
+	if (type.compare("gaussian") == 0 || type.compare("both") == 0)
 	{
 		default_random_engine gen;
 		normal_distribution<double> randn(0.0,0.01*radius*strength);
@@ -50,10 +62,5 @@ void applyNoise(PointCloud *model, string type, double strength)
 			model->points_[index][1] += randn(gen);
 			model->points_[index][2] += randn(gen);
 		}
-	}
-	else if (type.compare(string("both")) == 0)
-	{
-		applyNoise(model, string("outliers"), strength);
-		applyNoise(model, string("gaussian"), strength);
 	}
 }

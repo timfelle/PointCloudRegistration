@@ -2,6 +2,7 @@
 // INCLUDES
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <string>
 
@@ -29,7 +30,7 @@ int main(int argc, char *argv[])
 			"This function accepts the following arguments,\n"
 			"	S1,	name of the surface which should be altered.\n"
 			"The surface is altered based on the environment variables set,\n"
-			"	NOISE_TYPE		=[none,gaussian,salt]\n"
+			"	NOISE_TYPE		=[none,gaussian,outlier]\n"
 			"	NOISE_STRENGTH	=float\n"
 			"   ROTATION        =pitch,yaw,roll\n"
 			"   TRANSLATION     =x,y,z\n"
@@ -40,20 +41,29 @@ int main(int argc, char *argv[])
 	
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
-	const char *output_path, *input_path, *noise_type, *noise_strength;
+	const char *output_path, *input_path;
+	const char *noise_type, *noise_strength, *outlier_amount;
 	const char *rotation, *translation;
-	if ((input_path = getenv("INPUT_PATH")) == NULL)
-		input_path = "../Data/";
-	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
-		output_path = "../Data/";
+
+	// Path variables
+	if ((input_path		= getenv("INPUT_PATH"))		== NULL)
+		input_path		= "../Data/";
+	if ((output_path	= getenv("OUTPUT_PATH"))	== NULL)
+		output_path		= "../Data/";
+
+	// Transformation variables
+	if ((rotation		= getenv("ROTATION"))		== NULL)
+		rotation		= "0.0,0.0,0.0";
+	if ((translation	= getenv("TRANSLATION"))	== NULL)
+		translation =	"0.0,0.0,0.0";
+
+	// Noise variables
 	if ((noise_type = getenv("NOISE_TYPE")) == NULL)
-		noise_type = "none";
+		_putenv("NOISE_TYPE=none");
 	if ((noise_strength = getenv("NOISE_STRENGTH")) == NULL)
-		noise_strength = "0.0";
-	if ((rotation = getenv("ROTATION")) == NULL)
-		rotation = "0.0,0.0,0.0";
-	if ((translation = getenv("TRANSLATION")) == NULL)
-		translation = "0.0,0.0,0.0";
+		_putenv("NOISE_STRENGTH=0.0");
+	if ((outlier_amount = getenv("OUTLIER_AMOUNT")) == NULL)
+		_putenv("OUTLIER_AMOUNT=0.0");
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
@@ -162,12 +172,12 @@ int main(int argc, char *argv[])
 	// ------------------------------------------------------------------------
 	// Load the datafiles
 	PointCloud model;
-	open3d::ReadPointCloud(inputName, model);
+	ReadPointCloud(inputName, model);
 	
 	// ------------------------------------------------------------------------
 	// Apply noise
 
-	applyNoise(&model, string(noise_type), atof(noise_strength));
+	applyNoise(&model);
 
 	// ------------------------------------------------------------------------
 	// Transform model
@@ -182,7 +192,7 @@ int main(int argc, char *argv[])
 	
 	// ------------------------------------------------------------------------
 	// Save the results
-	open3d::WritePointCloud( outputName, model);
+	WritePointCloud( outputName, model);
 
 	// ------------------------------------------------------------------------
 	// Cleanup and delete variables
