@@ -29,6 +29,9 @@
     <ClCompile Include="..\src\registration\fast_point_feature_histograms.cpp">
       <Filter>Source Files\Registration</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\registration\fast_global_registration.cpp">
+      <Filter>Source Files\Registration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\point_cloud_utility.h">
@@ -38,6 +41,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\lib\fast_point_feature_histograms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lib\fast_global_registration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,6 +12,7 @@
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
 #include "fast_point_feature_histograms.h"
+#include "fast_global_registration.h"
 
 
 using namespace std;
@@ -25,7 +26,9 @@ int main(int argc, char *argv[])
 {
 	// ------------------------------------------------------------------------
 	// Handle input numbers and help.
-	if ((argc > 1) && (string(argv[1]).compare("-h") == 0)) {
+	if (argc == 2 && (
+		string(argv[1]).compare("-h") == 0 ||
+		string(argv[1]).compare("--help") == 0) ) {
 		printf(
 			"\n./Registration.exe S1 S2 [S3 S4 ...]\n"
 			"This function accepts the following arguments,\n"
@@ -40,80 +43,91 @@ int main(int argc, char *argv[])
 	}
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
-	const char* output_path, *input_path;
+	const char* output_path, *input_path, *output_name;
 	if ((input_path = getenv("INPUT_PATH")) == NULL)
-		input_path = "data/";
+		input_path = "../Testing/data/";
 	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
-		output_path = "data/";
+		output_path = "../Testing/data/";
+	if ((output_name = getenv("OUTPUT_NAME")) == NULL)
+		output_name = "result";
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
-	int nSurfaces = argc - 1;
 	vector<string> dataName;
-	int nErrors = 0;
-	if (nSurfaces < 2)
+	
+	// Read the input from terminal.
+	if (argc >= 3)
 	{
-		string char_input;
-		cout << "Please enter the name of additional surfaces. Type \"q\" to end inputs\n";
-		while (true)
+		for (int i = 0; i < argc - 1; i++)
 		{
-			cout << "Surface " << nSurfaces << ": ";
-			cin >> char_input;
-			if ((char_input.compare("q") == 0) && (char_input.size() == 1))
-				break;
-			char_input = string(input_path) + char_input;
+			int nErrors = 0;
+			string input = string(argv[i + 1]);
 
-			// Ensure files have the correct 
-			if (char_input.find(".ply") == string::npos) {
-				cerr << "\nError in input " << ": " << char_input << endl;
-				cerr << "   Incorrect file extension." << endl;
+			// Ensure file name have the correct extension
+			if (input.find(".ply") != (input.size() - 4)) {
+				cerr << "\nERROR in input " << i << ":";
+				cerr << "   " << input << endl;
+				cerr << "   Unknown file extension." << endl;
 				nErrors++;
 			}
 			// Ensure the files exist
-			else if (!is_file_exist(char_input)) {
-				cerr << "\nError in input " << ": " << char_input << endl;
+			else if (!is_file_exist(input_path + input)) {
+				cerr << "\nERROR in input " << i << ":" << endl;
+				cerr << "   " << input_path << input << endl;
 				cerr << "   File not found." << endl;
 				nErrors++;
 			}
-			if (nErrors == 0) {
-				dataName.push_back(char_input);
-				nSurfaces++;
-			}
+			if (nErrors != 0) return EXIT_FAILURE;
+			else dataName.push_back(input_path + input);
 		}
 	}
-	else {
-		for (int i = 0; i < nSurfaces; i++) {
-
-			// Read the input path and the name of the file.
-			dataName.push_back(string(input_path) + string(argv[i + 1]));
-
-			// Ensure files have the correct extension
-			if (dataName[i].find(".ply") == string::npos) {
-				cerr << "\nError in input " << i + 1 << ": " << dataName[i] << endl;
-				cerr << "   Incorrect file extension." << endl;
-				nErrors++;
-			}
-			// Ensure the files exist
-			else if (!is_file_exist(dataName[i])) {
-				cerr << "\nError in input " << i + 1 << ": " << dataName[i] << endl;
-				cerr << "   File not found." << endl;
-				nErrors++;
-			}
-		}
-		if (nErrors > 0) return EXIT_FAILURE;
-	}
-	if (nSurfaces < 2) {
-		cerr << "Not enough surfaces, atleast 2 are required" << endl;
+	// Read the name base of the terminal.
+	else if (argc == 2)
+	{
+		cerr << "Single input specifying base name not implemented yet." << endl;
 		return EXIT_FAILURE;
 	}
-	else {
-		cout << "Number of loaded surfaces: " << nSurfaces << endl << endl;
+	// Prompt user for surfaces to register.
+	else
+	{
+		string input;
+		cout << "Please specify names of the desired surfaces." << endl;
+		cout << "Quit: q, Completed inputs: done." << endl;
+		cout << "Current folder: " << input_path << endl;
+		cout << "Surface 0: ";
+		cin >> input;
+		while (input.compare("done") != 0 && input.compare("q") != 0)
+		{
+			int nErrors = 0;
+			// Ensure file name have the correct extension
+			if (input.find(".ply") != (input.size() - 4)) {
+				cerr << "\nERROR in input:";
+				cerr << "   " << input << endl;
+				cerr << "   Unknown file extension." << endl;
+				nErrors++;
+			}
+			// Ensure the files exist
+			else if (!is_file_exist(input_path + input)) {
+				cerr << "\nERROR in input:" << endl;
+				cerr << "   " << input_path << input << endl;
+				cerr << "   File not found." << endl;
+				nErrors++;
+			}
+			if (nErrors == 0) dataName.push_back(input_path + input);
+			cout << "Surface " << dataName.size() << ": ";
+			cin >> input;
+		}
+		if (input.compare("q") == 0) return EXIT_FAILURE;
 	}
-
+	if (dataName.size() < 2)
+	{
+		cerr << "Inputs not loaded correctly." << endl;
+		return EXIT_FAILURE;
+	}
+	
 	// ------------------------------------------------------------------------
 	// Load the datafiles
-
-
+	size_t nSurfaces = dataName.size();
 	vector<PointCloud> model(nSurfaces);
 	for (int i = 0; i < nSurfaces; i++)
 	{
@@ -121,7 +135,6 @@ int main(int argc, char *argv[])
 		ReadPointCloud(dataName[i], model[i]);
 		cout << endl;
 	}
-	
 	
 	// ------------------------------------------------------------------------
 	// Compute normals
@@ -135,15 +148,18 @@ int main(int argc, char *argv[])
 
 	// ------------------------------------------------------------------------
 	// Compute surface registration
+	Matrix4d T;
+	T = fastGlobalRegistration(K, model[0], model[1]);
 
 	// ------------------------------------------------------------------------
 	// Save the results
 	cout << "Result complete, exporting surfaces:" << endl;
-	vector<string> resultName;
+	string resultName;
 	for (int i = 0; i < nSurfaces; i++){
-		resultName.push_back(string(output_path) + string("result_") + to_string(i) + string(".ply") );
-		cout << endl << dataName[i] << " >> " << resultName[i] << endl;
-		WritePointCloud( resultName[i], model[i]);
+		resultName = string(output_path) + string(output_name) + string("_")
+			+ to_string(i) + string(".ply");
+		cout << endl << dataName[i] << " >> " << resultName << endl;
+		WritePointCloud( resultName, model[i]);
 	}
 
 	// ------------------------------------------------------------------------
