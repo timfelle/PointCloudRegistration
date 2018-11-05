@@ -40,19 +40,18 @@ if [ ! -f GenerateData.exe ] ; then
 	>&2 echo "================================================================="
 	exit
 fi
-#if [ ! -f Registration.exe ] ; then
-#	>&2 echo "================================================================="
-#	>&2 echo "ERROR in runtest.sh: (Missing executable)"
-#	>&2 echo "   Registration.exe not found. Aborting tests."
-#	>&2 echo "   Please attempt a manual compilation."
-#	>&2 echo "================================================================="
-#	exit
-#fi
+if [ ! -f Registration.exe ] ; then
+	>&2 echo "================================================================="
+	>&2 echo "ERROR in runtest.sh: (Missing executable)"
+	>&2 echo "   Registration.exe not found. Aborting tests."
+	>&2 echo "   Please attempt a manual compilation."
+	>&2 echo "================================================================="
+	exit
+fi
 cd ../Testing
 
 # Define files needed by the execution in all tests
-#EXEC="$EPATH/Registration.exe $EPATH/GenerateData.exe"
-EXEC="$EPATH/GenerateData.exe"
+EXEC="$EPATH/Registration.exe $EPATH/GenerateData.exe"
 
 # Create all needed folders
 mkdir -p $DPATH $FPATH $LPATH

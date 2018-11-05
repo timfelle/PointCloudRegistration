@@ -12,6 +12,7 @@
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
 #include "fast_point_feature_histograms.h"
+#include "fast_global_registration.h"
 
 
 using namespace std;
@@ -44,11 +45,11 @@ int main(int argc, char *argv[])
 	// Handle Environment variables
 	const char* output_path, *input_path, *output_name;
 	if ((input_path = getenv("INPUT_PATH")) == NULL)
-		input_path = "../Data/";
+		input_path = "../Testing/data/";
 	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
-		output_path = "../Data/";
-	if ((output_name = getenv("OUTPUT_PATH")) == NULL)
-		output_path = "result_";
+		output_path = "../Testing/data/";
+	if ((output_name = getenv("OUTPUT_NAME")) == NULL)
+		output_name = "result";
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
@@ -155,7 +156,7 @@ int main(int argc, char *argv[])
 	cout << "Result complete, exporting surfaces:" << endl;
 	string resultName;
 	for (int i = 0; i < nSurfaces; i++){
-		resultName = string(output_path) + string(output_name) 
+		resultName = string(output_path) + string(output_name) + string("_")
 			+ to_string(i) + string(".ply");
 		cout << endl << dataName[i] << " >> " << resultName << endl;
 		WritePointCloud( resultName, model[i]);
