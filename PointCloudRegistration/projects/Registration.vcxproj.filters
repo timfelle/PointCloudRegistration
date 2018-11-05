@@ -29,7 +29,7 @@
     <ClCompile Include="..\src\registration\fast_point_feature_histograms.cpp">
       <Filter>Source Files\Registration</Filter>
     </ClCompile>
-    <ClCompile Include="fast_global_registration.cpp">
+    <ClCompile Include="..\src\registration\fast_global_registration.cpp">
       <Filter>Source Files\Registration</Filter>
     </ClCompile>
   </ItemGroup>
@@ -43,7 +43,7 @@
     <ClInclude Include="..\lib\fast_point_feature_histograms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="fast_global_registration.h">
+    <ClInclude Include="..\lib\fast_global_registration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
