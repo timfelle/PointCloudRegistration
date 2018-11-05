@@ -66,7 +66,8 @@ rm -fr loadingBar.out # Remove all the loading bars again.
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "
 mkdir fig
-matlab -r "addpath('$MAT');displayModel({$MODEL},'./','fig');exit;" -wait -nodesktop -nosplash
+matlab -wait -nodesktop -nosplash 
+	-r "addpath('$MAT');displayModel({$MODEL},'./','fig');exit;" 
 mv -t $FIG fig/*
 echo "Results placed in folder:                                            "
 echo $FIG
