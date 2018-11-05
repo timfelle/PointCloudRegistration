@@ -5,6 +5,8 @@
 merge.sh
 
 # Folders
+[Bb]uild
+[Gg]lm
 [Oo]bj
 [Ll]ogs
 [Dd]ata
@@ -41,6 +43,7 @@ Icon
 # Linux Files
 
 # IDE's and other programs
+.vs
 .vscode
 *.code-workspace
 
