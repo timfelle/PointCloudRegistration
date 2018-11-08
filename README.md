@@ -11,7 +11,7 @@ The repository contain two folders,
 	- 	Containg shell scripts and matlab code used for testing and visualizing
 		the results of the program.
 [//]: # - Technical report describing the process of developing the code and the 
-[//]: # theory the behind problem and method.
+[//]: #   theory the behind problem and method.
 
 ### Prerequisites and libraries
 In order to compile and run the code the following libraries must be available: 
