@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	if ((input_path = getenv("INPUT_PATH")) == NULL)
 		input_path = "../Testing/data/";
 	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
-		output_path = "../Testing/data/";
+		output_path = "../Testing/logs/debuging/";
 	if ((output_name = getenv("OUTPUT_NAME")) == NULL)
 		output_name = "result";
 
@@ -140,9 +140,9 @@ int main(int argc, char *argv[])
 	// Compute normals
 	for (int i = 0; i < nSurfaces; i++)
 		EstimateNormals(model[i]);
-	
 	// ------------------------------------------------------------------------
 	// Estimate Fast Point Feature Histograms and Correspondances.
+	
 	vector<Vector2i> K;
 	K = computeCorrespondancePair(model[0], model[1]);
 
@@ -150,6 +150,7 @@ int main(int argc, char *argv[])
 	// Compute surface registration
 	Matrix4d T;
 	T = fastGlobalRegistration(K, model[0], model[1]);
+
 	model[1].Transform(T);
 
 	// ------------------------------------------------------------------------
@@ -162,7 +163,7 @@ int main(int argc, char *argv[])
 		cout << endl << dataName[i] << " >> " << resultName << endl;
 		WritePointCloud( resultName, model[i]);
 	}
-
+	
 	// ------------------------------------------------------------------------
 	// Cleanup and delete variables
 	
