@@ -1,23 +1,68 @@
-function displayRegistration(baseName,dir)
+function displayRegistration(inputName,dataPath,exportLocation)
+%DISPLAYMODEL
+%  This function displays a .ply point cloud as a 3d scatter.
+%  __________________________________________________________________
+%  DISPLAYMODEL()
+%       Displays the bunnyPartial1.ply file located on the path
+%       '../data/' and exports the result in the folder 
+%       '../logs/matlab'.
+%
+%  DISPLAYMODEL(name)
+%       Displays the model located in the file 'name.ply'.
+%       Import and export path is as above.
+%
+%  DISPLAYMODEL(name, dataPath)
+%       Locates the model in the folder specified by 'dataPath'.
+%
+%  DISPLAYMODEL(name, dataPath, exportLocation)
+%       Exports the model at location specified by 'exportLocation'.
+%
+%  See also EXPORTFIGURES.
 
 %% Handle input
-if ~exist('baseName','var') || isempty(baseName)
-    baseName = 'modifiedtestSurface';
+if ~exist('inputName','var') || isempty(inputName)
+    inputName = 'bunnyPartial';
 end
-if ~exist('dir','var') || isempty(dir)
-    dir = '../data/';
+if ~exist('dataPath','var') || isempty(dataPath)
+    dataPath = '../data/';
+end
+if ~exist('exportLocation','var') || isempty(dataPath)
+    exportLocation = '../logs/matlab';
+end
+dataName = findData(dataPath,inputName);
+
+F = CreateFigure(inputName);
+
+Color = colormap(jet(size(dataName,2)));
+
+hold on
+for i=1:length(dataName)
+    dispReg(dataName{i},dataPath,Color(i,:))
 end
 
-dataList = findData(dir,baseName);
+hold off
+axis equal
+axis off
+view([0,90])
+
+ExportFigures(F,exportLocation,'asp',1)
+end
+
+function dispReg(name,dataPath,Color)
+data = name ;
+if ~exist([dataPath,data],'file')
+    return;
+end
 
 %% Load the data
-clf
-hold on
-for i = 1:length(dataList)
-    model = pcread([dir,dataList{i}]);
-    A = scatter3(model.Location(:,1),model.Location(:,2),model.Location(:,3) );
-    A.MarkerFaceColor = [0.5,0.5,0.5].*0;
+model = pcread([dataPath,data]);
+
+X = double(model.Location(:,1));
+Y = double(model.Location(:,2));
+Z = double(model.Location(:,3));
+A = scatter3(X,Y,Z);
+A.MarkerFaceColor = Color;
+A.MarkerEdgeColor = Color*0.2;
+A.LineWidth = 0.1;
+
 end
-axis equal
-view([50,50])
-hold off
