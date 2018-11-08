@@ -26,11 +26,11 @@ vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &mode
 	computeFPFH(model_1, P_1, FPFH_1);
 	
 	// Build the 2 search trees
-	KDTreeFlann KDTree_0(FPFH_0);
-	KDTreeFlann KDTree_1(FPFH_1);
+	KDTreeFlann KDTree_0;
+	KDTreeFlann KDTree_1;
 
-	//KDTree_0.SetMatrixData(FPFH_0);
-	//KDTree_1.SetMatrixData(FPFH_1);
+	KDTree_0.SetMatrixData(FPFH_0);
+	KDTree_1.SetMatrixData(FPFH_1);
 
 	// Set up correspondances
 	vector<Vector2i> K_I_0, K_I_1, K_II, K_III;
@@ -219,8 +219,10 @@ vector<Vector2i> nearestNeighbour(vector<int> P_mod, vector<int> P_q,
 		vector<double> dist;
 		Vector2i k;
 		//int knn = 1;
-		KDTreeSearchParamKNN knn(1);
-		KDTree_q.Search(FPFH_mod.row(i), knn, index, dist);
+		//KDTreeSearchParamKNN knn(1);
+		int knn = 1;
+		VectorXd mod = FPFH_mod.col(i);
+		KDTree_q.SearchKNN(mod, knn, index, dist);
 
 		k(0) = P_mod[i];
 		k(1) = P_q[index[0]];

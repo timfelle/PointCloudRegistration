@@ -50,7 +50,7 @@ void applyNoise(PointCloud *model)
 		}
 	}
 
-	// Gaussian noise with mean 0 and std 1% of bounding box radius 
+	// Gaussian noise with mean 0 and std * 1% of bounding box radius 
 	// multiplied by the user defined strength.
 	if (type.compare("gaussian") == 0 || type.compare("both") == 0)
 	{
