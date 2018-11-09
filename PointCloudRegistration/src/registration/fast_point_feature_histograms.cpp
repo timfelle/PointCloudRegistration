@@ -22,9 +22,10 @@ vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &mode
 	// Compute FPFH for the two surfaces
 	vector<int> P_0, P_1;
 	MatrixXd FPFH_0, FPFH_1;
-	cout << __func__ << ": " << __LINE__ << endl; computeFPFH(model_0, P_0, FPFH_0);
-	cout << __func__ << ": " << __LINE__ << endl; computeFPFH(model_1, P_1, FPFH_1);
-
+	computeFPFH(model_0, P_0, FPFH_0);
+	computeFPFH(model_1, P_1, FPFH_1);
+	if (P_0.size() == 0 || P_1.size() == 0)
+		cerr << "No persistent features found " << endl;
 	// Build the 2 search trees
 	KDTreeFlann KDTree_0;
 	KDTreeFlann KDTree_1;
@@ -34,10 +35,10 @@ vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &mode
 
 	// Set up correspondances
 	vector<Vector2i> K_I_0, K_I_1, K_II, K_III;
-	cout << __func__ << ": " << __LINE__ << endl; K_I_0 = nearestNeighbour(P_0, P_0, FPFH_0, KDTree_0);
-	cout << __func__ << ": " << __LINE__ << endl; K_I_1 = nearestNeighbour(P_1, P_1, FPFH_1, KDTree_1);
-	cout << __func__ << ": " << __LINE__ << endl; K_II  = mutualNN(K_I_0, K_I_1);
-	cout << __func__ << ": " << __LINE__ << endl; K_III = tupleTest(K_II, model_0, model_1);
+	K_I_0 = nearestNeighbour(P_0, P_0, FPFH_0, KDTree_0);
+	K_I_1 = nearestNeighbour(P_1, P_1, FPFH_1, KDTree_1);
+	K_II  = mutualNN(K_I_0, K_I_1);
+	K_III = tupleTest(K_II, model_0, model_1);
 
 	return K_III;
 }
@@ -49,7 +50,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	// ********************************************************************* \\
 	// Initialization of the different values used in the computations.
 	double R = 0.5*(model.GetMaxBound() - model.GetMinBound()).norm();
-	double tol_R = 0.01;					// Maximal proportion of R to use.
+	double tol_R = 0.1;					// Maximal proportion of R to use.
 	double s1 = 0.0, s2 = 0.0, s3 = 0.0;	// Tolerances for feature cutoff
 	double alpha = 0.00;					// Proportion of STD to mark persistent.
 	
@@ -220,14 +221,16 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 				)
 			{
 				P_new.push_back(p_idx);
-				FPFH_new.resize(P_new.size(), 6);
-				FPFH_new.bottomRows(1) =  FPFH.row(p_idx);
+				FPFH_new = (MatrixXd(P_new.size(), 6) << FPFH_new, FPFH.row(p_idx)).finished();
 			}
 		}
 		// ================================================================= \\
 		// Use only persistent features for next iteration.
-		P = P_new;
-		FPFH = FPFH_new;
+		if (P_new.size() != 0)
+		{
+			P = P_new;
+			FPFH = FPFH_new;
+		}
 	}
 	
 }
@@ -243,7 +246,6 @@ vector<Vector2i> nearestNeighbour(vector<int> P_0, vector<int> P_1,
 	{
 		int p_idx = P_0[i];
 		VectorXd fpfh_0 = FPFH_0.row(p_idx);
-
 		vector<int> neighbour;
 		vector<double> distance;
 		Vector2i k = Vector2i::Zero();
@@ -254,10 +256,8 @@ vector<Vector2i> nearestNeighbour(vector<int> P_0, vector<int> P_1,
 		k(0) = p_idx;
 		k(1) = P_1[neighbour[0]];
 
-		//cout << k(0) << "  " << P_1[neighbour[0]] << "  " << distance[0] << endl;
 		K_near.push_back(k);
 	}
-	cout << "NNs: " << K_near.size() << endl;
 	return K_near;
 }
 
@@ -288,7 +288,7 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II,PointCloud model_0, PointCloud 
 	vector<Vector2i> K_III;
 	double tau = 0.9;
 	double tau_inv = 1.0 / tau;
-	cout << "K2: " << K_II.size() << endl;
+
 	// Fill index vector
 	vector<int> I(K_II.size());
 	iota(I.begin(), I.end(), 0);
@@ -297,16 +297,14 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II,PointCloud model_0, PointCloud 
 	random_device rd;
 	mt19937 g(rd());
 	shuffle(I.begin(), I.end(),g);
-	cout << __FILE__ << ": " << __LINE__ << endl;
+
 	// Run through all points
 	for (size_t i = 0; i < K_II.size()-3; i += 3)
 	{
-		cout << __FILE__ << ": " << __LINE__ << endl;
 		int idx = I[i];
 		double r01, r02, r12;
 
 		// Read the p and q points from the two models.
-		cout << __FILE__ << ": " << __LINE__ << endl;
 		Vector3d p_0 = model_0.points_[K_II[idx    ](0)];
 		Vector3d p_1 = model_0.points_[K_II[idx + 1](0)];
 		Vector3d p_2 = model_0.points_[K_II[idx + 2](0)];
@@ -315,13 +313,11 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II,PointCloud model_0, PointCloud 
 		Vector3d q_2 = model_1.points_[K_II[idx + 2](1)];
 
 		// Compute ratios
-		cout << __FILE__ << ": " << __LINE__ << endl;
 		r01 = (p_0 - p_1).norm() / (q_0 - q_1).norm();
 		r02 = (p_0 - p_2).norm() / (q_0 - q_2).norm();
 		r12 = (p_1 - p_2).norm() / (q_1 - q_2).norm();
 
 		// Save correspondences if ratios are valid
-		cout << __FILE__ << ": " << __LINE__ << endl;
 		if ((tau < r01 && r01 <= tau_inv) &&
 			(tau < r02 && r02 <= tau_inv) &&
 			(tau < r12 && r12 <= tau_inv))
@@ -331,6 +327,5 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II,PointCloud model_0, PointCloud 
 			K_III.push_back(K_II[idx + 2]);
 		}
 	}
-	cout << __FILE__ << ": " << __LINE__ << endl;
 	return K_III;
 }

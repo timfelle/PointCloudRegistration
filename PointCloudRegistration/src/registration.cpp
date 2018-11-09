@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 	if ((input_path = getenv("INPUT_PATH")) == NULL)
 		input_path = "../Testing/data/";
 	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
-		output_path = "../Testing/logs/debuging/";
+		output_path = "../Testing/logs/debugging/";
 	if ((output_name = getenv("OUTPUT_NAME")) == NULL)
 		output_name = "result";
 
