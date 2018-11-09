@@ -32,13 +32,13 @@ echo "   Transformation.                                                   "
 export NOISE_TYPE=none
 export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
 export TRANSLATION="0.0,0.0,0.0"
-./GenerateData bunnyClean.ply bunnyTransform.ply > loadingBar.out
+./GenerateData bunnyClean.ply bunnyTransform.ply
 
 MODEL+="'bunnyTransform' "
 
 # Test registration
 
-./Registration bunnyClean.ply bunnyTransform.ply
+./Registration $DAT/bunnyPartial2.ply bunnyTransform.ply
 
 rm -fr loadingBar.out # Remove all the loading bars again.
 # ==============================================================================
@@ -46,7 +46,9 @@ rm -fr loadingBar.out # Remove all the loading bars again.
 echo "Running matlab to complete visualisation.                            "
 mkdir fig
 matlab -wait -nodesktop -nosplash \
-	-r "addpath('$MAT');displayRegistration({$MODEL},'./','fig');exit;" 
+	-r "addpath('$MAT');displayRegistration('bunny','./','fig');exit;" 
+matlab -wait -nodesktop -nosplash \
+	-r "addpath('$MAT');displayRegistration('result','./','fig');exit;" 
 mv -t $FIG fig/*
 echo "Results placed in folder:                                            "
 echo $FIG

@@ -57,7 +57,7 @@ echo "   Transformation.                                                   "
 export NOISE_TYPE=none
 export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
 export TRANSLATION="0.0,0.0,0.0"
-./GenerateData bunnyPartial1.ply bunnyTransform.ply > loadingBar.out
+./GenerateData bunnyPartial1.ply bunnyTransform.ply
 
 MODEL+="'bunnyTransform' "
 
