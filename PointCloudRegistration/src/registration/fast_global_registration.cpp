@@ -28,10 +28,10 @@ Matrix4d fastGlobalRegistration(
 	double D = max(D_0, D_1);
 	size_t nK = K.size();
 
-	Matrix4d T = Matrix4d::Ones();
+	Matrix4d T = Matrix4d::Identity();
 	VectorXd xi = VectorXd::Zero(6);
 
-	double nu = pow(D, 2);
+	double nu = pow(D, 2.0);
 	int it_nu = 0;
 	while (nu > tol_nu)
 	{
@@ -43,9 +43,11 @@ Matrix4d fastGlobalRegistration(
 			// Read p and q
 			Vector4d p = vec_to_hom(model_0.points_[K[i](0)]);
 			Vector4d q = vec_to_hom(model_1.points_[K[i](1)]);
-
+			
 			// Compute l_(p,q)
-			double l_pq = pow(nu / (nu + pow((p - T * q).norm(), 2)), 2);
+			double l_pq = pow(nu / (nu + pow((p - T * q).norm(), 2.0)), 2.0);
+
+			
 
 			// Compute M and V
 			Vector4d M = T * q;
@@ -67,7 +69,7 @@ Matrix4d fastGlobalRegistration(
 		}
 
 		// Update T and xi
-		xi = -(Je.transpose()*Je).inverse()*Je.transpose()*e; // MUST BE CHANGED
+		xi = (Je.transpose()*Je).ldlt().solve( -Je.transpose()*e );
 		T = Xi(xi)*T;
 
 		// Update nu every forth time
@@ -77,8 +79,7 @@ Matrix4d fastGlobalRegistration(
 			it_nu = 0;
 		}
 	}
-
-
+	cout << T << endl;
 	return T;
 }
 
