@@ -22,10 +22,12 @@ Matrix4d fastGlobalRegistration(
 	vector<Vector2i> K, PointCloud &model_0, PointCloud &model_1)
 {
 	// Initialize values
-	double tol_nu = 1e-6;			// Tolerance on nu
+	double tol_nu = 1e-4;			// Tolerance on nu
+	double tol_e  = 1e-4;			// Tolerance on e
 	double D_0 = (model_0.GetMinBound() - model_0.GetMaxBound()).norm();
 	double D_1 = (model_1.GetMinBound() - model_1.GetMaxBound()).norm();
 	double D = max(D_0, D_1);
+
 	size_t nK = K.size();
 
 	Matrix4d T = Matrix4d::Identity();
@@ -33,7 +35,7 @@ Matrix4d fastGlobalRegistration(
 
 	double nu = pow(D, 2.0);
 	int it_nu = 0;
-	while (nu > tol_nu)
+	while (nu > tol_nu*D)
 	{
 		VectorXd e  = VectorXd::Zero(nK);
 		MatrixXd Je = MatrixXd::Zero(nK,6);
@@ -45,19 +47,16 @@ Matrix4d fastGlobalRegistration(
 			Vector4d q = vec_to_hom(model_1.points_[K[i](1)]);
 			
 			// Compute l_(p,q)
-			double l_pq = pow(nu / (nu + pow((p - T * q).norm(), 2.0)), 2.0);
-
-			
+			double l_pq_sqrt = nu / (nu + pow((p - T * q).norm(), 2.0));
+			double l_pq = pow(l_pq_sqrt, 2.0);
 
 			// Compute M and V
 			Vector4d M = T * q;
 			Vector4d V = p - Xi(xi)*M;
 			
-
 			// Update e and J_e
 			double V_norm = V.norm();
-			double l_pq_sqrt = pow(l_pq, 0.5);
-			e(i) = l_pq * V_norm;
+			e(i) = l_pq_sqrt * V_norm;
 
 			Je(i, 0) = V(1)*M(2) - V(2)*M(1);
 			Je(i, 1) = V(2)*M(0) - V(0)*M(2);
@@ -69,7 +68,7 @@ Matrix4d fastGlobalRegistration(
 		}
 
 		// Update T and xi
-		xi = (Je.transpose()*Je).ldlt().solve( -Je.transpose()*e );
+		xi = -(Je.transpose()*Je).ldlt().solve( Je.transpose()*e );
 		T = Xi(xi)*T;
 
 		// Update nu every forth time
@@ -78,8 +77,10 @@ Matrix4d fastGlobalRegistration(
 			nu /= 2.0;
 			it_nu = 0;
 		}
+		if (e.norm() / e.size() < tol_e * D)
+			break;
 	}
-	cout << T << endl;
+	
 	return T;
 }
 

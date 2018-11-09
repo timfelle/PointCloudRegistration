@@ -32,7 +32,7 @@ echo "   Transformation.                                                   "
 export NOISE_TYPE=none
 export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
 export TRANSLATION="0.0,0.0,0.0"
-./GenerateData bunnyClean.ply bunnyTransform.ply
+./GenerateData $DAT/bunnyPartial2.ply bunnyTransform.ply
 
 MODEL+="'bunnyTransform' "
 
