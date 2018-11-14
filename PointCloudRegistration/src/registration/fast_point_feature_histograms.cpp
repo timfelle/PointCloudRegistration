@@ -24,8 +24,7 @@ vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &mode
 	MatrixXd FPFH_0, FPFH_1;
 	computeFPFH(model_0, P_0, FPFH_0);
 	computeFPFH(model_1, P_1, FPFH_1);
-	if (P_0.size() == 0 || P_1.size() == 0)
-		cerr << "No persistent features found " << endl;
+
 	// Build the 2 search trees
 	KDTreeFlann KDTree_0;
 	KDTreeFlann KDTree_1;
@@ -35,9 +34,13 @@ vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &mode
 
 	// Set up correspondances
 	vector<Vector2i> K_I_0, K_I_1, K_II, K_III;
-	K_I_0 = nearestNeighbour(P_0, P_0, FPFH_0, KDTree_0);
-	K_I_1 = nearestNeighbour(P_1, P_1, FPFH_1, KDTree_1);
-	K_II  = mutualNN(K_I_0, K_I_1);
+
+	K_I_0 = nearestNeighbour(P_0, P_1, FPFH_0, KDTree_1);
+	K_I_1 = nearestNeighbour(P_1, P_0, FPFH_1, KDTree_0);
+	cout << "K_I " << K_I_0.size() << "  " << K_I_1.size() << endl;
+
+	K_II = mutualNN(K_I_0, K_I_1);
+	cout << "K_II " << K_II.size() << endl;
 	K_III = tupleTest(K_II, model_0, model_1);
 
 	return K_III;
@@ -53,28 +56,26 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	double tol_R = 0.1;					// Maximal proportion of R to use.
 	double s1 = 0.0, s2 = 0.0, s3 = 0.0;	// Tolerances for feature cutoff
 	double alpha = 0.00;					// Proportion of STD to mark persistent.
-	
+
 
 	// Initialize the persistent set as all points in the set.
 	P = vector<int>(model.points_.size());
 	for (int id = 0; id < P.size(); id++)
 		P[id] = id;
-	
 
 	// Precompute the KDTree used for distance search.
-	KDTreeFlann distTree;
-	distTree.SetGeometry(model);
-	
+	KDTreeFlann distTree(model);
+
 
 	// ********************************************************************* \\
 	// For each radius determine the FPFH and persistent features.
-	for (double r = 0.001*R; r < tol_R*R; r *= 2)
+	for (double r = tol_R * R; r > 0.01*R; r *= 0.5)
 	{
 		// Allocate space for needed values
-		MatrixXd SPFH(P.size(),6);
+		MatrixXd SPFH = MatrixXd::Zero(model.points_.size(), 6);
 		vector<vector<int>> Neighbours(P.size());
 
-		
+
 		// ================================================================= \\
 		// Compute the simplified features for all points.
 		for (int idx = 0; idx < P.size(); idx++)
@@ -85,12 +86,12 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			Vector3d p = model.points_[p_idx];
 			Vector3d n = model.normals_[p_idx];
 
-			// ============================================================= \\
-			// Nighbours are the indices of the neighbours in the model.
+			// Neighbours are the indices of the neighbours in the model.
 			vector<int> neighbours;
 			vector<double> distances;
 			distTree.SearchRadius(p, r, neighbours, distances);
 
+			// Make sure the point itself is not a neighbour
 			for (int k = 0; k < neighbours.size(); k++)
 			{
 				if (distances[k] == 0)
@@ -99,11 +100,8 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 					distances.erase(distances.begin() + k);
 				}
 			}
-			
-
 			Neighbours[idx] = neighbours;
 
-			// ============================================================= \\
 			// For each neighbour compute the local SPFH values
 			VectorXd spfh = VectorXd::Zero(6);
 			for (int k = 0; k < neighbours.size(); k++)
@@ -116,8 +114,10 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 				Vector3d p_i, p_j, n_i, n_j;
 				Vector3d line = p - p_k;
 
-				double angle_p = acos(n.dot(line) / (n.norm()*line.norm()));
-				double angle_pk = acos(n_k.dot(line) / (n_k.norm()*line.norm()));
+				double angle_p = acos(n.dot(line) /
+					(n.norm()*line.norm()));
+				double angle_pk = acos(n_k.dot(line) /
+					(n_k.norm()*line.norm()));
 				if (angle_p <= angle_pk)
 				{
 					p_i = p; p_j = p_k;
@@ -131,8 +131,8 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 
 				// Define the Darboux frame
 				Vector3d u = n_i;
-				Vector3d v = (p_j - p_i); v.cross(u);
-				Vector3d w = u; w.cross(v);
+				Vector3d v = (p_j - p_i).cross(u);
+				Vector3d w = u.cross(v);
 
 				// Compute features
 				double f_1 = v.dot(n_j);
@@ -143,21 +143,21 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 				}
 
 				// Compute simplified histogram
-				if (f_1 <  s1) spfh[0]++;
+				if (f_1 < s1) spfh[0]++;
 				if (f_1 >= s1) spfh[1]++;
-				if (f_2 <  s2) spfh[2]++;
+				if (f_2 < s2) spfh[2]++;
 				if (f_2 >= s2) spfh[3]++;
-				if (f_3 <  s3) spfh[4]++;
+				if (f_3 < s3) spfh[4]++;
 				if (f_3 >= s3) spfh[5]++;
 			}
 
 			if (neighbours.size() != 0)
 				SPFH.row(idx) = spfh / neighbours.size();
 		}
-		
+
 		// ================================================================= \\
 		// Compute the FPFH for each point
-		FPFH = MatrixXd::Zero(P.size(),6);
+		FPFH = MatrixXd::Zero(P.size(), 6);
 		for (int idx = 0; idx < P.size(); idx++)
 		{
 			int p_idx = P[idx];
@@ -166,73 +166,67 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			VectorXd fpfh = VectorXd::Zero(6);
 			size_t K = Neighbours[idx].size();
 			if (K > 0) {
-				double Kinv = 1.0 / (double) K;
-
 				for (int k = 0; k < K; k++)
 				{
 					int pk_idx = Neighbours[idx][k];
 					Vector3d pk = model.points_[pk_idx];
-					
-					if ((p - pk).norm() > 0.0) 
-						fpfh += SPFH.row(pk_idx) / ((p - pk).norm());
+					if ((p - pk).norm() > 0.0)
+						fpfh += SPFH.row(pk_idx) / (1 + (p - pk).norm());
 				}
-				fpfh *= Kinv;
+
+				fpfh *= 1.0 / (double)K;
 				FPFH.row(idx) = fpfh + SPFH.row(idx);
 			}
 		}
-		
+
 		// ================================================================= \\
 		// Compute the mean and standard deviation of the feature histograms.
 		VectorXd mu = VectorXd::Zero(6), sigma = VectorXd::Zero(6);
-
 		// Mean
 		for (int id = 0; id < FPFH.rows(); id++)
 			mu += FPFH.row(id) / FPFH.rows();
-		
+
 		// Standard Deviation
 		for (int f = 0; f < 6; f++)
 		{
-			VectorXd p_f = VectorXd::Zero(P.size());
-			for (int id = 0; id < P.size(); id++)
-			{
-				p_f(id) = FPFH(P[id], f) - mu(f);
-			}
-			 sigma(f) = p_f.norm() / sqrt(FPFH.rows() - 1);
+			VectorXd p_f = VectorXd::Zero(FPFH.rows());
+			p_f = FPFH.col(f);
+			p_f += VectorXd::Ones(FPFH.rows())*mu(f);
+
+			sigma(f) = (p_f).norm() / sqrt(FPFH.rows() - 1);
 		}
 
-		
 		// ================================================================= \\
 		// Determine which points have persistent features.
-		vector<int> P_new;
-		MatrixXd FPFH_new;
+		vector<int> P_new; MatrixXd FPFH_new;
 		for (int idx = 0; idx < P.size(); idx++)
 		{
-			int p_idx = P[idx];
-			VectorXd fpfh = FPFH.row(p_idx);
-			VectorXd dist = fpfh - mu;
 
+			int p_idx = P[idx];
+			VectorXd fpfh = FPFH.row(idx);
+			VectorXd dist = (fpfh - mu).cwiseAbs();
 			if (
-				abs(dist(0)) > alpha*sigma(0) &&
-				abs(dist(1)) > alpha*sigma(1) &&
-				abs(dist(2)) > alpha*sigma(2) &&
-				abs(dist(3)) > alpha*sigma(3) &&
-				abs(dist(4)) > alpha*sigma(4) &&
-				abs(dist(5)) > alpha*sigma(5)
+				dist(0) > alpha*sigma(0) &&
+				dist(1) > alpha*sigma(1) &&
+				dist(2) > alpha*sigma(2) &&
+				dist(3) > alpha*sigma(3) &&
+				dist(4) > alpha*sigma(4) &&
+				dist(5) > alpha*sigma(5)
 				)
 			{
 				P_new.push_back(p_idx);
-				FPFH_new = (MatrixXd(P_new.size(), 6) << FPFH_new, FPFH.row(p_idx)).finished();
+				FPFH_new = (MatrixXd(P_new.size(), 6)
+					<< FPFH_new, fpfh).finished();
 			}
 		}
-		// ================================================================= \\
 		// Use only persistent features for next iteration.
-		if (P_new.size() != 0)
+		if (P_new.size() >= 10)
 		{
 			P = P_new;
 			FPFH = FPFH_new;
 		}
 	}
-	
+
 }
 
 // ============================================================================
@@ -252,7 +246,7 @@ vector<Vector2i> nearestNeighbour(vector<int> P_0, vector<int> P_1,
 
 		int knn = 1;
 		KDTree_1.SearchKNN(fpfh_0, knn, neighbour, distance);
-		
+
 		k(0) = p_idx;
 		k(1) = P_1[neighbour[0]];
 
@@ -282,35 +276,37 @@ vector<Vector2i> mutualNN(vector<Vector2i> K_0, vector<Vector2i> K_1)
 }
 // ============================================================================
 // RUN TUPLE TEST
-vector<Vector2i> tupleTest(vector<Vector2i> K_II,PointCloud model_0, PointCloud model_1)
+vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0, PointCloud model_1)
 {
 	// Initialize values
 	vector<Vector2i> K_III;
 	double tau = 0.9;
 	double tau_inv = 1.0 / tau;
 
+
 	// Fill index vector
 	vector<int> I(K_II.size());
 	iota(I.begin(), I.end(), 0);
-	
+
 	// Do a random shuffle of I
 	random_device rd;
 	mt19937 g(rd());
-	shuffle(I.begin(), I.end(),g);
+	shuffle(I.begin(), I.end(), g);
 
 	// Run through all points
-	for (size_t i = 0; i < K_II.size()-3; i += 3)
+	for (int i = 0; i < I.size() - 2; i += 3)
 	{
-		int idx = I[i];
+		vector<int> idx = { I[i], I[i + 1], I[i + 2] };
 		double r01, r02, r12;
 
 		// Read the p and q points from the two models.
-		Vector3d p_0 = model_0.points_[K_II[idx    ](0)];
-		Vector3d p_1 = model_0.points_[K_II[idx + 1](0)];
-		Vector3d p_2 = model_0.points_[K_II[idx + 2](0)];
-		Vector3d q_0 = model_1.points_[K_II[idx    ](1)];
-		Vector3d q_1 = model_1.points_[K_II[idx + 1](1)];
-		Vector3d q_2 = model_1.points_[K_II[idx + 2](1)];
+		Vector3d p_0 = model_0.points_[K_II[idx[0]](0)];
+		Vector3d p_1 = model_0.points_[K_II[idx[1]](0)];
+		Vector3d p_2 = model_0.points_[K_II[idx[2]](0)];
+		Vector3d q_0 = model_1.points_[K_II[idx[0]](1)];
+		Vector3d q_1 = model_1.points_[K_II[idx[1]](1)];
+		Vector3d q_2 = model_1.points_[K_II[idx[2]](1)];
+
 
 		// Compute ratios
 		r01 = (p_0 - p_1).norm() / (q_0 - q_1).norm();
@@ -322,10 +318,12 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II,PointCloud model_0, PointCloud 
 			(tau < r02 && r02 <= tau_inv) &&
 			(tau < r12 && r12 <= tau_inv))
 		{
-			K_III.push_back(K_II[idx    ]);
-			K_III.push_back(K_II[idx + 1]);
-			K_III.push_back(K_II[idx + 2]);
+			K_III.push_back(K_II[idx[0]]);
+			K_III.push_back(K_II[idx[1]]);
+			K_III.push_back(K_II[idx[2]]);
 		}
 	}
+	if (K_III.size() < 10)
+		K_III = tupleTest(K_II, model_0, model_1);
 	return K_III;
 }

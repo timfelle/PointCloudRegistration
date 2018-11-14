@@ -2,8 +2,9 @@
 // INCLUDES
 
 #include <stdio.h>
-#include <iostream>
 #include <string>
+#include <iostream>
+#include <exception>
 
 #include <Eigen/Dense>
 #include <Open3D/Core/Core.h>
@@ -65,14 +66,14 @@ int main(int argc, char *argv[])
 
 			// Ensure file name have the correct extension
 			if (input.find(".ply") != (input.size() - 4)) {
-				cerr << "\nERROR in input " << i << ":";
+				cerr << "\nERROR in input " << i+1 << ":";
 				cerr << "   " << input << endl;
 				cerr << "   Unknown file extension." << endl;
 				nErrors++;
 			}
 			// Ensure the files exist
 			else if (!is_file_exist(input_path + input)) {
-				cerr << "\nERROR in input " << i << ":" << endl;
+				cerr << "\nERROR in input " << i+1 << ":" << endl;
 				cerr << "   " << input_path << input << endl;
 				cerr << "   File not found." << endl;
 				nErrors++;
@@ -129,11 +130,11 @@ int main(int argc, char *argv[])
 	// Load the datafiles
 	size_t nSurfaces = dataName.size();
 	vector<PointCloud> model(nSurfaces);
+	cout << "Reading data from: " << endl;
 	for (int i = 0; i < nSurfaces; i++)
 	{
-		cout << "Reading data from: " << dataName[i] << endl;
+		cout << dataName[i] << endl;
 		ReadPointCloud(dataName[i], model[i]);
-		cout << endl;
 	}
 	
 	// ------------------------------------------------------------------------
@@ -144,13 +145,14 @@ int main(int argc, char *argv[])
 	// Estimate Fast Point Feature Histograms and Correspondances.
 	
 	vector<Vector2i> K;
-	K = computeCorrespondancePair(model[0], model[1]);
+	cout << __func__ << ": " << __LINE__ <<endl; K = computeCorrespondancePair(model[0], model[1]);
+	cout << "Number of correspondences found: " << K.size() << endl;
 
 	// ------------------------------------------------------------------------
 	// Compute surface registration
 	Matrix4d T;
-	T = fastGlobalRegistration(K, model[0], model[1]);
-
+	cout << __func__ << ": " << __LINE__ <<endl; T = fastGlobalRegistration(K, model[0], model[1]);
+	cout << T << endl;
 	model[1].Transform(T);
 
 	// ------------------------------------------------------------------------

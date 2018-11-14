@@ -193,6 +193,8 @@ int main(int argc, char *argv[])
 	// ------------------------------------------------------------------------
 	// Save the results
 	WritePointCloud( outputName, model);
+	cout << "Data generated:" << endl;
+	cout << inputName << " >> " << outputName << endl;
 
 	// ------------------------------------------------------------------------
 	// Cleanup and delete variables
