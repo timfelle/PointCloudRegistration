@@ -70,13 +70,12 @@ EXEC="$EPATH/Registration.exe $EPATH/GenerateData.exe"
 mkdir -p $DPATH $FPATH $LPATH
 
 # Run the tests
-echo "Running the following tests: "
-echo $TEST
-echo ' '
+echo " "
 echo "------------------------------------------------------------------"
+echo "Queueing tests: "; echo " "
 for test in $TEST
 do
-	echo "Running test: $test."; echo " "
+	echo "  $test."
 	if [ -f "$SPATH/$test.sh" ] ; then
 		# Create the folder needed
 		rm -fr $LPATH/$test
@@ -87,13 +86,16 @@ do
 
 		# Move to the directory submit the code and return
 		cd $LPATH/$test
-		./$test.sh >output.out 2>error.err
+		./$test.sh >output.out 2>error.err &
 		cd ../../
 	else
 		>&2 echo "File $SPATH/$test.sh was not found"
 	fi
 done
+echo " "
 echo "------------------------------------------------------------------"
-echo "Tests concluded."
+echo "Tests queued."
+wait
+echo "Tests complete."
 
 # # EOF # #
