@@ -96,6 +96,7 @@ echo " "
 echo "------------------------------------------------------------------"
 echo "Tests queued."
 wait
+cp -frt ../../Latex/Figures $FPATH/* 
 echo "Tests complete."
 
 # # EOF # #

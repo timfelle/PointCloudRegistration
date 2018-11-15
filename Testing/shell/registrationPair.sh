@@ -6,7 +6,7 @@ echo "   of several settings for the data generation program.              "
 echo "                                                                     "
 
 DAT=../../data
-FIG=../../figures
+FIG=../../figures/RegistrationPair
 MAT=../../matlab
 
 # ==============================================================================
@@ -41,7 +41,7 @@ rm -fr loadingBar.out # Remove all the loading bars again.
 # ==============================================================================
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "
-mkdir fig
+mkdir fig $FIG -p
 matlab -wait -nodesktop -nosplash \
 	-r "addpath('$MAT');displayRegistration('bunny','./','fig');exit;" 
 matlab -wait -nodesktop -nosplash \
