@@ -8,6 +8,7 @@
 #include <Open3D/Core/Core.h>
 #include <Eigen/Dense>
 
+
 #include "utility_functions.h"
 #include "fast_global_registration.h"
 
@@ -35,11 +36,13 @@ Matrix4d fastGlobalRegistration(
 
 	double nu = max(pow(D, 2.0), 1.0);
 	int it_nu = 0;
+	double err = 0.0;
 	while ( nu > tol_nu * D )
 	{
 		VectorXd e = VectorXd::Zero(nK);
 		MatrixXd Je = MatrixXd::Zero(nK, 6);
-		double err = 0.0;
+
+		err = 0.0;
 		for (size_t i = 0; i < nK; i++)
 		{
 			int p_idx = K[i](0);
@@ -59,25 +62,25 @@ Matrix4d fastGlobalRegistration(
 
 			// Update e and J_e
 			double V_norm = V.norm();
-			e(i) = l_pq_sqrt * V_norm;
+			e(i) = l_pq * pow(V_norm,2.0);
 
 			Je(i, 0) = V(1)*M(2) - V(2)*M(1);
 			Je(i, 1) = V(2)*M(0) - V(0)*M(2);
 			Je(i, 2) = V(0)*M(1) - V(1)*M(0);
-			Je(i, 3) = -V(0)*M(3);
-			Je(i, 4) = -V(1)*M(3);
-			Je(i, 5) = -V(2)*M(3);
+			Je(i, 3) = -V(0);
+			Je(i, 4) = -V(1);
+			Je(i, 5) = -V(2);
 			Je.row(i) *= l_pq_sqrt / V_norm;
 
 			err += (p - M).norm();
 		}
-
 		if (err < tol_e * nK) break;
-
+		
 		// Update T and xi
 		xi = (Je.transpose()*Je).ldlt().solve(-Je.transpose()*e);
+		
 		T = Xi(xi)*T;
-
+		
 		// Update nu every forth time
 		it_nu++;
 		if (it_nu == 4) {
@@ -85,7 +88,7 @@ Matrix4d fastGlobalRegistration(
 			it_nu = 0;
 		}
 	}
-
+	cout << "Error: " << err << endl;
 	return T;
 }
 
