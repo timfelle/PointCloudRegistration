@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	// Handle input numbers and help.
 	if (argc == 2 && (
 		string(argv[1]).compare("-h") == 0 ||
-		string(argv[1]).compare("--help") == 0) ) {
+		string(argv[1]).compare("--help") == 0)) {
 		printf(
 			"\n./Registration.exe S1 S2 [S3 S4 ...]\n"
 			"This function accepts the following arguments,\n"
@@ -45,17 +45,21 @@ int main(int argc, char *argv[])
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
 	const char* output_path, *input_path, *output_name;
+	bool export_corr = true;
+
 	if ((input_path = getenv("INPUT_PATH")) == NULL)
 		input_path = "../Testing/data/";
 	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
 		output_path = "../Testing/logs/debugging/";
 	if ((output_name = getenv("OUTPUT_NAME")) == NULL)
 		output_name = "result";
+	if (getenv("EXPORT_CORRESPONDENCES") == NULL)
+		export_corr = true;
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
 	vector<string> dataName;
-	
+
 	// Read the input from terminal.
 	if (argc >= 3)
 	{
@@ -66,14 +70,14 @@ int main(int argc, char *argv[])
 
 			// Ensure file name have the correct extension
 			if (input.find(".ply") != (input.size() - 4)) {
-				cerr << "\nERROR in input " << i+1 << ":";
+				cerr << "\nERROR in input " << i + 1 << ":";
 				cerr << "   " << input << endl;
 				cerr << "   Unknown file extension." << endl;
 				nErrors++;
 			}
 			// Ensure the files exist
 			else if (!is_file_exist(input_path + input)) {
-				cerr << "\nERROR in input " << i+1 << ":" << endl;
+				cerr << "\nERROR in input " << i + 1 << ":" << endl;
 				cerr << "   " << input_path << input << endl;
 				cerr << "   File not found." << endl;
 				nErrors++;
@@ -125,7 +129,7 @@ int main(int argc, char *argv[])
 		cerr << "Inputs not loaded correctly." << endl;
 		return EXIT_FAILURE;
 	}
-	
+
 	// ------------------------------------------------------------------------
 	// Load the datafiles
 	size_t nSurfaces = dataName.size();
@@ -136,17 +140,30 @@ int main(int argc, char *argv[])
 		cout << dataName[i] << endl;
 		ReadPointCloud(dataName[i], model[i]);
 	}
-	
+
 	// ------------------------------------------------------------------------
 	// Compute normals
 	for (int i = 0; i < nSurfaces; i++)
 		EstimateNormals(model[i]);
 	// ------------------------------------------------------------------------
 	// Estimate Fast Point Feature Histograms and Correspondances.
-	
+
 	vector<Vector2i> K;
-	cout << __func__ << ": " << __LINE__ <<endl; K = computeCorrespondancePair(model[0], model[1]);
+	cout << __func__ << ": " << __LINE__ << endl; K = computeCorrespondancePair(model[0], model[1]);
 	cout << "Number of correspondences found: " << K.size() << endl;
+
+	if (export_corr)
+	{
+		PointCloud correspondence_0, correspondence_1;
+		for (int i = 0; i < K.size(); i++)
+		{
+			correspondence_0.points_.push_back(model[0].points_[K[i](0)]);
+			correspondence_1.points_.push_back(model[1].points_[K[i](1)]);
+		}
+		WritePointCloud(string(output_path) + string("Corr_0.ply"), correspondence_0);
+		WritePointCloud(string(output_path) + string("Corr_1.ply"), correspondence_1);
+	}
+
 
 	// ------------------------------------------------------------------------
 	// Compute surface registration
@@ -154,6 +171,18 @@ int main(int argc, char *argv[])
 	cout << __func__ << ": " << __LINE__ <<endl; T = fastGlobalRegistration(K, model[0], model[1]);
 	cout << T << endl;
 	model[1].Transform(T);
+
+	if (export_corr)
+	{
+		PointCloud correspondence_0, correspondence_1;
+		for (int i = 0; i < K.size(); i++)
+		{
+			correspondence_0.points_.push_back(model[0].points_[K[i](0)]);
+			correspondence_1.points_.push_back(model[1].points_[K[i](1)]);
+		}
+		WritePointCloud(string(output_path) + string("CorrT_0.ply"), correspondence_0);
+		WritePointCloud(string(output_path) + string("CorrT_1.ply"), correspondence_1);
+	}
 
 	// ------------------------------------------------------------------------
 	// Save the results
