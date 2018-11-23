@@ -35,6 +35,7 @@ vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &mode
 	// Set up correspondances
 	vector<Vector2i> K_I_0, K_I_1, K_II, K_III;
 
+	
 	K_I_0 = nearestNeighbour(P_0, P_1, FPFH_0, KDTree_1);
 	K_I_1 = nearestNeighbour(P_1, P_0, FPFH_1, KDTree_0);
 	cout << "K_I " << K_I_0.size() << "  " << K_I_1.size() << endl;
@@ -53,7 +54,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	// ********************************************************************* \\
 	// Initialization of the different values used in the computations.
 	double R = 0.5*(model.GetMaxBound() - model.GetMinBound()).norm();
-	double tol_R = 0.2;					// Maximal proportion of R to use.
+	double tol_R = 0.1;						// Maximal proportion of R to use.
 	double s1 = 0.0, s2 = 0.0, s3 = 0.0;	// Tolerances for feature cutoff
 	double alpha = 1.00;					// Proportion of STD to mark persistent.
 
@@ -68,12 +69,11 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 
 	// ********************************************************************* \\
 	// For each radius determine the FPFH and persistent features.
-	for (double r = tol_R * R; r > 0.001*R; r *= 0.2)
+	for (double r = tol_R * R; r > 0.005*R; r *= 0.9)
 	{
 		// Allocate space for needed values
 		MatrixXd SPFH = MatrixXd::Zero(model.points_.size(), 6);
 		vector<vector<int>> Neighbours(P.size());
-		cout << __LINE__ << endl;
 
 		// ================================================================= \\
 		// Compute the simplified features for all points.
@@ -153,7 +153,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			if (neighbours.size() != 0)
 				SPFH.row(idx) = spfh / neighbours.size();
 		}
-		cout << __LINE__ << endl;
+
 		// ================================================================= \\
 		// Compute the FPFH for each point
 		FPFH = MatrixXd::Zero(P.size(),6);
@@ -178,7 +178,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			}
 			else FPFH.row(idx) = SPFH.row(idx);
 		}
-		cout << __LINE__ << endl;
+
 		// ================================================================= \\
 		// Compute the mean and standard deviation of the feature histograms.
 		VectorXd mu = VectorXd::Zero(6), sigma = VectorXd::Zero(6);
@@ -195,7 +195,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 
 			sigma(f) = (p_f).norm() / sqrt(FPFH.rows() - 1);
 		}
-		cout << __LINE__ << endl;
+
 		// ================================================================= \\
 		// Determine which points have persistent features.
 		vector<int> P_new; MatrixXd FPFH_new;
@@ -219,12 +219,14 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 					<< FPFH_new, fpfh).finished();
 			}
 		}
+
 		// Use only persistent features for next iteration.
-		if (P_new.size() >= 10)
+		if (P_new.size() >= 0.10*model.points_.size())
 		{
 			P = P_new;
 			FPFH = FPFH_new;
 		}
+		cout << "P size: " << P.size() << endl;
 	}
 }
 
@@ -238,7 +240,7 @@ vector<Vector2i> nearestNeighbour(vector<int> P_0, vector<int> P_1,
 	for (int i = 0; i < P_0.size(); i++)
 	{
 		int p_idx = P_0[i];
-		VectorXd fpfh_0 = FPFH_0.row(p_idx);
+		VectorXd fpfh_0 = FPFH_0.row(i);
 		vector<int> neighbour;
 		vector<double> distance;
 		Vector2i k = Vector2i::Zero();

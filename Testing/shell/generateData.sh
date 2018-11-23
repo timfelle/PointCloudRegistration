@@ -21,7 +21,7 @@ echo "                                                                     "
 
 # Clean model
 echo "Fetching clean model"
-cp $DAT/bunnyPartial1.ply bunnyClean.ply
+cp $DAT/bunny.ply bunnyClean.ply
 MODEL="'bunnyClean', "
 
 echo "====================================================================="
@@ -31,7 +31,7 @@ echo "Commencing tests:                                                    "
 echo "   Gaussian noise.                                                   "
 export NOISE_TYPE=gaussian
 export NOISE_STRENGTH=1.5
-./GenerateData bunnyPartial1.ply bunnyGaussian.ply > loadingBar.out
+./GenerateData bunny.ply bunnyGaussian.ply > loadingBar.out
 
 MODEL+="'bunnyGaussian', "
 
@@ -39,7 +39,7 @@ MODEL+="'bunnyGaussian', "
 echo "   Outlier addition.                                                 "
 export NOISE_TYPE=outliers
 export OUTLIER_AMOUNT=5.0
-./GenerateData bunnyPartial1.ply bunnyOutliers.ply > loadingBar.out
+./GenerateData bunny.ply bunnyOutliers.ply > loadingBar.out
 
 MODEL+="'bunnyOutliers', "
 
@@ -48,7 +48,7 @@ echo "   Combined noise and outlier.                                       "
 export NOISE_TYPE=both
 export NOISE_STRENGTH=2.0
 export OUTLIER_AMOUNT=5.0
-./GenerateData bunnyPartial1.ply bunnyNoise.ply > loadingBar.out
+./GenerateData bunny.ply bunnyNoise.ply > loadingBar.out
 
 MODEL+="'bunnyNoise', "
 
@@ -57,7 +57,7 @@ echo "   Transformation.                                                   "
 export NOISE_TYPE=none
 export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
 export TRANSLATION="0.0,0.0,0.0"
-./GenerateData bunnyPartial1.ply bunnyTransform.ply
+./GenerateData bunny.ply bunnyTransform.ply
 
 MODEL+="'bunnyTransform' "
 

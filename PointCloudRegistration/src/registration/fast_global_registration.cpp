@@ -24,7 +24,7 @@ Matrix4d fastGlobalRegistration(
 {
 	// Initialize values
 	double tol_nu = 1e-8;			// Tolerance on nu
-	double tol_e = 1e-3;			// Tolerance on e
+	double tol_e = 1e-4;			// Tolerance on e
 	double D_0 = (model_0.GetMinBound() - model_0.GetMaxBound()).norm();
 	double D_1 = (model_1.GetMinBound() - model_1.GetMaxBound()).norm();
 	double D = max(D_0, D_1);
@@ -39,8 +39,8 @@ Matrix4d fastGlobalRegistration(
 	double err = 0.0;
 	while ( nu > tol_nu * D )
 	{
-		VectorXd e = VectorXd::Zero(nK);
-		MatrixXd Je = MatrixXd::Zero(nK, 6);
+		VectorXd e = VectorXd::Zero( 4*nK );
+		MatrixXd Je = MatrixXd::Zero(4*nK, 6);
 
 		err = 0.0;
 		for (size_t i = 0; i < nK; i++)
@@ -54,23 +54,26 @@ Matrix4d fastGlobalRegistration(
 
 			// Compute l_(p,q)
 			double l_pq_sqrt = nu / (nu + pow((p - T * q).norm(), 2.0));
-			double l_pq = pow(l_pq_sqrt, 2.0);
 			
 			// Compute M and V
 			Vector4d M = T * q;
-			Vector4d V = p - Xi(xi)*M;
 
 			// Update e and J_e
-			double V_norm = V.norm();
-			e(i) = l_pq * pow(V_norm,2.0);
+			e(4 * i + 0) = l_pq_sqrt * (p(0) - M(0));
+			e(4 * i + 1) = l_pq_sqrt * (p(1) - M(1));
+			e(4 * i + 2) = l_pq_sqrt * (p(2) - M(2));
+			e(4 * i + 3) = l_pq_sqrt * (p(3) - M(3));
 
-			Je(i, 0) = V(1)*M(2) - V(2)*M(1);
-			Je(i, 1) = V(2)*M(0) - V(0)*M(2);
-			Je(i, 2) = V(0)*M(1) - V(1)*M(0);
-			Je(i, 3) = -V(0);
-			Je(i, 4) = -V(1);
-			Je(i, 5) = -V(2);
-			Je.row(i) *= l_pq_sqrt / V_norm;
+			MatrixXd J(4, 6);
+			J << 0, -M(2), M(1), -M(3), 0, 0
+				, M(2), 0, -M(0), 0, -M(3), 0
+				, -M(1), M(0), 0, 0, 0, -M(3)
+				, 0, 0, 0, 0, 0, 0;
+
+			Je.row(4*i + 0) = l_pq_sqrt * J.row(0);
+			Je.row(4*i + 1) = l_pq_sqrt * J.row(1);
+			Je.row(4*i + 2) = l_pq_sqrt * J.row(2);
+			Je.row(4*i + 3) = l_pq_sqrt * J.row(3);
 
 			err += (p - M).norm();
 		}
