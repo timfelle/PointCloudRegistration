@@ -1,4 +1,4 @@
-function displayCorrespondences(inputName,dataPath,exportLocation)
+function F = displayCorrespondences(inputName,dataPath,exportLocation,animation)
 %DISPLAYMODEL
 %  This function displays a .ply point cloud as a 3d scatter.
 %  __________________________________________________________________
@@ -26,9 +26,12 @@ end
 if ~exist('dataPath','var') || isempty(dataPath)
     dataPath = '../logs/debugging/';
 end
-if ~exist('exportLocation','var') || isempty(dataPath)
+if ~exist('exportLocation','var') || isempty(exportLocation)
     exportLocation = '../logs/matlab';
 end
+if ~exist('animation','var') || isempty(animation)
+    animation = false;
+end 
 dataName = findData(dataPath,inputName);
 if isempty(dataName) 
     return;
@@ -54,6 +57,7 @@ hold on
 hold off
 view([30,10])
 grid on
+title('Before registration','FontSize',15)
 
 subplot(122);
 hold on
@@ -63,8 +67,9 @@ hold on
 hold off
 view([30,10])
 grid on
+title('After registration','FontSize',15)
 
-if nargin ~= 0
+if nargin ~= 0 && ~animation
     ExportFigures(F,exportLocation,'asp',2)
 end
 end

@@ -45,6 +45,8 @@ echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
 matlab -wait -nodesktop -nosplash \
 	-r "addpath('$MAT');displayCorrespondences('Corr','./','fig');exit;"	
+matlab -wait -nodesktop -nosplash \
+	-r "addpath('$MAT');animateCorrespondences('Corr','./','fig');exit;"
 mv -t $FIG fig/*
 echo "Results placed in folder:                                            "
 echo $FIG
