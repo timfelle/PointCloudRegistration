@@ -56,7 +56,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	double R = 0.5*(model.GetMaxBound() - model.GetMinBound()).norm();
 	double tol_R = 0.1;						// Maximal proportion of R to use.
 	double s1 = 0.0, s2 = 0.0, s3 = 0.0;	// Tolerances for feature cutoff
-	double alpha = 1.00;					// Proportion of STD to mark persistent.
+	double alpha = 1.0;					// Proportion of STD to mark persistent.
 
 
 	// Initialize the persistent set as all points in the set.
@@ -181,20 +181,23 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 
 		// ================================================================= \\
 		// Compute the mean and standard deviation of the feature histograms.
-		VectorXd mu = VectorXd::Zero(6), sigma = VectorXd::Zero(6);
-		// Mean
+		VectorXd mu = VectorXd::Zero(6);
+
+		// Mean FPFH value
 		for (int id = 0; id < FPFH.rows(); id++)
 			mu += FPFH.row(id) / FPFH.rows();
 
-		// Standard Deviation
-		for (int f = 0; f < 6; f++)
-		{
-			VectorXd p_f = VectorXd::Zero(FPFH.rows());
-			p_f = FPFH.col(f);
-			p_f += VectorXd::Ones(FPFH.rows())*mu(f);
+		// Setup distance from mu.
+		VectorXd dist_vec = VectorXd::Zero(FPFH.rows());
+		for (int i = 0; i < FPFH.rows(); i++)
+			dist_vec(i) = (FPFH.row(i) - mu).norm();
 
-			sigma(f) = (p_f).norm() / sqrt(FPFH.rows() - 1);
-		}
+		// Compute mean distance.
+		double mu_dist = dist_vec.mean();
+
+		// Standard Deviation of distances
+		double sigma = ( dist_vec - VectorXd::Ones(FPFH.rows())*mu_dist ).norm()
+			/ sqrt( FPFH.rows() );
 
 		// ================================================================= \\
 		// Determine which points have persistent features.
@@ -202,26 +205,16 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 		for (int idx = 0; idx < P.size(); idx++)
 		{
 
-			int p_idx = P[idx];
-			VectorXd fpfh = FPFH.row(idx);
-			VectorXd dist = (fpfh - mu).cwiseAbs();
-			if (
-				dist(0) > alpha*sigma(0) &&
-				dist(1) > alpha*sigma(1) &&
-				dist(2) > alpha*sigma(2) &&
-				dist(3) > alpha*sigma(3) &&
-				dist(4) > alpha*sigma(4) &&
-				dist(5) > alpha*sigma(5)
-				)
+			if ( abs(dist_vec(idx)) > alpha*sigma )
 			{
-				P_new.push_back(p_idx);
+				P_new.push_back(P[idx]);
 				FPFH_new = (MatrixXd(P_new.size(), 6)
-					<< FPFH_new, fpfh).finished();
+					<< FPFH_new, FPFH.row(idx)).finished();
 			}
 		}
 
 		// Use only persistent features for next iteration.
-		if (P_new.size() >= 0.10*model.points_.size())
+		if (P_new.size() >= 0.01*model.points_.size())
 		{
 			P = P_new;
 			FPFH = FPFH_new;

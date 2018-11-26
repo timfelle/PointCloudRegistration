@@ -23,8 +23,8 @@ Matrix4d fastGlobalRegistration(
 	vector<Vector2i> K, PointCloud &model_0, PointCloud &model_1)
 {
 	// Initialize values
-	double tol_nu = 1e-8;			// Tolerance on nu
-	double tol_e = 1e-4;			// Tolerance on e
+	double tol_nu = 1e-10;			// Tolerance on nu
+	double tol_e = 1e-10;			// Tolerance on e
 	double D_0 = (model_0.GetMinBound() - model_0.GetMaxBound()).norm();
 	double D_1 = (model_1.GetMinBound() - model_1.GetMaxBound()).norm();
 	double D = max(D_0, D_1);
