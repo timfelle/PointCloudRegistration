@@ -7,6 +7,7 @@
 #include <random>
 #include <Open3D/Core/Core.h>
 #include <Eigen/Dense>
+#include <unsupported/Eigen/MatrixFunctions>
 
 
 #include "utility_functions.h"
@@ -75,32 +76,39 @@ Matrix4d fastGlobalRegistration(
 			Je.row(4*i + 2) = l_pq_sqrt * J.row(2);
 			Je.row(4*i + 3) = l_pq_sqrt * J.row(3);
 
-			err += (p - M).norm();
+			err += (p - M).norm()/nK;
 		}
-		if (err < tol_e * nK) break;
+		if (err < tol_e) break;
 		
 		// Update T and xi
 		xi = (Je.transpose()*Je).ldlt().solve(-Je.transpose()*e);
 		
 		T = Xi(xi)*T;
+		Matrix3d Rot;
+		Rot << 
+			T(0, 0), T(0, 1), T(0, 2),
+			T(1, 0), T(1, 1), T(1, 2), 
+			T(2, 0), T(2, 1), T(2, 2);
+
+		cout << "Det: " << (Rot.transpose()).determinant() << endl;
 		
 		// Update nu every forth time
 		it_nu++;
 		if (it_nu == 4) {
-			nu /= 2.0;
+			nu *= 0.5;
 			it_nu = 0;
 		}
 	}
-	cout << "Error: " << err << endl;
+	cout << "Error: " << err/D << endl;
 	return T;
 }
 
 MatrixXd Xi(VectorXd xi)
 {
 	MatrixXd X(4, 4);
-	X << 1.0, -xi(2), xi(1), xi(3),
-		xi(2), 1.0, -xi(0), xi(4),
-		-xi(1), xi(0), 1.0, xi(5),
-		0.0, 0.0, 0.0, 1.0;
-	return X;
+	X << 0.0, -xi(2), xi(1), xi(3),
+		xi(2), 0.0, -xi(0), xi(4),
+		-xi(1), xi(0), 0.0, xi(5),
+		0.0, 0.0, 0.0, 0.0;
+	return X.exp();
 }
