@@ -33,24 +33,30 @@ dataName = findData(dataPath,inputName);
 if isempty(dataName) 
     return;
 end
-F = displayCorrespondences(inputName,dataPath,exportLocation,true);
 
-A1 = F.Children(1);
-A2 = F.Children(2);
+%% Generate the correspondence plots
+F = displayCorrespondences(inputName,dataPath,exportLocation,nargin~=0);
 
-axis(A1,'vis3d','off')
-axis(A2,'vis3d','off')
+% Find the axes in question
+A1 = findobj('Tag','A1');
+A2 = findobj('Tag','A2');
+axis(A1,'vis3d','off');
+axis(A2,'vis3d','off');
+
 F.WindowStyle = 'normal';
 F.Position = [50,50,1500,700];
 v = VideoWriter([exportLocation,'/',F.Name],'MPEG-4');
+
+% Settings for the video
 v.Quality = 100;
 v.FrameRate = 60;
-open(v);
-
 Time = 10;
+
+
 Frames = Time*v.FrameRate;
 angle = 360/Frames;
 
+open(v);
 for i = 1 : Frames
     camorbit(A1,angle,0);
     camorbit(A2,angle,0);

@@ -21,8 +21,8 @@ echo "                                                                     "
 
 # Clean model
 echo "   Fetching clean models"
-cp $DAT/bunnyPartial1.ply bunnyClean.ply
-cp $DAT/bunnyPartial2.ply bunnyTransform.ply
+cp $DAT/bunny.ply bunnyClean.ply
+cp $DAT/bunny.ply bunnyTransform.ply
 
 # Test transformation
 echo "   Generating transformed model."
@@ -43,9 +43,7 @@ rm -fr loadingBar.out # Remove all the loading bars again.
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
-matlab -wait -nodesktop -nosplash \
-	-r "addpath('$MAT');displayCorrespondences('Corr','./','fig');exit;"	
-matlab -wait -nodesktop -nosplash \
+matlab -wait -nodesktop -nosplash -minimize \
 	-r "addpath('$MAT');animateCorrespondences('Corr','./','fig');exit;"
 mv -t $FIG fig/*
 echo "Results placed in folder:                                            "

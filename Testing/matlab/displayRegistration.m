@@ -41,7 +41,7 @@ for i=1:length(dataName)
 end
 
 hold off
-axis equal
+axis vis3d
 axis off
 view([0,90])
 

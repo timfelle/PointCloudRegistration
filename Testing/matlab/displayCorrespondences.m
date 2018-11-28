@@ -1,4 +1,4 @@
-function F = displayCorrespondences(inputName,dataPath,exportLocation,animation)
+function F = displayCorrespondences(inputName,dataPath,exportLocation,export)
 %DISPLAYMODEL
 %  This function displays a .ply point cloud as a 3d scatter.
 %  __________________________________________________________________
@@ -29,8 +29,8 @@ end
 if ~exist('exportLocation','var') || isempty(exportLocation)
     exportLocation = '../logs/matlab';
 end
-if ~exist('animation','var') || isempty(animation)
-    animation = false;
+if ~exist('export','var') || isempty(export)
+    export = false;
 end 
 dataName = findData(dataPath,inputName);
 if isempty(dataName) 
@@ -49,27 +49,32 @@ for i=1:length(dataName)
     end
 end
 
-subplot(121);
+A1 = subplot(121);
+A1.Tag = 'A1';
 hold on
    dispPC(Corr{1},dataPath,Color(1,:))
    dispPC(Corr{2},dataPath,Color(2,:))
    dispLi(Corr{1},Corr{2},dataPath)
 hold off
 view([30,10])
+axis vis3d
 grid on
-title('Before registration','FontSize',15)
 
-subplot(122);
+A2 = subplot(122);
+A2.Tag = 'A2';
 hold on
     dispPC(CorrT{1},dataPath,Color(1,:))
     dispPC(CorrT{2},dataPath,Color(2,:))
     dispLi(CorrT{1},CorrT{2},dataPath)
 hold off
 view([30,10])
+axis vis3d
 grid on
-title('After registration','FontSize',15)
+T = suptitle('Before registration and after registration');
+T.FontSize = 15;
+T.FontWeight = 'bold';
 
-if nargin ~= 0 && ~animation
+if export
     ExportFigures(F,exportLocation,'asp',2)
 end
 end
