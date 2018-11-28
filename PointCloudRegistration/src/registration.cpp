@@ -47,14 +47,14 @@ int main(int argc, char *argv[])
 	const char* output_path, *input_path, *output_name;
 	bool export_corr = true;
 
-	if ((input_path = getenv("INPUT_PATH")) == NULL)
-		input_path = "../Testing/data/";
-	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
-		output_path = "../Testing/logs/debugging/";
-	if ((output_name = getenv("OUTPUT_NAME")) == NULL)
-		output_name = "result";
-	if (getenv("EXPORT_CORRESPONDENCES") == NULL)
-		export_corr = true;
+	if ((input_path		= getenv("INPUT_PATH"))				== NULL)
+		input_path		= "../Testing/data/";
+	if ((output_path	= getenv("OUTPUT_PATH"))			== NULL)
+		output_path		= "../Testing/logs/debugging/";
+	if ((output_name	= getenv("OUTPUT_NAME"))			== NULL)
+		output_name		= "result";
+	if (				  getenv("EXPORT_CORRESPONDENCES")	== NULL)
+		export_corr		= true;
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names

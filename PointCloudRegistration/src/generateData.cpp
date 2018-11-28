@@ -47,15 +47,15 @@ int main(int argc, char *argv[])
 
 	// Path variables
 	if ((input_path		= getenv("INPUT_PATH"))		== NULL)
-		input_path		= "../Data/";
+		input_path		= "../Testing/data/";
 	if ((output_path	= getenv("OUTPUT_PATH"))	== NULL)
-		output_path		= "../Data/";
+		output_path		= "../Testing/logs/debugging/";
 
 	// Transformation variables
 	if ((rotation		= getenv("ROTATION"))		== NULL)
 		rotation		= "0.0,0.0,0.0";
 	if ((translation	= getenv("TRANSLATION"))	== NULL)
-		translation =	"0.0,0.0,0.0";
+		translation		= "0.0,0.0,0.0";
 
 	// Noise variables
 	if ((noise_type = getenv("NOISE_TYPE")) == NULL)
