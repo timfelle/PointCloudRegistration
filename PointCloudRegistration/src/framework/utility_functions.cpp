@@ -80,3 +80,68 @@ Matrix4d transformationMatrix(std::vector<double> rot, std::vector<double> trans
 
 	return T;
 }
+
+bool checkFileName(std::string input)
+{
+	bool isValid = true;
+	// Ensure file name have the correct extension
+	if (input.find(".ply") != (input.size() - 4)) {
+		cerr << "\nERROR in input:";
+		cerr << "   " << input << endl;
+		cerr << "   Unknown file extension." << endl;
+		isValid = false;
+	}
+	// Ensure the files exist
+	else if (!is_file_exist(input)) {
+		cerr << "\nERROR in input:";
+		cerr << "   " << input << endl;
+		cerr << "   File not found." << endl;
+		isValid = false;
+	}
+	return isValid;
+}
+
+
+vector<string> readInputFiles(int argc, char *argv[], const char *input_path)
+{
+	vector<string> dataName;
+
+	// Read the input from terminal.
+	if (argc >= 3)
+	{
+		for (int i = 0; i < argc - 1; i++)
+		{
+			int nErrors = 0;
+			string input = string(argv[i + 1]);
+
+			if (!checkFileName(input_path + input)) return vector<string>();
+			else dataName.push_back(input_path + input);
+		}
+	}
+	// Read the name base of the terminal.
+	else if (argc == 2)
+	{
+		cerr << "Single input specifying base name not implemented yet." << endl;
+		return vector<string>();
+	}
+	// Prompt user for surfaces to register.
+	else
+	{
+		string input;
+		cout << "Please specify names of the desired surfaces." << endl;
+		cout << "Quit: q, Completed inputs: done." << endl;
+		cout << "Current folder: " << input_path << endl;
+		cout << "Surface 0: ";
+		cin >> input;
+		while (input.compare("done") != 0 && input.compare("q") != 0)
+		{
+			if (checkFileName(input_path + input)) dataName.push_back(input_path + input);
+			cout << "Surface " << dataName.size() << ": ";
+			cin >> input;
+		}
+		if (input.compare("q") == 0) return vector<string>();
+	}
+
+	// Return successful list of names
+	return dataName;
+}

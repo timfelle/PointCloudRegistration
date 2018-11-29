@@ -53,9 +53,12 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	// ********************************************************************* \\
 	// Initialization of the different values used in the computations.
 	double R = 0.5*(model.GetMaxBound() - model.GetMinBound()).norm();
-	double tol_R = 0.05;					// Maximal proportion of R to use.
+	double max_R = atof(getenv("MAX_R"));	// Maximal proportion of R to use.
+	double min_R = atof(getenv("MIN_R"));	// Minimal proportion of R to use.
+	double stp_R = atof(getenv("STP_R"));	// Multiplicative step size for R.
+	double alpha = atof(getenv("ALPHA"));	// Proportion of STD to mark persistent.
+
 	double s1 = 0.0, s2 = 0.0, s3 = 0.0;	// Tolerances for feature cutoff
-	double alpha = 1.5;					// Proportion of STD to mark persistent.
 	int n_scales = 0;
 
 	// Initialize the persistent set as all points in the set.
@@ -67,10 +70,9 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	// Precompute the KDTree used for distance search.
 	KDTreeFlann distTree(model);
 	
-
 	// ********************************************************************* \\
 	// For each radius determine the FPFH and persistent features.
-	for (double r = 0.001*R; r < tol_R * R; r *= 1.1)
+	for (double r = min_R*R; r < max_R * R; r *= stp_R)
 	{
 		// Allocate space for needed values
 		MatrixXd SPFH = MatrixXd::Zero(model.points_.size(), 6);
@@ -222,7 +224,6 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			FPFH += FPFH_new;
 			n_scales++;
 		}
-		cout << "P size: " << P.size() << endl;
 	}
 	MatrixXd FPFH_temp;
 	for (int idx = 0; idx < P.size(); idx++)
@@ -232,8 +233,6 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			<< FPFH_temp, FPFH.row(p_idx)).finished();
 	}
 	FPFH = FPFH_temp / (double)n_scales;
-
-	cout << "FPFH: " << FPFH.rows() << " P: " << P.size() << endl;
 }
 
 // ============================================================================
@@ -287,9 +286,8 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0, PointCloud
 {
 	// Initialize values
 	vector<Vector2i> K_III;
-	double tau = 0.95;
+	double tau = 0.9;
 	double tau_inv = 1.0 / tau;
-
 
 	// Fill index vector
 	vector<int> I(K_II.size());
@@ -299,8 +297,9 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0, PointCloud
 	random_device rd;
 	mt19937 g(rd());
 	int count = 0;
-	// Run through all points
-	for (int i = I.size() - 3; i > 0.01*K_II.size() && count < K_II.size()*10; )
+
+	// Run through all possible correspondences
+	for (int i = I.size() - 3; i > K_II.size() && count < K_II.size()*10; )
 	{
 		shuffle(I.begin(), I.end(), g);
 		vector<int> idx = { I[i], I[i + 1], I[i + 2] };

@@ -47,83 +47,34 @@ int main(int argc, char *argv[])
 	const char* output_path, *input_path, *output_name;
 	bool export_corr = true;
 
-	if ((input_path		= getenv("INPUT_PATH"))				== NULL)
-		input_path		= "../Testing/data/";
-	if ((output_path	= getenv("OUTPUT_PATH"))			== NULL)
-		output_path		= "../Testing/logs/debugging/";
-	if ((output_name	= getenv("OUTPUT_NAME"))			== NULL)
-		output_name		= "result";
-	if (				  getenv("EXPORT_CORRESPONDENCES")	== NULL)
-		export_corr		= true;
+	// Path variables
+	if ((input_path = getenv("INPUT_PATH")) == NULL)
+		input_path = "../Testing/data/";
+	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
+		output_path = "../Testing/logs/debugging/";
+
+	// Export functions
+	if ((output_name = getenv("OUTPUT_NAME")) == NULL)
+		output_name = "result";
+	if (getenv("EXPORT_CORRESPONDENCES") == NULL)
+		export_corr = true;
+
+	// Tolerences
+	if (getenv("TOL_NU") == NULL) _putenv("TOL_NU=1e-6");
+	if (getenv("TOL_E" ) == NULL) _putenv("TOL_E=1e-6" );
+
+	// Radius scaling
+	if (getenv("MAX_R") == NULL) _putenv("MAX_R=0.050");
+	if (getenv("MIN_R") == NULL) _putenv("MIN_R=0.001");
+	if (getenv("STP_R") == NULL) _putenv("STP_R=1.100");
+
+	// STD fraction
+	if (getenv("ALPHA") == NULL) _putenv("ALPHA=1.5");
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
-	vector<string> dataName;
+	vector<string> dataName = readInputFiles(argc, argv, input_path);
 
-	// Read the input from terminal.
-	if (argc >= 3)
-	{
-		for (int i = 0; i < argc - 1; i++)
-		{
-			int nErrors = 0;
-			string input = string(argv[i + 1]);
-
-			// Ensure file name have the correct extension
-			if (input.find(".ply") != (input.size() - 4)) {
-				cerr << "\nERROR in input " << i + 1 << ":";
-				cerr << "   " << input << endl;
-				cerr << "   Unknown file extension." << endl;
-				nErrors++;
-			}
-			// Ensure the files exist
-			else if (!is_file_exist(input_path + input)) {
-				cerr << "\nERROR in input " << i + 1 << ":" << endl;
-				cerr << "   " << input_path << input << endl;
-				cerr << "   File not found." << endl;
-				nErrors++;
-			}
-			if (nErrors != 0) return EXIT_FAILURE;
-			else dataName.push_back(input_path + input);
-		}
-	}
-	// Read the name base of the terminal.
-	else if (argc == 2)
-	{
-		cerr << "Single input specifying base name not implemented yet." << endl;
-		return EXIT_FAILURE;
-	}
-	// Prompt user for surfaces to register.
-	else
-	{
-		string input;
-		cout << "Please specify names of the desired surfaces." << endl;
-		cout << "Quit: q, Completed inputs: done." << endl;
-		cout << "Current folder: " << input_path << endl;
-		cout << "Surface 0: ";
-		cin >> input;
-		while (input.compare("done") != 0 && input.compare("q") != 0)
-		{
-			int nErrors = 0;
-			// Ensure file name have the correct extension
-			if (input.find(".ply") != (input.size() - 4)) {
-				cerr << "\nERROR in input:";
-				cerr << "   " << input << endl;
-				cerr << "   Unknown file extension." << endl;
-				nErrors++;
-			}
-			// Ensure the files exist
-			else if (!is_file_exist(input_path + input)) {
-				cerr << "\nERROR in input:" << endl;
-				cerr << "   " << input_path << input << endl;
-				cerr << "   File not found." << endl;
-				nErrors++;
-			}
-			if (nErrors == 0) dataName.push_back(input_path + input);
-			cout << "Surface " << dataName.size() << ": ";
-			cin >> input;
-		}
-		if (input.compare("q") == 0) return EXIT_FAILURE;
-	}
 	if (dataName.size() < 2)
 	{
 		cerr << "Inputs not loaded correctly." << endl;
@@ -149,8 +100,7 @@ int main(int argc, char *argv[])
 	// Estimate Fast Point Feature Histograms and Correspondances.
 
 	vector<Vector2i> K;
-	cout << __func__ << ": " << __LINE__ << endl; K = computeCorrespondancePair(model[0], model[1]);
-	cout << "Number of correspondences found: " << K.size() << endl;
+	K = computeCorrespondancePair(model[0], model[1]);
 
 	if (export_corr)
 	{
@@ -168,8 +118,7 @@ int main(int argc, char *argv[])
 	// ------------------------------------------------------------------------
 	// Compute surface registration
 	Matrix4d T;
-	cout << __func__ << ": " << __LINE__ <<endl; T = fastGlobalRegistration(K, model[0], model[1]);
-	cout << T << endl;
+	T = fastGlobalRegistrationPair(K, model[0], model[1]);
 	model[1].Transform(T);
 
 	if (export_corr)
@@ -188,15 +137,16 @@ int main(int argc, char *argv[])
 	// Save the results
 	cout << "Result complete, exporting surfaces:" << endl;
 	string resultName;
-	for (int i = 0; i < nSurfaces; i++){
+	for (int i = 0; i < nSurfaces; i++) {
 		resultName = string(output_path) + string(output_name) + string("_")
 			+ to_string(i) + string(".ply");
 		cout << endl << dataName[i] << " >> " << resultName << endl;
-		WritePointCloud( resultName, model[i]);
+		WritePointCloud(resultName, model[i]);
 	}
-	
+
 	// ------------------------------------------------------------------------
 	// Cleanup and delete variables
-	
+
 	return EXIT_SUCCESS;
 }
+

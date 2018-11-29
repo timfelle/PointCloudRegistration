@@ -15,4 +15,7 @@ Eigen::Vector3d hom_to_vec(Eigen::Vector4d hom);
 void charToVec(const char *input, std::vector<double> &v);
 Eigen::Matrix4d transformationMatrix(std::vector<double> rot, std::vector<double> trans);
 
+bool checkFileName(std::string input);
+std::vector<std::string> readInputFiles(int argc, char *argv[], const char *input_path);
+
 #endif	/* __UTILITY_FUNCTIONS__ */

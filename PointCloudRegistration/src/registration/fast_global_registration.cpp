@@ -20,12 +20,13 @@ using namespace open3d;
 
 // ============================================================================
 // COMPUTE REGISTRATION
-Matrix4d fastGlobalRegistration(
+Matrix4d fastGlobalRegistrationPair(
 	vector<Vector2i> K, PointCloud &model_0, PointCloud &model_1)
 {
 	// Initialize values
-	double tol_nu = 1e-10;			// Tolerance on nu
-	double tol_e = 1e-10;			// Tolerance on e
+	double tol_nu = atof(getenv("TOL_NU"));			// Tolerance on nu
+	double tol_e = atof(getenv("TOL_E"));			// Tolerance on e
+
 	double D_0 = (model_0.GetMinBound() - model_0.GetMaxBound()).norm();
 	double D_1 = (model_1.GetMinBound() - model_1.GetMaxBound()).norm();
 	double D = max(D_0, D_1);
@@ -84,13 +85,6 @@ Matrix4d fastGlobalRegistration(
 		xi = (Je.transpose()*Je).ldlt().solve(-Je.transpose()*e);
 		
 		T = Xi(xi)*T;
-		Matrix3d Rot;
-		Rot << 
-			T(0, 0), T(0, 1), T(0, 2),
-			T(1, 0), T(1, 1), T(1, 2), 
-			T(2, 0), T(2, 1), T(2, 2);
-
-		cout << "Det: " << (Rot.transpose()).determinant() << endl;
 		
 		// Update nu every forth time
 		it_nu++;
@@ -103,9 +97,9 @@ Matrix4d fastGlobalRegistration(
 	return T;
 }
 
-MatrixXd Xi(VectorXd xi)
+Matrix4d Xi(VectorXd xi)
 {
-	MatrixXd X(4, 4);
+	Matrix4d X(4, 4);
 	X << 0.0, -xi(2), xi(1), xi(3),
 		xi(2), 0.0, -xi(0), xi(4),
 		-xi(1), xi(0), 0.0, xi(5),
