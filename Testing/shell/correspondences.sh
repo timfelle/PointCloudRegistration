@@ -21,8 +21,8 @@ echo "                                                                     "
 
 # Clean model
 echo "   Fetching clean models"
-cp $DAT/bunny.ply bunnyClean.ply
-cp $DAT/bunny.ply bunnyTransform.ply
+cp $DAT/bunnyPartial1.ply bunnyClean.ply
+cp $DAT/bunnyPartial2.ply bunnyTransform.ply
 
 # Test transformation
 echo "   Generating transformed model."
@@ -36,7 +36,13 @@ echo "Commencing tests:                                                    "
 
 # Test registration
 export EXPORT_CORRESPONDENCES="true"
-./Registration bunnyClean.ply bunnyTransform.ply
+(
+	set -e
+	./Registration bunnyClean.ply bunnyTransform.ply
+)
+if [ $? -ne 0 ]; then
+  exit $?
+fi
 
 rm -fr loadingBar.out # Remove all the loading bars again.
 # ==============================================================================

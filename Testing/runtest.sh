@@ -8,6 +8,16 @@
 # located in the folder shell. These TESTNAME.sh files contain the 
 # definition of the test which should be run.
 
+# Submit function
+submit(){
+	
+	if [ ! -s error.err ]; then
+	 	echo "No error"
+	else
+		echo "We have error"
+	fi
+}
+
 # Help commands
 if  [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
 	echo "runtest.sh TESTNAME [TESTNAME ...]"
@@ -70,6 +80,7 @@ EXEC="$EPATH/Registration.exe $EPATH/GenerateData.exe"
 mkdir -p $DPATH $FPATH $LPATH
 
 # Run the tests
+set -e
 echo " "
 echo "------------------------------------------------------------------"
 echo "Queueing tests: "; echo " "
@@ -92,11 +103,28 @@ do
 		>&2 echo "File $SPATH/$test.sh was not found"
 	fi
 done
+# you catch errors with this if
 echo " "
 echo "------------------------------------------------------------------"
 echo "Tests queued."
 wait
-cp -frt ../../Latex/Figures $FPATH/* 
-echo "Tests complete."
+echo "Tests finished:"
+for test in $TEST
+do
+	if [ -f "$SPATH/$test.sh" ] ; then
+		# Move to the directory 
+		cd $LPATH/$test
+		if [ -s error.err ] ; then
+			echo "Error: \"$test\" not completed."
+			echo "       See error file for details."
+			echo "       $LPATH/$test/error.err"
+		else
+			echo "  $test completed."
+		fi
+		cd ../../
+	fi
+	
+done
+cp -frt ../../Latex/Figures $FPATH/*
 
 # # EOF # #
