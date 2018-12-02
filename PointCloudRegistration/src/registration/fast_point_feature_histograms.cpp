@@ -37,12 +37,19 @@ vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &mode
 	
 	K_I_0 = nearestNeighbour(P_0, P_1, FPFH_0, KDTree_1);
 	K_I_1 = nearestNeighbour(P_1, P_0, FPFH_1, KDTree_0);
-	cout << "K_I " << K_I_0.size() << "  " << K_I_1.size() << endl;
 
 	K_II = mutualNN(K_I_0, K_I_1);
-	cout << "K_II " << K_II.size() << endl;
 	K_III = tupleTest(K_II, model_0, model_1);
-	cout << "K_III " << K_III.size() << endl;
+
+	if (K_III.size() == 0)
+	{
+		cerr << "Error in " << __func__ << endl;
+		cerr << "  No correspondences found" << endl;
+		cerr << "  K_I: " << K_I_0.size() << " " << K_I_1.size() << endl;
+		cerr << "  K_II: " << K_II.size() << endl;
+		cerr << "  K_III: " << K_III.size() << endl;
+	}
+
 	return K_III;
 }
 
@@ -299,7 +306,7 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0, PointCloud
 	int count = 0;
 
 	// Run through all possible correspondences
-	for (int i = I.size() - 3; i > K_II.size() && count < K_II.size()*10; )
+	for (int i = I.size() - 3; i < I.size() && count < K_II.size()*10; )
 	{
 		shuffle(I.begin(), I.end(), g);
 		vector<int> idx = { I[i], I[i + 1], I[i + 2] };

@@ -64,12 +64,12 @@ int main(int argc, char *argv[])
 	if (getenv("TOL_E" ) == NULL) _putenv("TOL_E=1e-6" );
 
 	// Radius scaling
-	if (getenv("MAX_R") == NULL) _putenv("MAX_R=0.050");
-	if (getenv("MIN_R") == NULL) _putenv("MIN_R=0.001");
+	if (getenv("MAX_R") == NULL) _putenv("MAX_R=0.100");
+	if (getenv("MIN_R") == NULL) _putenv("MIN_R=0.0005");
 	if (getenv("STP_R") == NULL) _putenv("STP_R=1.100");
 
 	// STD fraction
-	if (getenv("ALPHA") == NULL) _putenv("ALPHA=1.5");
+	if (getenv("ALPHA") == NULL) _putenv("ALPHA=1.96");
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
@@ -93,17 +93,21 @@ int main(int argc, char *argv[])
 	}
 
 	// ------------------------------------------------------------------------
-	// Compute normals
+	// Compute normals if needed
 	for (int i = 0; i < nSurfaces; i++)
-		EstimateNormals(model[i]);
+		if (!model[i].HasNormals()) EstimateNormals(model[i]);
+
 	// ------------------------------------------------------------------------
 	// Estimate Fast Point Feature Histograms and Correspondances.
-
 	vector<Vector2i> K;
 	K = computeCorrespondancePair(model[0], model[1]);
+	if (K.size() == 0)
+		return EXIT_FAILURE;
 
+	cout << "Completing registration with " << K.size() << " correspondences\n";
 	if (export_corr)
 	{
+		cout << "Exporting correspondence sets" << endl;
 		PointCloud correspondence_0, correspondence_1;
 		for (int i = 0; i < K.size(); i++)
 		{
@@ -113,7 +117,6 @@ int main(int argc, char *argv[])
 		WritePointCloud(string(output_path) + string("Corr_0.ply"), correspondence_0);
 		WritePointCloud(string(output_path) + string("Corr_1.ply"), correspondence_1);
 	}
-
 
 	// ------------------------------------------------------------------------
 	// Compute surface registration

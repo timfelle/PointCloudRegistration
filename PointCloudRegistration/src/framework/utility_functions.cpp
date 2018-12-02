@@ -105,7 +105,6 @@ bool checkFileName(std::string input)
 vector<string> readInputFiles(int argc, char *argv[], const char *input_path)
 {
 	vector<string> dataName;
-
 	// Read the input from terminal.
 	if (argc >= 3)
 	{
@@ -114,17 +113,21 @@ vector<string> readInputFiles(int argc, char *argv[], const char *input_path)
 			int nErrors = 0;
 			string input = string(argv[i + 1]);
 
-			if (!checkFileName(input_path + input)) return vector<string>();
-			else dataName.push_back(input_path + input);
+			if (!checkFileName(input_path + input))
+			{
+				vector<string> error;
+				return error;
+			}
+			else 
+				dataName.push_back(input_path + input);
 		}
 	}
-	// Read the name base of the terminal.
 	else if (argc == 2)
 	{
 		cerr << "Single input specifying base name not implemented yet." << endl;
-		return vector<string>();
+		vector<string> error;
+		return error;
 	}
-	// Prompt user for surfaces to register.
 	else
 	{
 		string input;
@@ -135,11 +138,16 @@ vector<string> readInputFiles(int argc, char *argv[], const char *input_path)
 		cin >> input;
 		while (input.compare("done") != 0 && input.compare("q") != 0)
 		{
+			cout << argc << endl;
 			if (checkFileName(input_path + input)) dataName.push_back(input_path + input);
 			cout << "Surface " << dataName.size() << ": ";
 			cin >> input;
 		}
-		if (input.compare("q") == 0) return vector<string>();
+		if (input.compare("q") == 0)
+		{
+			vector<string> error;
+			return error;
+		}
 	}
 
 	// Return successful list of names
