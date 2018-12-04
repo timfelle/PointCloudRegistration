@@ -63,4 +63,7 @@ void applyNoise(PointCloud *model)
 			model->points_[index][2] += randn(gen);
 		}
 	}
+	if ( type.compare("outliers") == 0 &&  type.compare("gaussian") == 0 &&
+			type.compare("both") == 0)
+			cout << "Type not found" << endl;
 }

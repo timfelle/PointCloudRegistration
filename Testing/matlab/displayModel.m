@@ -54,7 +54,7 @@ Y = double(model.Location(:,2));
 Z = double(model.Location(:,3));
 
 A = scatter3(X,Y,Z);
-axis equal
+axis vis3d
 axis off
 
 Color = [0.3,0.5,0.9];

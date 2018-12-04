@@ -71,7 +71,6 @@ Matrix4d transformationMatrix(std::vector<double> rot, std::vector<double> trans
 		0.0, 0.0, 1.0;
 
 	Matrix3d R = (Rx * Ry) * Rz;
-	cout << "Det: " << R.determinant() << endl;
 	T <<
 		R(0, 0), R(0, 1), R(0, 2), trans[0],
 		R(1, 0), R(1, 1), R(1, 2), trans[1],
