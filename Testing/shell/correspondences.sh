@@ -36,14 +36,11 @@ echo "Commencing tests:                                                    "
 
 # Test registration
 export EXPORT_CORRESPONDENCES="true"
-(
-	set -e
-	./Registration bunnyClean.ply bunnyTransform.ply
-)
-if [ $? -ne 0 ]; then
-  exit $?
-fi
+./Registration bunnyClean.ply bunnyTransform.ply
 
+if [ -s error.err ] ; then
+	exit
+fi
 # ==============================================================================
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "

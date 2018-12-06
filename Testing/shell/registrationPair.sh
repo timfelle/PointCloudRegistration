@@ -37,6 +37,9 @@ echo "Commencing tests:                                                    "
 # Test registration
 ./Registration bunnyClean.ply bunnyTransform.ply
 
+if [ -s error.err ] ; then
+	exit
+fi
 # ==============================================================================
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "

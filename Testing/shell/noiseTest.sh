@@ -32,8 +32,8 @@ export TRANSLATION="-0.2,0.3,-0.1"
 ./GenerateData bunnyTransform.ply bunnyTransform.ply
 
 export NOISE_TYPE=gaussian
-export NOISE_STRENGTH=0.1
-./GenerateData bunnyClean.ply gaussianBunny1.ply
+export NOISE_STRENGTH=0.05
+./GenerateData bunnyClean.ply gaussianBunny1.ply 
 ./GenerateData bunnyTransform.ply gaussianBunny2.ply
 
 export NOISE_TYPE=gaussian
@@ -41,25 +41,46 @@ export NOISE_STRENGTH=1.0
 ./GenerateData bunnyClean.ply gaussianBunny3.ply
 ./GenerateData bunnyTransform.ply gaussianBunny4.ply
 
+export NOISE_TYPE=outliers
+export OUTLIER_AMOUNT=1.0
+./GenerateData bunnyClean.ply outlierBunny1.ply
+./GenerateData bunnyTransform.ply outlierBunny2.ply
+
+export NOISE_TYPE=outliers
+export OUTLIER_AMOUNT=5.0
+./GenerateData bunnyClean.ply outlierBunny3.ply
+./GenerateData bunnyTransform.ply outlierBunny4.ply
+
+export NOISE_TYPE=outliers
+export OUTLIER_AMOUNT=10.0
+./GenerateData bunnyClean.ply outlierBunny5.ply
+./GenerateData bunnyTransform.ply outlierBunny6.ply
+
 echo "====================================================================="
 echo "Commencing tests:                                                    "
 echo " "
 
 # Test registration
 echo "Clean ---------------------------------------------------------------"
-OUTPUT_NAME=resultClean  ./Registration bunnyClean.ply bunnyTransform.ply
+#OUTPUT_NAME=resultClean  ./Registration bunnyClean.ply bunnyTransform.ply
 echo " "
-echo "Gaussian 1 ----------------------------------------------------------"
+echo "Gaussian   ----------------------------------------------------------"
 OUTPUT_NAME=resultGauss1 \
-	MIN_R=0.015 \
-	MAX_R=0.100 \
 	EXPORT_CORRESPONDENCES=true \
-	./Registration gaussianBunny1.ply gaussianBunny2.ply
-
-#echo " "
-#echo "Gaussian 2 ----------------------------------------------------------"
+	MIN_R=0.01 \
+	MAX_R=0.5 \
+#	./Registration gaussianBunny1.ply gaussianBunny2.ply
 #OUTPUT_NAME=resultGauss2 ./Registration gaussianBunny3.ply gaussianBunny4.ply
 
+echo " "
+echo "Outliers   ----------------------------------------------------------"
+OUTPUT_NAME=resultOut1 ./Registration outlierBunny1.ply outlierBunny2.ply
+OUTPUT_NAME=resultOut2 ./Registration outlierBunny3.ply outlierBunny4.ply
+OUTPUT_NAME=resultOut3 ./Registration outlierBunny5.ply outlierBunny6.ply
+
+if [ -s error.err ] ; then
+	exit
+fi
 # ==============================================================================
 # Export the figures using matlab
 echo " "
@@ -72,7 +93,9 @@ matlab -wait -nodesktop -nosplash \
 	displayRegistration('resultClean','./','fig');
 	displayRegistration('resultGauss1','./','fig');
 	displayRegistration('resultGauss2','./','fig');
-	animateCorrespondences('Corr','./','fig');
+	displayRegistration('resultOut1','./','fig');
+	displayRegistration('resultOut2','./','fig');
+	displayRegistration('resultOut3','./','fig');
 	exit;"
 mv -t $FIG fig/*
 rm -f *.ply *.exe *.sh

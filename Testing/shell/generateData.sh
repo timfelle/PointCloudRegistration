@@ -61,6 +61,9 @@ export TRANSLATION="0.0,0.0,0.0"
 
 MODEL+="'bunnyTransform' "
 
+if [ -s error.err ] ; then
+	exit
+fi
 # ==============================================================================
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "

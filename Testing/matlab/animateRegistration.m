@@ -68,8 +68,8 @@ v = VideoWriter([exportLocation,'/',F.Name],'MPEG-4');
 
 % Settings for the video
 v.Quality = 100;
-v.FrameRate = 10;
-Time = 60;
+v.FrameRate = 60;
+Time = 15;
 
 
 Frames = Time*v.FrameRate;
