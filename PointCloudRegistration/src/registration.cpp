@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	if ((output_name = getenv("OUTPUT_NAME")) == NULL)
 		output_name = "result";
 	if (getenv("EXPORT_CORRESPONDENCES") == NULL)
-		export_corr = true;
+		export_corr = false;
 
 	// Tolerences
 	if (getenv("TOL_NU") == NULL) _putenv("TOL_NU=1e-6");
