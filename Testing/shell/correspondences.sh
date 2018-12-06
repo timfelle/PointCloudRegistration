@@ -44,7 +44,6 @@ if [ $? -ne 0 ]; then
   exit $?
 fi
 
-rm -fr loadingBar.out # Remove all the loading bars again.
 # ==============================================================================
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "

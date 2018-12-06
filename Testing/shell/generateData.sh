@@ -31,7 +31,7 @@ echo "Commencing tests:                                                    "
 echo "   Gaussian noise.                                                   "
 export NOISE_TYPE=gaussian
 export NOISE_STRENGTH=1.5
-./GenerateData bunny.ply bunnyGaussian.ply > loadingBar.out
+./GenerateData bunny.ply bunnyGaussian.ply
 
 MODEL+="'bunnyGaussian', "
 
@@ -39,7 +39,7 @@ MODEL+="'bunnyGaussian', "
 echo "   Outlier addition.                                                 "
 export NOISE_TYPE=outliers
 export OUTLIER_AMOUNT=5.0
-./GenerateData bunny.ply bunnyOutliers.ply > loadingBar.out
+./GenerateData bunny.ply bunnyOutliers.ply
 
 MODEL+="'bunnyOutliers', "
 
@@ -48,7 +48,7 @@ echo "   Combined noise and outlier.                                       "
 export NOISE_TYPE=both
 export NOISE_STRENGTH=2.0
 export OUTLIER_AMOUNT=5.0
-./GenerateData bunny.ply bunnyNoise.ply > loadingBar.out
+./GenerateData bunny.ply bunnyNoise.ply
 
 MODEL+="'bunnyNoise', "
 
@@ -61,7 +61,6 @@ export TRANSLATION="0.0,0.0,0.0"
 
 MODEL+="'bunnyTransform' "
 
-rm -fr loadingBar.out # Remove all the loading bars again.
 # ==============================================================================
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "

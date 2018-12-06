@@ -28,7 +28,7 @@ cp $DAT/bunnyPartial2.ply bunnyTransform.ply
 echo "   Generating transformed model."
 export NOISE_TYPE=none
 export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
-export TRANSLATION="0.0,0.0,0.0"
+export TRANSLATION="0.1,-0.4,-0.1"
 ./GenerateData bunnyTransform.ply bunnyTransform.ply
 
 echo "====================================================================="
@@ -37,15 +37,16 @@ echo "Commencing tests:                                                    "
 # Test registration
 ./Registration bunnyClean.ply bunnyTransform.ply
 
-rm -fr loadingBar.out # Remove all the loading bars again.
 # ==============================================================================
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
 matlab -wait -nodesktop -nosplash \
-	-r "addpath('$MAT');displayRegistration('bunny','./','fig');exit;" 
-matlab -wait -nodesktop -nosplash \
-	-r "addpath('$MAT');displayRegistration('result','./','fig');exit;" 
+	-r "addpath('$MAT');
+	displayRegistration('bunny','./','fig');
+	displayRegistration('result','./','fig');
+	animateRegistration('bunny','result','./','fig');
+	exit;" 
 mv -t $FIG fig/*
 echo "Results placed in folder:                                            "
 echo $FIG
