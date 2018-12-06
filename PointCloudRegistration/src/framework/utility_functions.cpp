@@ -4,6 +4,8 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <filesystem>
+
 #include <Open3D/Core/Core.h>
 #include <Eigen/Dense>
 
@@ -11,6 +13,7 @@
 
 using namespace std;
 using namespace Eigen;
+namespace fs = std::experimental::filesystem;
 
 // ============================================================================
 // FILE MANIPULATION
@@ -123,9 +126,15 @@ vector<string> readInputFiles(int argc, char *argv[], const char *input_path)
 	}
 	else if (argc == 2)
 	{
-		cerr << "Single input specifying base name not implemented yet." << endl;
-		vector<string> error;
-		return error;
+		string baseName = string(argv[1]);
+		for (auto & iter : fs::directory_iterator(input_path))
+		{
+			string iterator = iter.path().string();
+			int in = iterator.find_last_of("/\\");
+			string fileName = iterator.substr(in + 1);
+			if (fileName.find(baseName) != string::npos)
+				dataName.push_back(input_path + fileName);
+		}
 	}
 	else
 	{
