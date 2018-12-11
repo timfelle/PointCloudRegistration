@@ -1,18 +1,17 @@
 #!/bin/sh
 echo "====================================================================="
-echo "generateData.sh:                                                     "
-echo "   This is the test generateData. This test will display the effect  "
-echo "   of several settings for the data generation program.              "
-echo "                                                                     "
+echo "registrationMulti.sh:"
+echo "   Registration of multiple surfaces"
+echo " "
 
 DAT=../../data
-FIG=../../figures/RegistrationPair
+FIG=../../figures/RegistrationMulti
 MAT=../../matlab
 
-# ==============================================================================
-# Generate all the data needed
 export INPUT_PATH="./"
 export OUTPUT_PATH="./"
+# ==============================================================================
+# Generate all the data needed
 
 echo "Input and output paths defined by:                                   "
 echo "Input : $INPUT_PATH                                                  "
@@ -22,20 +21,24 @@ echo "                                                                     "
 # Clean model
 echo "   Fetching clean models"
 cp $DAT/bunnyPartial1.ply bunnyClean.ply
-cp $DAT/bunnyPartial2.ply bunnyTransform.ply
+cp $DAT/bunnyPartial2.ply bunnyTransform1.ply
+cp $DAT/bunny.ply bunnyTransform2.ply
 
 # Test transformation
-echo "   Generating transformed model."
-export NOISE_TYPE=none
-export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
-export TRANSLATION="0.01,-0.04,-0.01"
-./GenerateData bunnyTransform.ply bunnyTransform.ply
+echo "   Generating transformed models."
+ROTATION="0.52,0.52,0.79" \
+	TRANSLATION="0.1,-0.4,-0.1" \
+	./GenerateData bunnyTransform1.ply bunnyTransform1.ply
+
+ROTATION="0.22,0.62,-0.79" \
+	TRANSLATION="-0.1,0.3,-0.3" \
+	./GenerateData bunnyTransform2.ply bunnyTransform2.ply
 
 echo "====================================================================="
 echo "Commencing tests:                                                    "
 
 # Test registration
-./Registration bunnyClean.ply bunnyTransform.ply
+./Registration bunny
 
 if [ -s error.err ] ; then
 	exit
@@ -45,9 +48,9 @@ fi
 echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
 matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
-	renderRegistration('bunny','./','fig');
-	renderRegistration('result','./','fig');
-	animateRender('bunny','result','./','fig');
+	displayRegistration('bunny','./','fig');
+	displayRegistration('result','./','fig');
+	animateRegistration('bunny','result','./','fig');
 	exit;" 
 rm -fr $FIG/*
 mv -t $FIG fig/*

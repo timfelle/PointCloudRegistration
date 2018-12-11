@@ -9,10 +9,10 @@ DAT=../../data/
 FIG=../../figures/GenerateData
 MAT=../../matlab
 
-# ==============================================================================
-# Generate all the data needed
 export INPUT_PATH=$DAT
 export OUTPUT_PATH=./
+# ==============================================================================
+# Generate all the data needed
 
 echo "Input and output paths defined by:                                   "
 echo "Input : $INPUT_PATH                                                  "
@@ -68,9 +68,12 @@ fi
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
-matlab -wait -nodesktop -nosplash \
-	-r "addpath('$MAT');displayModel({$MODEL},'./','fig');exit;" 
+matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
+	renderModel({$MODEL},'./','fig');
+	exit;" 
+rm -fr $FIG/*
 mv -t $FIG fig/*
+rm -fr *.ply *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

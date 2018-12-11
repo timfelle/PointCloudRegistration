@@ -1,54 +1,50 @@
 #!/bin/sh
 echo "====================================================================="
-echo "generateData.sh:                                                     "
-echo "   This is the test generateData. This test will display the effect  "
-echo "   of several settings for the data generation program.              "
-echo "                                                                     "
+echo "sealTest.sh:"
+echo "   This is a full-scale test of the algorithm examining the left"
+echo "   oriented seal dataset"
+echo " "
 
 DAT=../../data
-FIG=../../figures/RegistrationPair
+FIG=../../figures/sealTest
 MAT=../../matlab
 
+mkdir -p dat
+cp -ft dat $DAT/seal/left/pointcloud*
 # ==============================================================================
 # Generate all the data needed
-export INPUT_PATH="./"
-export OUTPUT_PATH="./"
+export INPUT_PATH="./dat/"
+export OUTPUT_PATH="./dat/"
 
 echo "Input and output paths defined by:                                   "
 echo "Input : $INPUT_PATH                                                  "
 echo "Output: $OUTPUT_PATH                                                 "
 echo "                                                                     "
 
-# Clean model
-echo "   Fetching clean models"
-cp $DAT/bunnyPartial1.ply bunnyClean.ply
-cp $DAT/bunnyPartial2.ply bunnyTransform.ply
-
-# Test transformation
-echo "   Generating transformed model."
-export NOISE_TYPE=none
-export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
-export TRANSLATION="0.01,-0.04,-0.01"
-./GenerateData bunnyTransform.ply bunnyTransform.ply
-
 echo "====================================================================="
 echo "Commencing tests:                                                    "
+echo " "
 
 # Test registration
-./Registration bunnyClean.ply bunnyTransform.ply
+export MIN_R=0.005
+export MAX_R=0.050
+export STP_R=1.1
+./Registration pointcloud
 
 if [ -s error.err ] ; then
 	exit
 fi
 # ==============================================================================
 # Export the figures using matlab
+echo " "
+echo "====================================================================="
 echo "Running matlab to complete visualisation.                            "
-mkdir fig $FIG -p
+mkdir -p fig $FIG
 matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
-	renderRegistration('bunny','./','fig');
-	renderRegistration('result','./','fig');
-	animateRender('bunny','result','./','fig');
-	exit;" 
+	%displayRegistration('pointcloud','$INPUT_PATH','fig');
+	displayRegistration('result','$OUTPUT_PATH','fig');
+	%animateRegistration('pointcloud','result','./dat/','fig');
+	exit;"
 rm -fr $FIG/*
 mv -t $FIG fig/*
 rm -fr *.ply *.exe *.sh fig

@@ -10,7 +10,6 @@
 
 # Submit function
 submit(){
-	
 	if [ ! -s error.err ]; then
 	 	echo "No error"
 	else
@@ -103,7 +102,6 @@ do
 		>&2 echo "File $SPATH/$test.sh was not found"
 	fi
 done
-# you catch errors with this if
 echo " "
 echo "------------------------------------------------------------------"
 echo "Tests queued."
@@ -115,16 +113,14 @@ do
 		# Move to the directory 
 		cd $LPATH/$test
 		if [ -s error.err ] ; then
-			echo "Error: \"$test\" not completed."
+			echo "  \"$test\" not completed."
 			echo "       See error file for details."
 			echo "       $LPATH/$test/error.err"
 		else
-			echo "  $test completed."
+			echo "  \"$test\" completed."
 		fi
 		cd ../../
 	fi
-	
 done
-cp -frt ../../Latex/Figures $FPATH/*
 
 # # EOF # #
