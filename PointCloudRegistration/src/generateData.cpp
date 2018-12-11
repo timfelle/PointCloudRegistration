@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
@@ -12,6 +13,12 @@
 
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
+
+#if _cpluplus <= 201703L
+#define PUTENV _putenv
+#else
+#define PUTENV _putenv
+#endif
 
 using namespace std;
 using namespace open3d;
@@ -59,11 +66,11 @@ int main(int argc, char *argv[])
 
 	// Noise variables
 	if ((noise_type = getenv("NOISE_TYPE")) == NULL)
-		_putenv("NOISE_TYPE=none");
+		PUTENV("NOISE_TYPE=none");
 	if ((noise_strength = getenv("NOISE_STRENGTH")) == NULL)
-		_putenv("NOISE_STRENGTH=0.0");
+		PUTENV("NOISE_STRENGTH=0.0");
 	if ((outlier_amount = getenv("OUTLIER_AMOUNT")) == NULL)
-		_putenv("OUTLIER_AMOUNT=0.0");
+		PUTENV("OUTLIER_AMOUNT=0.0");
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
@@ -171,6 +178,7 @@ int main(int argc, char *argv[])
 
 	// ------------------------------------------------------------------------
 	// Load the datafiles
+	SetVerbosityLevel(VerbosityLevel::VerboseError);
 	PointCloud model;
 	ReadPointCloud(inputName, model);
 	
@@ -181,7 +189,7 @@ int main(int argc, char *argv[])
 
 	// ------------------------------------------------------------------------
 	// Transform model
-	vector<double> rot, trans;
+	Vector3d rot, trans;
 	
 	charToVec(rotation, rot);
 	charToVec(translation, trans);
@@ -193,7 +201,9 @@ int main(int argc, char *argv[])
 	// ------------------------------------------------------------------------
 	// Save the results
 	WritePointCloud( outputName, model);
-	cout << "Data generated:" << endl;
+	if (( rot.norm() + trans.norm()) >= 1e-6 )
+		cout << "Transformation:\n" << T << endl;
+	cout << "Data generated:" << endl << "  ";
 	cout << inputName << " >> " << outputName << endl;
 
 	// ------------------------------------------------------------------------

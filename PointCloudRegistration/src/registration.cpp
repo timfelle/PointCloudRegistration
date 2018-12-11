@@ -2,6 +2,8 @@
 // INCLUDES
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 #include <iostream>
 #include <exception>
@@ -15,6 +17,11 @@
 #include "fast_point_feature_histograms.h"
 #include "fast_global_registration.h"
 
+#if __cplusplus > 201402L
+#define PUTENV putenv
+#else
+#define PUTENV _putenv
+#endif
 
 using namespace std;
 using namespace Eigen;
@@ -60,16 +67,16 @@ int main(int argc, char *argv[])
 		export_corr = false;
 
 	// Tolerences
-	if (getenv("TOL_NU") == NULL) _putenv("TOL_NU=1e-6");
-	if (getenv("TOL_E") == NULL) _putenv("TOL_E=1e-6");
+	if (getenv("TOL_NU") == NULL) PUTENV("TOL_NU=1e-6");
+	if (getenv("TOL_E") == NULL) PUTENV("TOL_E=1e-6");
 
 	// Radius scaling
-	if (getenv("MAX_R") == NULL) _putenv("MAX_R=0.010");
-	if (getenv("MIN_R") == NULL) _putenv("MIN_R=0.005");
-	if (getenv("STP_R") == NULL) _putenv("STP_R=1.100");
+	if (getenv("MAX_R") == NULL) PUTENV("MAX_R=0.010");
+	if (getenv("MIN_R") == NULL) PUTENV("MIN_R=0.005");
+	if (getenv("STP_R") == NULL) PUTENV("STP_R=1.100");
 
 	// STD fraction
-	if (getenv("ALPHA") == NULL) _putenv("ALPHA=1.96");
+	if (getenv("ALPHA") == NULL) PUTENV("ALPHA=1.96");
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
@@ -80,7 +87,7 @@ int main(int argc, char *argv[])
 		cerr << "Inputs not loaded correctly." << endl;
 		return EXIT_FAILURE;
 	}
-
+	SetVerbosityLevel(VerbosityLevel::VerboseError);
 	// ------------------------------------------------------------------------
 	// Load the datafiles
 	size_t nSurfaces = dataName.size();
@@ -100,7 +107,8 @@ int main(int argc, char *argv[])
 
 	for (int s = 0; s < nSurfaces - 1; s++)
 	{
-		cout << "Surfaces: " << s << ", " << s + 1 << endl;
+		if (nSurfaces > 2)
+			cout << "Surfaces: " << s << ", " << s + 1 << endl;
 		// ------------------------------------------------------------------------
 		// Estimate Fast Point Feature Histograms and Correspondances.
 		vector<Vector2i> K;
