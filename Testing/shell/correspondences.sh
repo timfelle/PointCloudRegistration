@@ -49,8 +49,7 @@ mkdir fig $FIG -p
 matlab -wait -nodesktop -nosplash -minimize -r "addpath('$MAT');
 	animateCorrespondences('Corr','./','fig');
 	exit;"
-rm -fr $FIG/*
-mv -t $FIG fig/*
+mv -ft $FIG fig/*
 rm -fr *.ply *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
