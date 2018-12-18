@@ -17,7 +17,7 @@ WARN    =
 LIBS    =-std=c++17 -I$(OPEN3D)/include/ -I$(OPEN3D)/include/Open3D -I$(EIGEN3)
 CHIP    =
 PARA    =-fopenmp
-LFLAGS  =-L$(OPEN3D)/lib -I$(OPEN3D)/lib/lib* -fopenmp -lstdc++fs
+LFLAGS  =-L$(OPEN3D)/lib -lOpen3D -fopenmp -lstdc++fs
 
 CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 
