@@ -59,8 +59,6 @@ int main(int argc, char *argv[])
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
 	const char *output_path, *input_path, *output_name;
-	const char *tol_nu, *tol_e, *max_r, *min_r, *stp_r;
-	const char *alpha;
 	bool export_corr = true;
 
 	// Path variables
@@ -76,16 +74,16 @@ int main(int argc, char *argv[])
 		export_corr = false;
 
 	// Tolerences
-	if ((tol_nu = getenv("TOL_NU")) == NULL) PUTENV("TOL_NU=1e-6");
-	if ((tol_e = getenv("TOL_E")) == NULL) PUTENV("TOL_E=1e-6");
+	if (getenv("TOL_NU") == NULL) PUTENV("TOL_NU=1e-6");
+	if (getenv("TOL_E") == NULL) PUTENV("TOL_E=1e-6");
 
 	// Radius scaling
-	if ((max_r = getenv("MAX_R")) == NULL) PUTENV("MAX_R=0.010");
-	if ((min_r = getenv("MIN_R")) == NULL) PUTENV("MIN_R=0.005");
-	if ((stp_r = getenv("STP_R")) == NULL) PUTENV("STP_R=1.100");
+	if (getenv("MAX_R") == NULL) PUTENV("MAX_R=0.010");
+	if (getenv("MIN_R") == NULL) PUTENV("MIN_R=0.005");
+	if (getenv("STP_R") == NULL) PUTENV("STP_R=1.100");
 
 	// STD fraction
-	if ((alpha = getenv("ALPHA")) == NULL) PUTENV("ALPHA=1.96");
+	if (getenv("ALPHA") == NULL) PUTENV("ALPHA=1.96");
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
@@ -107,9 +105,10 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < nSurfaces; i++)
 		if (!model[i].HasNormals()) EstimateNormals(model[i]);
 
-	cout << "Computing correspondences." << endl;
+	
 	for (int s = 0; s < nSurfaces - 1; s++)
 	{
+		cout << "Computing correspondences." << endl;
 		if (nSurfaces > 2)
 			cout << "   Surface: " << s << ", " << s + 1 << endl;
 		// ------------------------------------------------------------------------

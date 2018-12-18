@@ -253,7 +253,8 @@ vector<Vector2i> nearestNeighbour(vector<int> P_0, vector<int> P_1,
 	for (int idx = 0; idx < P_0.size(); idx++)
 	{
 		int p_idx = P_0[idx];
-		VectorXd fpfh_0 = FPFH_0.row(idx);
+		VectorXd fpfh_0 = VectorXd(6);
+		fpfh_0 = FPFH_0.row(idx);
 		vector<int> neighbour;
 		vector<double> distance;
 		Vector2i k = Vector2i::Zero();
