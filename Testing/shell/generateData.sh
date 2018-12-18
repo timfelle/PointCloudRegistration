@@ -6,11 +6,11 @@ echo "   of several settings for the data generation program.              "
 echo "                                                                     "
 
 DAT=../../data/
-FIG=../../figures/GenerateData.exe
+FIG=../../figures/GenerateData
 MAT=../../matlab
 
 export INPUT_PATH=$DAT
-export OUTPUT_PATH=./
+export OUTPUT_PATH=dat/
 # ==============================================================================
 # Generate all the data needed
 
@@ -18,10 +18,10 @@ echo "Input and output paths defined by:                                   "
 echo "Input : $INPUT_PATH                                                  "
 echo "Output: $OUTPUT_PATH                                                 "
 echo "                                                                     "
-
+mkdir dat
 # Clean model
 echo "Fetching clean model"
-cp $DAT/bunny.ply bunnyClean.ply
+cp $DAT/bunny.ply dat/bunnyClean.ply
 MODEL="'bunnyClean', "
 
 echo "====================================================================="
@@ -68,9 +68,8 @@ fi
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
-matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
-	renderModel({$MODEL},'./','fig');
-	exit;" 
+matlab -nodesktop -nosplash \
+	-r "addpath('$MAT');renderModel({$MODEL},'dat/','fig/');exit;" 
 mv -ft $FIG fig/*
 rm -fr *.ply *.exe *.sh fig
 echo "Results placed in folder:                                            "

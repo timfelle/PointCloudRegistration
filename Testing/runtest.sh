@@ -54,6 +54,10 @@ fi
 
 # Make sure the excecutables exists
 cd $EPATH;
+if [ ! -f GenerateData.exe ] || [ ! -f Registration.exe ] ; then
+	echo "Executables not found, attempting make."
+	make -s 
+fi
 if [ ! -f GenerateData.exe ] ; then
 	>&2 echo "================================================================="
 	>&2 echo "| ERROR in runtest.sh: (Missing executable)                     |"
