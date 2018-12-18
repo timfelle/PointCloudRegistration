@@ -45,10 +45,10 @@ axis(A2,'vis3d','off');
 
 F.WindowStyle = 'normal';
 F.Position = [50,50,1500,700];
-v = VideoWriter([exportLocation,'/',F.Name],'MPEG-4');
+v = VideoWriter([exportLocation,'/',F.Name],'Motion JPEG AVI');
 
 % Settings for the video
-v.Quality = 100;
+v.Quality = 95;
 v.FrameRate = 60;
 Time = 10;
 
