@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 		);
 		return EXIT_SUCCESS;
 	}
-	cout << "Starting Data" << endl;
+	
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
 	const char *output_path, *input_path;
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 		PUTENV("NOISE_STRENGTH=0.0");
 	if ((outlier_amount = getenv("OUTLIER_AMOUNT")) == NULL)
 		PUTENV("OUTLIER_AMOUNT=0.0");
-	cout << "Env put" << endl;
+
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
 	vector<string> dataName = { string(argv[1]), string(argv[2]) };
@@ -85,7 +85,6 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 	SetVerbosityLevel(VerbosityLevel::VerboseError);
-	cout << "Names checked" << endl;
 	// ------------------------------------------------------------------------
 	// Load the datafiles
 	PointCloud model;
@@ -95,23 +94,18 @@ int main(int argc, char *argv[])
 		cerr << __FILE_NAME__ << ":" << __func__ << ":" << __LINE__ << endl;
 		cerr << "   Error in point cloud read." << endl;
 	}
-	cout << "Model read" << endl;
 	// ------------------------------------------------------------------------
 	// Apply noise
-	cout << "Noise " << endl;
 	applyNoise(model);
-	cout << "applied" << endl;
 
 	// ------------------------------------------------------------------------
 	// Transform model
 	Vector3d rot, trans;
 	charToVec(rotation, rot);
 	charToVec(translation, trans);
-	cout << "Transformation";
 	Matrix4d T;
 	T = transformationMatrix(rot, trans);
 	model.Transform(T);
-	cout << "Matrix" << endl;
 	if (model.points_.size() == NULL)
 	{
 		cerr << __FILE_NAME__ << ":" << __func__ << ":" << __LINE__ << endl;
@@ -121,9 +115,7 @@ int main(int argc, char *argv[])
 	// ------------------------------------------------------------------------
 	// Save the results
 	bool status = true;
-	cout << "Pointcloud ";
 	status = WritePointCloud( string(output_path) + dataName[1], model);
-	cout << "saved." << endl;
 	if (status)
 	{
 		cout << "Data generated:" << endl << "  ";

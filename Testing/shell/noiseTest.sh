@@ -51,21 +51,25 @@ export NOISE_STRENGTH=0.01
 echo " "
 
 OUTPUT_NAME=resultGauss1 \
-	EXPORT_CORRESPONDENCES=true \
-	MIN_R=0.01 \
+	MIN_R=0.001 \
 	STP_R=1.1 \
-	MAX_R=0.05 \
-	ALPHA=1.0 \
+	MAX_R=0.1 \
+	ALPHA=1.96 \
 	./Registration gaussianBunny1.ply gaussianBunny2.ply 
 echo "----------------------------------------------------------"
-#echo " "
+echo " "
 #export NOISE_TYPE=gaussian
-#export NOISE_STRENGTH=1.0
+#export NOISE_STRENGTH=0.1
 #./GenerateData bunnyClean.ply gaussianBunny3.ply
 #./GenerateData bunnyTransform.ply gaussianBunny4.ply
 #echo " "
 
 #OUTPUT_NAME=resultGauss2 \
+#	EXPORT_CORRESPONDENCES=true \
+#	MIN_R=0.001 \
+#	STP_R=1.1 \
+#	MAX_R=0.1 \
+#	ALPHA=1.5 \
 #	./Registration gaussianBunny3.ply gaussianBunny4.ply
 #echo "----------------------------------------------------------"
 
@@ -114,14 +118,14 @@ echo "====================================================================="
 echo "Running matlab to complete visualisation.                            "
 mkdir -p fig $FIG
 matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
-	displayRegistration('bunny','./','fig');
-	displayRegistration('resultClean','./','fig');
-	displayRegistration('resultGauss1','./','fig');
-	%animateCorrespondences('Corr','./','fig');
-	%displayRegistration('resultGauss2','./','fig');
-	%displayRegistration('resultOut1','./','fig');
-	%displayRegistration('resultOut2','./','fig');
-	%displayRegistration('resultOut3','./','fig');
+	displayRegistration('bunny','dat/','fig');
+	displayRegistration('resultClean','dat/','fig');
+	displayRegistration('resultGauss1','dat/','fig');
+	%animateCorrespondences('Corr','dat/','fig');
+	%displayRegistration('resultGauss2','dat/','fig');
+	displayRegistration('resultOut1','dat/','fig');
+	displayRegistration('resultOut2','dat/','fig');
+	displayRegistration('resultOut3','dat/','fig');
 	exit;"
 mv -ft $FIG fig/*
 rm -fr *.ply *.exe *.sh fig

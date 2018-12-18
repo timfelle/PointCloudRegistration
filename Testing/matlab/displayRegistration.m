@@ -46,6 +46,7 @@ axis off
 view([0,90])
 
 ExportFigures(F,exportLocation,'asp',1)
+close(F)
 end
 
 function dispReg(name,dataPath,Color)

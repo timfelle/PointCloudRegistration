@@ -17,23 +17,22 @@ using namespace std;
 using namespace Eigen;
 using namespace open3d;
 
-void applyNoise(PointCloud model)
+void applyNoise(PointCloud &model)
 {
 	// Read Noise type
 	char *noise_type = getenv("NOISE_TYPE");
 	string type = string(noise_type);
-	cout << __LINE__ << endl;
+
 	// If no noise is required exit the function
 	if (type.compare("none") == 0)
 		return;
-	cout << __LINE__ << endl;
+
 	// Read variables from point cloud
 	size_t nPoints = model.points_.size();
 	Vector3d minBound = model.GetMinBound();
 	Vector3d maxBound = model.GetMaxBound();
-	cout << __LINE__ << endl;
 	double radius = 0.5*(maxBound - minBound).norm();
-	cout << __LINE__ << endl;
+
 	// Outlier amount is the percentage of point which should be altered
 	if (type.compare("outliers") == 0 || type.compare("both") == 0)
 	{
@@ -43,7 +42,7 @@ void applyNoise(PointCloud model)
 
 		default_random_engine gen;
 		normal_distribution<double> randn(0.0, 0.1*radius);
-		uniform_int_distribution<int> randi(0, (int)nPoints);
+		uniform_int_distribution<int> randi(0, (int)nPoints - 1);
 		for (size_t i = 0; i < nPoints*amount; i++)
 		{
 			int index = randi(gen);
@@ -52,7 +51,7 @@ void applyNoise(PointCloud model)
 			model.points_[index](2) += randn(gen);
 		}
 	}
-	cout << __LINE__ << endl;
+
 	// Gaussian noise with mean 0 and std * 1% of bounding box radius 
 	// multiplied by the user defined strength.
 	if (type.compare("gaussian") == 0 || type.compare("both") == 0)
@@ -75,6 +74,5 @@ void applyNoise(PointCloud model)
 		cerr << __func__ << ":" << __func__ << ":" << __LINE__ << endl;
 		cerr << "   Noise type invalid" << endl;
 	}
-	cout << __LINE__ << endl;
 	return;
 }

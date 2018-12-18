@@ -8,6 +8,6 @@
 // ============================================================================
 // Function prototypes
 
-void applyNoise(open3d::PointCloud model);
+void applyNoise(open3d::PointCloud &model);
 
 #endif	/* __POINT_CLOUD_UTILITY__ */
