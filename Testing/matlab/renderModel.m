@@ -26,10 +26,9 @@ end
 if ~exist('dataPath','var') || isempty(dataPath)
     dataPath = '../data/';
 end
-if ~exist('exportLocation','var') || isempty(dataPath)
+if ~exist('exportLocation','var') || isempty(exportLocation)
     exportLocation = '../logs/matlab';
 end
-
 if iscell(inputName)
     for i=1:length(inputName)
         dispMod(inputName{i},dataPath,exportLocation)
@@ -40,14 +39,16 @@ end
 end
 
 function dispMod(name,dataPath,exportLocation)
-data = [ name, '.ply' ];
+data = [ dataPath, name, '.ply' ];
 if ~exist(data,'file')
+    disp(data);
+    disp('File not found');
     return;
 end
 
 %% Load the data
 F = CreateFigure(name);
-model = pcread([dataPath,data]);
+model = pcread(data);
 Color = colormap(jet(2));
 Color = Color(1,:);
 

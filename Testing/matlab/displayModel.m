@@ -40,14 +40,14 @@ end
 end
 
 function dispMod(name,dataPath,exportLocation)
-data = [ name, '.ply' ];
+data = [ dataPath, name, '.ply' ];
 if ~exist(data,'file')
     return;
 end
 
 %% Load the data
 F = CreateFigure(name);
-model = pcread([dataPath,data]);
+model = pcread(data);
 
 X = double(model.Location(:,1));
 Y = double(model.Location(:,2));
