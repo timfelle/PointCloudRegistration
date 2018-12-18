@@ -4,12 +4,12 @@ echo "registrationMulti.sh:"
 echo "   Registration.exe of multiple surfaces"
 echo " "
 
-DAT=../../data
 FIG=../../figures/RegistrationMulti
+DAT=../../data
 MAT=../../matlab
 
-export INPUT_PATH="./"
-export OUTPUT_PATH="./"
+export INPUT_PATH="dat/"
+export OUTPUT_PATH="dat/"
 # ==============================================================================
 # Generate all the data needed
 
@@ -41,6 +41,9 @@ echo "Commencing tests:                                                    "
 ./Registration.exe bunny
 
 if [ -s error.err ] ; then
+	echo "Errors have been found. Exiting."
+	echo " "
+	rm -fr *.ply *.exe *.sh fig dat
 	exit
 fi
 # ==============================================================================

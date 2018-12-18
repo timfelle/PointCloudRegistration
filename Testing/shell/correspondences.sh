@@ -5,12 +5,12 @@ echo "   This test display the correspondences before and after"
 echo "	 registration."
 echo " "
 
-DAT=../../data
 FIG=../../figures/Correspondences
+DAT=../../data
 MAT=../../matlab
 
-export INPUT_PATH="./"
-export OUTPUT_PATH="./"
+export INPUT_PATH="dat/"
+export OUTPUT_PATH="dat/"
 
 # ==============================================================================
 # Generate all the data needed
@@ -40,6 +40,9 @@ export EXPORT_CORRESPONDENCES="true"
 ./Registration.exe bunnyClean.ply bunnyTransform.ply
 
 if [ -s error.err ] ; then
+	echo "Errors have been found. Exiting."
+	echo " "
+	rm -fr *.ply *.exe *.sh fig dat
 	exit
 fi
 # ==============================================================================
@@ -50,7 +53,7 @@ matlab -wait -nodesktop -nosplash -minimize -r "addpath('$MAT');
 	animateCorrespondences('Corr','./','fig');
 	exit;"
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig
+rm -fr *.ply *.exe *.sh fig dat
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

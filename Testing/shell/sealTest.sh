@@ -5,16 +5,17 @@ echo "   This is a full-scale test of the algorithm examining the left"
 echo "   oriented seal dataset"
 echo " "
 
-DAT=../../data
 FIG=../../figures/sealTest
+DAT=../../data
 MAT=../../matlab
+
+export INPUT_PATH="dat/"
+export OUTPUT_PATH="dat/"
 
 mkdir -p dat
 cp -ft dat $DAT/seal/left/pointcloud*
 # ==============================================================================
 # Generate all the data needed
-export INPUT_PATH="./dat/"
-export OUTPUT_PATH="./dat/"
 
 echo "Input and output paths defined by:                                   "
 echo "Input : $INPUT_PATH                                                  "
@@ -32,6 +33,9 @@ export STP_R=1.1
 ./Registration.exe pointcloud
 
 if [ -s error.err ] ; then
+	echo "Errors have been found. Exiting."
+	echo " "
+	rm -fr *.ply *.exe *.sh fig dat
 	exit
 fi
 # ==============================================================================
@@ -46,7 +50,7 @@ matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	%animateRegistration('pointcloud','result','./dat/','fig');
 	exit;"
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig
+rm -fr *.ply *.exe *.sh fig dat
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

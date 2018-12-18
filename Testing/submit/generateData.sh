@@ -44,11 +44,11 @@ echo --------------------------------------------------------------------------
 #==============================================================================
 # Define Preparation
 
-DAT=../../data/
 FIG=../../figures/GenerateData
+DAT=../../data
 MAT=../../matlab
 
-export INPUT_PATH="$DAT"
+export INPUT_PATH="dat/"
 export OUTPUT_PATH="dat/"
 
 Prepare()
@@ -93,7 +93,7 @@ Program()
 	echo "   Gaussian noise.                                                   "
 	export NOISE_TYPE=gaussian
 	export NOISE_STRENGTH=1.5
-	./GenerateData.exe bunny.ply bunnyGaussian.ply
+	./GenerateData.exe bunnyClean.ply bunnyGaussian.ply
 
 	MODEL+="'bunnyGaussian', "
 
@@ -101,7 +101,7 @@ Program()
 	echo "   Outlier addition.                                                 "
 	export NOISE_TYPE=outliers
 	export OUTLIER_AMOUNT=5.0
-	./GenerateData.exe bunny.ply bunnyOutliers.ply
+	./GenerateData.exe bunnyClean.ply bunnyOutliers.ply
 
 	MODEL+="'bunnyOutliers', "
 
@@ -110,7 +110,7 @@ Program()
 	export NOISE_TYPE=both
 	export NOISE_STRENGTH=2.0
 	export OUTLIER_AMOUNT=5.0
-	./GenerateData.exe bunny.ply bunnyNoise.ply
+	./GenerateData.exe bunnyClean.ply bunnyNoise.ply
 
 	MODEL+="'bunnyNoise', "
 
@@ -119,11 +119,14 @@ Program()
 	export NOISE_TYPE=none
 	export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
 	export TRANSLATION="0.0,0.0,0.0"
-	./GenerateData.exe bunny.ply bunnyTransform.ply
+	./GenerateData.exe bunnyClean.ply bunnyTransform.ply
 
 	MODEL+="'bunnyTransform' "
 
 	if [ -s error.err ] ; then
+		echo "Errors have been found. Exiting."
+		echo " "
+		rm -fr *.ply *.exe *.sh fig dat
 		exit
 	fi
 	# -------------------------------------------------------------------------

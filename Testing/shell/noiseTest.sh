@@ -5,8 +5,8 @@ echo "   Noise test. This will run the program for several amounts and"
 echo "   types of noise and display the results."
 echo " "
 
-DAT=../../data
 FIG=../../figures/NoiseTest
+DAT=../../data
 MAT=../../matlab
 
 export INPUT_PATH="dat/"
@@ -108,7 +108,7 @@ wait
 if [ -s error.err ] ; then
 	echo "Errors have been found. Exiting."
 	echo " "
-	rm -fr *.ply *.exe *.sh fig
+	rm -fr *.ply *.exe *.sh fig dat
 	exit
 fi
 # ==============================================================================
@@ -128,7 +128,7 @@ matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	displayRegistration('resultOut3','dat/','fig');
 	exit;"
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig
+rm -fr *.ply *.exe *.sh fig dat
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

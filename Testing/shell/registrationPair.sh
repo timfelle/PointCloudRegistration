@@ -5,14 +5,14 @@ echo "   This is the test generateData. This test will display the effect  "
 echo "   of several settings for the data generation program.              "
 echo "                                                                     "
 
-DAT=../../data
 FIG=../../figures/RegistrationPair
+DAT=../../data
 MAT=../../matlab
 
+export INPUT_PATH="dat/"
+export OUTPUT_PATH="dat/"
 # ==============================================================================
 # Generate all the data needed
-export INPUT_PATH="./"
-export OUTPUT_PATH="./"
 
 echo "Input and output paths defined by:                                   "
 echo "Input : $INPUT_PATH                                                  "
@@ -38,6 +38,9 @@ echo "Commencing tests:                                                    "
 ./Registration.exe bunnyClean.ply bunnyTransform.ply
 
 if [ -s error.err ] ; then
+	echo "Errors have been found. Exiting."
+	echo " "
+	rm -fr *.ply *.exe *.sh fig dat
 	exit
 fi
 # ==============================================================================
@@ -50,7 +53,7 @@ matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	animateRender('bunny','result','./','fig');
 	exit;" 
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig
+rm -fr *.ply *.exe *.sh fig dat
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

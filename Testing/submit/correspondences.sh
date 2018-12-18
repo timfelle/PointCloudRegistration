@@ -44,11 +44,11 @@ echo --------------------------------------------------------------------------
 #==============================================================================
 # Define Preparation
 
-DAT=../../data
 FIG=../../figures/Correspondences
+DAT=../../data
 MAT=../../matlab
 
-export INPUT_PATH="$DAT"
+export INPUT_PATH="dat/"
 export OUTPUT_PATH="dat/"
 
 Prepare()
@@ -98,6 +98,9 @@ Program()
 	./Registration.exe bunnyClean.ply bunnyTransform.ply
 
 	if [ -s error.err ] ; then
+		echo "Errors have been found. Exiting."
+		echo " "
+		rm -fr *.ply *.exe *.sh fig dat
 		exit
 	fi
 	# -------------------------------------------------------------------------

@@ -5,12 +5,13 @@ echo "   This is the test generateData. This test will display the effect  "
 echo "   of several settings for the data generation program.              "
 echo "                                                                     "
 
-DAT=../../data/
 FIG=../../figures/GenerateData
+DAT=../../data
 MAT=../../matlab
 
-export INPUT_PATH=$DAT
-export OUTPUT_PATH=dat/
+export INPUT_PATH="dat/"
+export OUTPUT_PATH="dat/"
+
 # ==============================================================================
 # Generate all the data needed
 
@@ -62,6 +63,9 @@ export TRANSLATION="0.0,0.0,0.0"
 MODEL+="'bunnyTransform' "
 
 if [ -s error.err ] ; then
+	echo "Errors have been found. Exiting."
+	echo " "
+	rm -fr *.ply *.exe *.sh fig dat
 	exit
 fi
 # ==============================================================================
@@ -71,7 +75,7 @@ mkdir fig $FIG -p
 matlab -nodesktop -nosplash \
 	-r "addpath('$MAT');renderModel({$MODEL},'dat/','fig/');exit;" 
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig
+rm -fr *.ply *.exe *.sh fig dat
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="
