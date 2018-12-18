@@ -153,12 +153,12 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 				}
 
 				// Compute simplified histogram
-				if (f_1 <  s1) spfh[0]++;
-				if (f_1 >= s1) spfh[1]++;
-				if (f_2 <  s2) spfh[2]++;
-				if (f_2 >= s2) spfh[3]++;
-				if (f_3 <  s3) spfh[4]++;
-				if (f_3 >= s3) spfh[5]++;
+				if (f_1 <  s1) spfh(0)++;
+				if (f_1 >= s1) spfh(1)++;
+				if (f_2 <  s2) spfh(2)++;
+				if (f_2 >= s2) spfh(3)++;
+				if (f_3 <  s3) spfh(4)++;
+				if (f_3 >= s3) spfh(5)++;
 			}
 
 			if (neighbours.size() != 0)
@@ -253,7 +253,7 @@ vector<Vector2i> nearestNeighbour(vector<int> P_0, vector<int> P_1,
 	for (int idx = 0; idx < P_0.size(); idx++)
 	{
 		int p_idx = P_0[idx];
-		VectorXd fpfh_0 = VectorXd(6);
+		VectorXd fpfh_0 = VectorXd::Zero(6);
 		fpfh_0 = FPFH_0.row(idx);
 		vector<int> neighbour;
 		vector<double> distance;
