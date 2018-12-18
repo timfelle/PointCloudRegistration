@@ -17,7 +17,7 @@ WARN    =
 LIBS    =-std=c++17 -I$(OPEN3D)/include/ -I$(OPEN3D)/include/Open3D -I$(EIGEN3)
 CHIP    =
 PARA    =-fopenmp
-LFLAGS  =-L$(OPEN3D)/lib -lOpen3D -fopenmp -lstdc++fs
+LFLAGS  =-L$(OPEN3D)/lib -lOpen3D -fopenmp -lstdc++fs -Wl,-rpath,$(OPEN3D)/lib
 
 CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 
@@ -26,7 +26,7 @@ CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 # -- File definitions and macros
 
 # - Excecutable
-EXEC    = GenerateData
+EXEC    = GenerateData.exe
 
 # - Source files
 MAIN    = generateData

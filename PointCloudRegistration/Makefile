@@ -17,7 +17,7 @@ WARN    =
 LIBS    =-std=c++17 -I$(OPEN3D)/include/ -I$(OPEN3D)/include/Open3D -I$(EIGEN3)
 CHIP    =
 PARA    =-fopenmp
-LFLAGS  =-L$(OPEN3D)/lib -lOpen3D -fopenmp -lstdc++fs
+LFLAGS  =-L$(OPEN3D)/lib -lOpen3D -fopenmp -lstdc++fs -Wl,-rpath,$(OPEN3D)/lib
 
 CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 
@@ -26,7 +26,7 @@ CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 # -- File definitions and macros
 
 # - Excecutable
-EXEC    = Registration
+EXEC    = Registration.exe
 
 # - Source files
 MAIN    = registration
@@ -54,9 +54,14 @@ OBJECTS += $(addprefix $(OBJDIR)/, $(addsuffix .o, $(REGIS)))
 # -- Compilations                             (Avoid changes beyond this point)
 
 # - Main
-$(EXEC) : $(OBJECTS)
+$(EXEC) : $(OBJECTS) DEPS
 	$(CXX) -o $(EXEC) $(OBJECTS) -I$(LIBDIR) $(LFLAGS)
 	@echo -e "\nmake: '$(EXEC)' was build sucessfully."
+
+# - Dependencies
+DEPS : 
+	@echo -e "Make dependency: GenerateData.exe"
+	@make -sf Makefile.GenerateData
 
 # - C Files
 .SUFFIXES: .cpp
@@ -66,6 +71,7 @@ $(OBJDIR)/%.o: $(FDIR)/%.cpp | $(OBJDIR)
 	$(CXX) $(CFLAGS) -o $@ -c $< -I$(LIBDIR)
 $(OBJDIR)/%.o: $(RDIR)/%.cpp | $(OBJDIR)
 	$(CXX) $(CFLAGS) -o $@ -c $< -I$(LIBDIR)
+
 
 # -- End of compilations
 #==============================================================================
