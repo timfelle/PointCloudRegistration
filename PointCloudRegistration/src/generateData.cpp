@@ -14,10 +14,10 @@
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
 
-#if _cpluplus <= 201703L
+#if _cpluplus > 201703L
 #define PUTENV _putenv
 #else
-#define PUTENV _putenv
+#define PUTENV putenv
 #endif
 
 #define __FILE_NAME__ "generateData"
