@@ -55,7 +55,7 @@ Prepare()
 {
 	echo ' '
 	echo Preparing
-	mkdir fig $FIG -p
+	mkdir -p fig $FIG dat
 	lscpu >> $LSB_JOBNAME.cpu
 
 }
@@ -80,8 +80,8 @@ Program()
 
 	# Clean model
 	echo "   Fetching clean models"
-	cp $DAT/bunnyPartial1.ply bunnyClean.ply
-	cp $DAT/bunnyPartial2.ply bunnyTransform.ply
+	cp $DAT/bunnyPartial1.ply dat/bunnyClean.ply
+	cp $DAT/bunnyPartial2.ply dat/bunnyTransform.ply
 
 	# Test transformation
 	echo "   Generating transformed model."

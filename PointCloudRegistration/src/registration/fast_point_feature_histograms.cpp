@@ -67,7 +67,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 
 	double s1 = 0.0, s2 = 0.0, s3 = 0.0;	// Tolerances for feature cutoff
 	int n_scales = 0;
-
+	
 	// Initialize the persistent set as all points in the set.
 	P = vector<int>(model.points_.size());
 	FPFH = MatrixXd::Zero(P.size(), 6);
@@ -79,6 +79,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	
 	// ********************************************************************* \\
 	// For each radius determine the FPFH and persistent features.
+	
 	for (double r = min_R*R; r >= min_R * R && r <= max_R * R; r *= stp_R)
 	{
 		// Allocate space for needed values
@@ -182,8 +183,8 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 					Vector3d pk = model.points_[pk_idx];
 					fpfh += SPFH.row(pk_idx) / (1 + (p - pk).norm());
 				}
-
-				fpfh = SPFH.row(idx) + fpfh / (double)K;
+				VectorXd spfh = SPFH.row(idx);
+				fpfh = spfh + 1.0 / ((double)K)*fpfh;
 				FPFH_new.row(p_idx) = fpfh.cwiseMax(1e-6);
 				
 			}
@@ -198,7 +199,8 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 		for (int idx = 0; idx < P.size(); idx++)
 		{
 			int p_idx = P[idx];
-			mu += FPFH_new.row(p_idx) / P.size();
+			VectorXd fpfh_new = FPFH_new.row(p_idx);
+			mu += fpfh_new / (double) P.size();
 		}
 
 		// Setup distance from mu.
@@ -206,7 +208,8 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 		for (int idx = 0; idx < P.size(); idx++)
 		{
 			int p_idx = P[idx];
-			dist_vec(idx) = (FPFH_new.row(p_idx) - mu).norm();
+			VectorXd fpfh_new = FPFH_new.row(p_idx);
+			dist_vec(idx) = (fpfh_new - mu).norm();
 		}
 		VectorXd ones = VectorXd::Ones(dist_vec.size());
 		dist_vec -= ones*dist_vec.mean();
@@ -233,12 +236,13 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			n_scales++;
 		}
 	}
-	MatrixXd FPFH_temp;
+	
+	MatrixXd FPFH_temp = MatrixXd::Zero(P.size(),6);
 	for (int idx = 0; idx < P.size(); idx++)
 	{
 		int p_idx = P[idx];
-		FPFH_temp = (MatrixXd(idx+1, 6)
-			<< FPFH_temp, FPFH.row(p_idx)).finished();
+		VectorXd fpfh = FPFH.row(p_idx);
+		FPFH_temp.row(idx) = fpfh;
 	}
 	FPFH = FPFH_temp / (double)n_scales;
 }
