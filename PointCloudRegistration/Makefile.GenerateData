@@ -17,7 +17,7 @@ WARN    =
 LIBS    =-std=c++17 -I$(OPEN3D)/include/ -I$(OPEN3D)/include/Open3D -I$(EIGEN3)
 CHIP    =
 PARA    =-fopenmp
-LFLAGS  =-L$(OPEN3D)/lib -lOpen3D -fopenmp -lstdc++fs -Wl,-rpath,$(OPEN3D)/lib
+LFLAGS  =-L$(OPEN3D)/lib -lOpen3D -fopenmp -lstdc++fs -Wl,-rpath,$(OPEN3D)/lib -lCore
 
 CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 
@@ -79,8 +79,8 @@ clean :
 realclean : clean
 	@rm -f $(EXEC)
 depend :
-	makedepend -Y$(LIBDIR) $(SOURCES)
-	@rm -f Makefile.bak MDP.err
+	makedepend -Y$(LIBDIR) $(SOURCES) -f Makefile.GenerateData
+	@rm -f Makefile.GenerateData.bak MDP.err
 
 # -- End of utility commands
 #==============================================================================
@@ -90,9 +90,7 @@ depend :
 src/framework/utility_functions.o: lib/utility_functions.h
 src/framework/point_cloud_utility.o: lib/point_cloud_utility.h
 src/framework/point_cloud_utility.o: lib/utility_functions.h
-src/registration.o: lib/point_cloud_utility.h lib/utility_functions.h
-src/registration.o: lib/fast_point_feature_histograms.h
-src/registration.o: lib/fast_global_registration.h
+src/generateData.o: lib/point_cloud_utility.h lib/utility_functions.h
 src/registration/fast_global_registration.o: lib/utility_functions.h
 src/registration/fast_global_registration.o: lib/fast_global_registration.h
 src/registration/fast_point_feature_histograms.o: lib/fast_point_feature_histograms.h

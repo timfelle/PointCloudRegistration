@@ -32,7 +32,7 @@ echo "Commencing tests:                                                    "
 echo "   Gaussian noise.                                                   "
 export NOISE_TYPE=gaussian
 export NOISE_STRENGTH=1.5
-./GenerateData.exe bunny.ply bunnyGaussian.ply
+./GenerateData.exe bunnyClean.ply bunnyGaussian.ply
 
 MODEL+="'bunnyGaussian', "
 
@@ -40,7 +40,7 @@ MODEL+="'bunnyGaussian', "
 echo "   Outlier addition.                                                 "
 export NOISE_TYPE=outliers
 export OUTLIER_AMOUNT=5.0
-./GenerateData.exe bunny.ply bunnyOutliers.ply
+./GenerateData.exe bunnyClean.ply bunnyOutliers.ply
 
 MODEL+="'bunnyOutliers', "
 
@@ -49,7 +49,7 @@ echo "   Combined noise and outlier.                                       "
 export NOISE_TYPE=both
 export NOISE_STRENGTH=2.0
 export OUTLIER_AMOUNT=5.0
-./GenerateData.exe bunny.ply bunnyNoise.ply
+./GenerateData.exe bunnyClean.ply bunnyNoise.ply
 
 MODEL+="'bunnyNoise', "
 
@@ -58,7 +58,7 @@ echo "   Transformation.                                                   "
 export NOISE_TYPE=none
 export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
 export TRANSLATION="0.0,0.0,0.0"
-./GenerateData.exe bunny.ply bunnyTransform.ply
+./GenerateData.exe bunnyClean.ply bunnyTransform.ply
 
 MODEL+="'bunnyTransform' "
 
@@ -72,8 +72,8 @@ fi
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
-matlab -nodesktop -nosplash \
-	-r "addpath('$MAT');renderModel({$MODEL},'dat/','fig/');exit;" 
+matlab -nodesktop -nosplash -wait \
+	-r "addpath('$MAT');displayModel({$MODEL},'dat/','fig/');exit;" 
 mv -ft $FIG fig/*
 rm -fr *.ply *.exe *.sh fig dat
 echo "Results placed in folder:                                            "

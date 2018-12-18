@@ -2,6 +2,7 @@
 // INCLUDES
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <iostream>
 #include <exception>
@@ -57,7 +58,9 @@ int main(int argc, char *argv[])
 	}
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
-	const char* output_path, *input_path, *output_name;
+	const char *output_path, *input_path, *output_name;
+	const char *tol_nu, *tol_e, *max_r, *min_r, *stp_r;
+	const char *alpha;
 	bool export_corr = true;
 
 	// Path variables
@@ -73,16 +76,16 @@ int main(int argc, char *argv[])
 		export_corr = false;
 
 	// Tolerences
-	if (getenv("TOL_NU") == NULL) PUTENV("TOL_NU=1e-6");
-	if (getenv("TOL_E") == NULL) PUTENV("TOL_E=1e-6");
+	if ((tol_nu = getenv("TOL_NU")) == NULL) tol_nu="1e-6";
+	if ((tol_e = getenv("TOL_E")) == NULL) tol_e="1e-6";
 
 	// Radius scaling
-	if (getenv("MAX_R") == NULL) PUTENV("MAX_R=0.010");
-	if (getenv("MIN_R") == NULL) PUTENV("MIN_R=0.005");
-	if (getenv("STP_R") == NULL) PUTENV("STP_R=1.100");
+	if ((max_r = getenv("MAX_R")) == NULL) PUTENV("MAX_R=0.010");
+	if ((min_r = getenv("MIN_R")) == NULL) PUTENV("MIN_R=0.005");
+	if ((stp_r = getenv("STP_R")) == NULL) PUTENV("STP_R=1.100");
 
 	// STD fraction
-	if (getenv("ALPHA") == NULL) PUTENV("ALPHA=1.96");
+	if ((alpha = getenv("ALPHA")) == NULL) PUTENV("ALPHA=1.96");
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names

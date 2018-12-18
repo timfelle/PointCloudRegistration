@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <cstdlib>
 #include <iostream>
 #include <string>
 
@@ -14,10 +13,10 @@
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
 
-#if _cpluplus > 201703L
-#define PUTENV _putenv
-#else
+#if __cplusplus > 201402L
 #define PUTENV putenv
+#else
+#define PUTENV _putenv
 #endif
 
 #define __FILE_NAME__ "generateData"
