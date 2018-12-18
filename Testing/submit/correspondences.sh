@@ -118,7 +118,7 @@ Visualize()
 {
 	echo ' '
 	echo Visualizing
-	matlab -r "addpath('$MAT');animateCorrespondences('Corr','./','fig');exit;"
+	matlab -r "addpath('$MAT');animateCorrespondences('Corr','dat/','fig');exit;"
 }
 
 # End of Visualize
