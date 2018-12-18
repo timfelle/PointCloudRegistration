@@ -31,7 +31,7 @@ echo "   Generating transformed model."
 NOISE_TYPE=none \
 	ROTATION="0.52,0.52,0.79" \
 	TRANSLATION="0.1,0.0,-0.1" \
-	./GenerateData bunnyTransform.ply bunnyTransform.ply
+	./GenerateData.exe bunnyTransform.ply bunnyTransform.ply
 
 
 echo "====================================================================="
@@ -40,14 +40,14 @@ echo " "
 
 echo "Clean ---------------------------------------------------------------"
 echo " "
-OUTPUT_NAME=resultClean  ./Registration bunnyClean.ply bunnyTransform.ply 
+OUTPUT_NAME=resultClean  ./Registration.exe bunnyClean.ply bunnyTransform.ply 
 echo " "
 echo "Gaussian   ----------------------------------------------------------"
 echo " "
 export NOISE_TYPE=gaussian
 export NOISE_STRENGTH=0.01
-./GenerateData bunnyClean.ply gaussianBunny1.ply 
-./GenerateData bunnyTransform.ply gaussianBunny2.ply 
+./GenerateData.exe bunnyClean.ply gaussianBunny1.ply 
+./GenerateData.exe bunnyTransform.ply gaussianBunny2.ply 
 echo " "
 
 OUTPUT_NAME=resultGauss1 \
@@ -55,13 +55,13 @@ OUTPUT_NAME=resultGauss1 \
 	STP_R=1.1 \
 	MAX_R=0.1 \
 	ALPHA=1.96 \
-	./Registration gaussianBunny1.ply gaussianBunny2.ply 
+	./Registration.exe gaussianBunny1.ply gaussianBunny2.ply 
 echo "----------------------------------------------------------"
 echo " "
 #export NOISE_TYPE=gaussian
 #export NOISE_STRENGTH=0.1
-#./GenerateData bunnyClean.ply gaussianBunny3.ply
-#./GenerateData bunnyTransform.ply gaussianBunny4.ply
+#./GenerateData.exe bunnyClean.ply gaussianBunny3.ply
+#./GenerateData.exe bunnyTransform.ply gaussianBunny4.ply
 #echo " "
 
 #OUTPUT_NAME=resultGauss2 \
@@ -70,7 +70,7 @@ echo " "
 #	STP_R=1.1 \
 #	MAX_R=0.1 \
 #	ALPHA=1.5 \
-#	./Registration gaussianBunny3.ply gaussianBunny4.ply
+#	./Registration.exe gaussianBunny3.ply gaussianBunny4.ply
 #echo "----------------------------------------------------------"
 
 echo " "
@@ -78,31 +78,31 @@ echo "Outliers   ----------------------------------------------------------"
 echo " "
 export NOISE_TYPE=outliers
 export OUTLIER_AMOUNT=1.0
-./GenerateData bunnyClean.ply outlierBunny1.ply 
-./GenerateData bunnyTransform.ply outlierBunny2.ply 
+./GenerateData.exe bunnyClean.ply outlierBunny1.ply 
+./GenerateData.exe bunnyTransform.ply outlierBunny2.ply 
 echo " "
 
-OUTPUT_NAME=resultOut1 ./Registration outlierBunny1.ply outlierBunny2.ply 
+OUTPUT_NAME=resultOut1 ./Registration.exe outlierBunny1.ply outlierBunny2.ply 
 
 echo "----------------------------------------------------------"
 echo " "
 export NOISE_TYPE=outliers
 export OUTLIER_AMOUNT=5.0
-./GenerateData bunnyClean.ply outlierBunny3.ply 
-./GenerateData bunnyTransform.ply outlierBunny4.ply 
+./GenerateData.exe bunnyClean.ply outlierBunny3.ply 
+./GenerateData.exe bunnyTransform.ply outlierBunny4.ply 
 echo " "
 
-OUTPUT_NAME=resultOut2 ./Registration outlierBunny3.ply outlierBunny4.ply 
+OUTPUT_NAME=resultOut2 ./Registration.exe outlierBunny3.ply outlierBunny4.ply 
 
 echo "----------------------------------------------------------"
 echo " "
 export NOISE_TYPE=outliers
 export OUTLIER_AMOUNT=10.0
-./GenerateData bunnyClean.ply outlierBunny5.ply 
-./GenerateData bunnyTransform.ply outlierBunny6.ply 
+./GenerateData.exe bunnyClean.ply outlierBunny5.ply 
+./GenerateData.exe bunnyTransform.ply outlierBunny6.ply 
 echo " "
 
-OUTPUT_NAME=resultOut3 ./Registration outlierBunny5.ply outlierBunny6.ply 
+OUTPUT_NAME=resultOut3 ./Registration.exe outlierBunny5.ply outlierBunny6.ply 
 echo "----------------------------------------------------------"
 wait
 if [ -s error.err ] ; then
