@@ -58,7 +58,7 @@ OBJECTS += $(addprefix $(OBJDIR)/, $(addsuffix .o, $(REGIS)))
 # -- Compilations                             (Avoid changes beyond this point)
 
 # - Main
-$(EXEC) : $(OBJECTS) #DEPS
+$(EXEC) : $(OBJECTS) DEPS
 	$(CXX) -o $(EXEC) $(OBJECTS) -I$(LIBDIR) $(LFLAGS)
 	@echo -e "\nmake: '$(EXEC)' was build sucessfully."
 
