@@ -82,7 +82,7 @@ Matrix4d transformationMatrix(Eigen::Vector3d rot, Eigen::Vector3d trans)
 		R(0, 0), R(0, 1), R(0, 2), trans(0),
 		R(1, 0), R(1, 1), R(1, 2), trans(1),
 		R(2, 0), R(2, 1), R(2, 2), trans(2),
-		0.0, 0.0, 0.0, 0.0;
+		0.0, 0.0, 0.0, 1.0;
 
 	return T;
 }

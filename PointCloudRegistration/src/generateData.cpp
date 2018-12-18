@@ -20,6 +20,8 @@
 #define PUTENV _putenv
 #endif
 
+#define __FILE_NAME__ "generateData"
+
 using namespace std;
 using namespace open3d;
 using namespace Eigen;
@@ -31,7 +33,7 @@ int main(int argc, char *argv[])
 {
 	// ------------------------------------------------------------------------
 	// Handle input numbers and help.
-	if ((argc > 1) && (string(argv[1]).compare("-h") == 0)) {
+	if ((argc != 3) && (string(argv[1]).compare("-h") == 0)) {
 		printf(
 			"\n./generateData.bin S1\n"
 			"This function accepts the following arguments,\n"
@@ -45,7 +47,7 @@ int main(int argc, char *argv[])
 		);
 		return EXIT_SUCCESS;
 	}
-	
+	cout << "Starting Data" << endl;
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
 	const char *output_path, *input_path;
@@ -71,143 +73,79 @@ int main(int argc, char *argv[])
 		PUTENV("NOISE_STRENGTH=0.0");
 	if ((outlier_amount = getenv("OUTLIER_AMOUNT")) == NULL)
 		PUTENV("OUTLIER_AMOUNT=0.0");
-
+	cout << "Env put" << endl;
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
-	string inputName, outputName;
-	int nSurfaces = 0;
-
-	// Read the input from terminal.
-	if (argc >= 2)
+	vector<string> dataName = { string(argv[1]), string(argv[2]) };
+	bool fileNameStatus = checkFileName(string(input_path) + dataName[0]);
+	if (dataName.size() != 2 || !fileNameStatus)
 	{
-		int nErrors = 0;
-		inputName = string(input_path) + string(argv[1]);
-
-		// Ensure file name have the correct extension
-		if (inputName.find(".ply") != (inputName.size() - 4)) {
-			cerr << "\nERROR: Input 1: " << inputName << endl;
-			cerr << "   Incorrect file extension." << endl;
-			nErrors++;
-		}
-		// Ensure the files exist
-		else if (!is_file_exist(inputName)) {
-			cerr << "\nERROR: Input 1: " << inputName << endl;
-			cerr << "   File not found." << endl;
-			cerr << "   " << inputName << endl;
-			nErrors++;
-		}
-		if (nErrors != 0) inputName = string("");
-	}
-	if (argc == 3)
-	{
-		int nErrors = 0;
-		outputName = string(output_path) + string(argv[2]);
-
-		// Ensure file name have the correct extension
-		if (outputName.find(".ply") != (outputName.size() - 4)) {
-			cerr << "\nERROR: Input 2: " << outputName << endl;
-			cerr << "   Incorrect file extension." << endl;
-			nErrors++;
-		}
-		if (nErrors != 0) outputName = string("");
-	}
-
-	// If input arguments is missing or invalid.
-	if (inputName.empty() || inputName.size() == 0 || 
-		outputName.empty() || outputName.size() == 0) 
-	{
-		cout << "File names are missing, please specify filenames bellow. " 
-			<< "Enter \"q\" to exit." << endl; 
-	}
-	// Prompt user for missing filenames.
-	while (inputName.empty() || inputName.size() == 0 || 
-		outputName.empty() || outputName.size() == 0)
-	{
-		if ( inputName.empty() || inputName.size() == 0 )
-			cout << "Input file: ";
-		else if ( outputName.empty() || outputName.size())
-			cout << "Output file: ";
-
-		string char_input;
-		cin >> char_input;
-
-		// Exit if the input is q
-		if ( string(char_input).compare("q") == 0 )
-			return EXIT_SUCCESS;
-
-		if (inputName.empty() || inputName.size() == 0)
-		{
-			inputName = string(input_path) + char_input;
-
-			int nErrors = 0;
-			// Ensure files have the correct extension
-			if (inputName.find(".ply") != (inputName.size() - 4)) {
-				cerr << "\nERROR: Input 1: " << inputName << endl;
-				cerr << "   Incorrect file extension." << endl;
-				nErrors++;
-			}
-			// Ensure the files exist
-			else if (!is_file_exist(string(input_path) + inputName)) {
-				cerr << "\nError in input " << ": " << char_input << endl;
-				cerr << "   File not found." << endl;
-				cerr << "   " << inputName << endl;
-				nErrors++;
-			}
-			if (nErrors != 0) inputName = string("");
-		}
-		else if (outputName.empty() || outputName.size() == 0)
-		{
-			outputName = string(output_path) + char_input;
-
-			int nErrors = 0;
-			// Ensure files have the correct extension
-			if (outputName.find(".ply") != (outputName.size() - 4)) {
-				cerr << "\nERROR: Input 2: " << outputName << endl;
-				cerr << "   Incorrect file extension." << endl;
-				nErrors++;
-			}
-			if (nErrors != 0) outputName = string("");
-		}
-	}
-
-	if (inputName.size() == 0 || outputName.size() == 0) {
-		cerr << "\nERROR: Must have both input and ouput names specified.";
-		cerr << endl;
+		cerr << __FILE_NAME__ << ":" << __func__ << ":" << __LINE__ << endl;
+		cerr << "   Inputs not loaded correctly." << endl;
 		return EXIT_FAILURE;
 	}
-
+	SetVerbosityLevel(VerbosityLevel::VerboseError);
+	cout << "Names checked" << endl;
 	// ------------------------------------------------------------------------
 	// Load the datafiles
-	SetVerbosityLevel(VerbosityLevel::VerboseError);
 	PointCloud model;
-	ReadPointCloud(inputName, model);
-	
+	bool readStatus = ReadPointCloud(input_path + dataName[0], model);
+	if (!readStatus)
+	{
+		cerr << __FILE_NAME__ << ":" << __func__ << ":" << __LINE__ << endl;
+		cerr << "   Error in point cloud read." << endl;
+	}
+	cout << "Model read" << endl;
 	// ------------------------------------------------------------------------
 	// Apply noise
-
-	applyNoise(&model);
+	cout << "Noise " << endl;
+	applyNoise(model);
+	cout << "applied" << endl;
 
 	// ------------------------------------------------------------------------
 	// Transform model
 	Vector3d rot, trans;
-	
 	charToVec(rotation, rot);
 	charToVec(translation, trans);
+	cout << "Transformation";
 	Matrix4d T;
 	T = transformationMatrix(rot, trans);
 	model.Transform(T);
-
-	
+	cout << "Matrix" << endl;
+	if (model.points_.size() == NULL)
+	{
+		cerr << __FILE_NAME__ << ":" << __func__ << ":" << __LINE__ << endl;
+		cerr << "   Error when transforming model" << endl;
+		return EXIT_FAILURE;
+	}
 	// ------------------------------------------------------------------------
 	// Save the results
-	WritePointCloud( outputName, model);
-	if (( rot.norm() + trans.norm()) >= 1e-6 )
-		cout << "Transformation:\n" << T << endl;
-	cout << "Data generated:" << endl << "  ";
-	cout << inputName << " >> " << outputName << endl;
+	bool status = true;
+	cout << "Pointcloud ";
+	status = WritePointCloud( string(output_path) + dataName[1], model);
+	cout << "saved." << endl;
+	if (status)
+	{
+		cout << "Data generated:" << endl << "  ";
+		cout << dataName[0] << " >> " << dataName[1] << endl;
+
+		if ((rot.norm() + trans.norm()) >= 1e-6)
+			cout << "  Transformation:\n" << T << endl;
+		if ((getenv("NOISE_TYPE") != NULL) && (string(getenv("NOISE_TYPE")).find("outliers") != string::npos))
+			cout << "  Outliers: " << outlier_amount << endl;
+		if ((getenv("NOISE_TYPE") != NULL) && (string(getenv("NOISE_TYPE")).find("gaussian") != string::npos))
+			cout << "  Gaussian: " << noise_strength << endl;
+		cout << endl;
+	}
+	else
+	{
+		cerr << __FILE_NAME__ << ":" << __func__ << ":" << __LINE__ << endl;
+		cerr << "   Error when writting pointcloud: " << dataName[1] << endl;
+		return EXIT_FAILURE;
+	}
 
 	// ------------------------------------------------------------------------
 	// Cleanup and delete variables
-	
+
 	return EXIT_SUCCESS;
 }

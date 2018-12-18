@@ -2,8 +2,6 @@
 // INCLUDES
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <cstdlib>
 #include <string>
 #include <iostream>
 #include <exception>
@@ -22,6 +20,8 @@
 #else
 #define PUTENV _putenv
 #endif
+
+#define __FILE_NAME__  "registration"
 
 using namespace std;
 using namespace Eigen;
@@ -48,6 +48,12 @@ int main(int argc, char *argv[])
 			"See README for additional information.\n"
 		);
 		return EXIT_SUCCESS;
+	}
+	else
+	{
+		cout << "Registration started for the surfaces:" << endl;
+		for (int i = 1; i < argc; i++)
+			cout << "   " << argv[i] << endl;
 	}
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
@@ -81,10 +87,8 @@ int main(int argc, char *argv[])
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
 	vector<string> dataName = readInputFiles(argc, argv, input_path);
-
 	if (dataName.size() < 2)
 	{
-		cerr << "Inputs not loaded correctly." << endl;
 		return EXIT_FAILURE;
 	}
 	SetVerbosityLevel(VerbosityLevel::VerboseError);
@@ -92,34 +96,32 @@ int main(int argc, char *argv[])
 	// Load the datafiles
 	size_t nSurfaces = dataName.size();
 	vector<PointCloud> model(nSurfaces);
-	cout << "Reading data from: " << endl;
 	for (int i = 0; i < nSurfaces; i++)
-	{
-		cout << dataName[i] << endl;
 		ReadPointCloud(dataName[i], model[i]);
-	}
 
 	// ------------------------------------------------------------------------
 	// Compute normals if needed
 	for (int i = 0; i < nSurfaces; i++)
 		if (!model[i].HasNormals()) EstimateNormals(model[i]);
 
-
+	cout << "Computing correspondences." << endl;
 	for (int s = 0; s < nSurfaces - 1; s++)
 	{
 		if (nSurfaces > 2)
-			cout << "Surfaces: " << s << ", " << s + 1 << endl;
+			cout << "   Surface: " << s << ", " << s + 1 << endl;
 		// ------------------------------------------------------------------------
 		// Estimate Fast Point Feature Histograms and Correspondances.
 		vector<Vector2i> K;
 		K = computeCorrespondancePair(model[s], model[s + 1]);
 		if (K.size() == 0)
+		{
 			return EXIT_FAILURE;
+		}
 
-		cout << "Completing registration with " << K.size() << " correspondences\n";
+		cout << "   Correspondences found: " << K.size() << endl;
 		if (export_corr)
 		{
-			cout << "Exporting correspondence sets" << endl;
+			cout << "   Exporting correspondence sets" << endl;
 			PointCloud correspondence_0, correspondence_1;
 			for (int i = 0; i < K.size(); i++)
 			{
@@ -132,6 +134,7 @@ int main(int argc, char *argv[])
 
 		// ------------------------------------------------------------------------
 		// Compute surface registration
+		cout << "Computing registration." << endl;
 		Matrix4d T;
 		T = fastGlobalRegistrationPair(K, model[s], model[s + 1]);
 		model[s + 1].Transform(T);
@@ -155,7 +158,7 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < nSurfaces; i++) {
 		resultName = string(output_path) + string(output_name) + string("_")
 			+ to_string(i) + string(".ply");
-		cout << dataName[i] << " >> " << resultName << endl;
+		cout << "   " << dataName[i] << " >> " << resultName << endl;
 		WritePointCloud(resultName, model[i]);
 	}
 

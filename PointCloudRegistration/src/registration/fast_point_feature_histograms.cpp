@@ -79,7 +79,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	
 	// ********************************************************************* \\
 	// For each radius determine the FPFH and persistent features.
-	for (double r = min_R*R; r < max_R * R; r *= stp_R)
+	for (double r = min_R*R; r >= min_R * R && r <= max_R * R; r *= stp_R)
 	{
 		// Allocate space for needed values
 		MatrixXd SPFH = MatrixXd::Zero(model.points_.size(), 6);
@@ -109,6 +109,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 					distances.erase(distances.begin() + k);
 				}
 			}
+			
 			Neighbours[idx] = neighbours;
 
 			// For each neighbour compute the local SPFH values
