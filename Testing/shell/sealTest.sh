@@ -29,7 +29,7 @@ echo " "
 export MIN_R=0.005
 export MAX_R=0.050
 export STP_R=1.1
-./Registration pointcloud
+./Registration.exe pointcloud
 
 if [ -s error.err ] ; then
 	exit

@@ -29,13 +29,13 @@ echo "   Generating transformed model."
 export NOISE_TYPE=none
 export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
 export TRANSLATION="0.01,-0.04,-0.01"
-./GenerateData bunnyTransform.ply bunnyTransform.ply
+./GenerateData.exe bunnyTransform.ply bunnyTransform.ply
 
 echo "====================================================================="
 echo "Commencing tests:                                                    "
 
 # Test registration
-./Registration bunnyClean.ply bunnyTransform.ply
+./Registration.exe bunnyClean.ply bunnyTransform.ply
 
 if [ -s error.err ] ; then
 	exit

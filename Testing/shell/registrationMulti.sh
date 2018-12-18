@@ -1,7 +1,7 @@
 #!/bin/sh
 echo "====================================================================="
 echo "registrationMulti.sh:"
-echo "   Registration of multiple surfaces"
+echo "   Registration.exe of multiple surfaces"
 echo " "
 
 DAT=../../data
@@ -28,17 +28,17 @@ cp $DAT/bunny.ply bunnyTransform2.ply
 echo "   Generating transformed models."
 ROTATION="0.52,0.52,0.79" \
 	TRANSLATION="0.1,-0.4,-0.1" \
-	./GenerateData bunnyTransform1.ply bunnyTransform1.ply
+	./GenerateData.exe bunnyTransform1.ply bunnyTransform1.ply
 
 ROTATION="0.22,0.62,-0.79" \
 	TRANSLATION="-0.1,0.3,-0.3" \
-	./GenerateData bunnyTransform2.ply bunnyTransform2.ply
+	./GenerateData.exe bunnyTransform2.ply bunnyTransform2.ply
 
 echo "====================================================================="
 echo "Commencing tests:                                                    "
 
 # Test registration
-./Registration bunny
+./Registration.exe bunny
 
 if [ -s error.err ] ; then
 	exit
