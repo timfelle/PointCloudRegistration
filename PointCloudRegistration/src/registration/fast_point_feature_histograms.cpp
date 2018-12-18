@@ -211,8 +211,8 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			VectorXd fpfh_new = FPFH_new.row(p_idx);
 			dist_vec(idx) = (fpfh_new - mu).norm();
 		}
-
-		dist_vec -= VectorXd::Ones(dist_vec.size())*dist_vec.mean();
+		VectorXd ones = VectorXd::Ones(dist_vec.size());
+		dist_vec -= ones*dist_vec.mean();
 
 		// Standard Deviation of distances
 		double sigma = ( dist_vec ).norm() / sqrt( P.size() - 1 );
@@ -257,8 +257,7 @@ vector<Vector2i> nearestNeighbour(vector<int> P_0, vector<int> P_1,
 	for (int idx = 0; idx < P_0.size(); idx++)
 	{
 		int p_idx = P_0[idx];
-		VectorXd fpfh_0 = VectorXd(6);
-		fpfh_0 = FPFH_0.row(idx);
+		VectorXd fpfh_0 = FPFH_0.row(idx);
 		vector<int> neighbour;
 		vector<double> distance;
 		Vector2i k = Vector2i::Zero();
