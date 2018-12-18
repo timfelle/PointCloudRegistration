@@ -26,7 +26,7 @@ CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 # -- File definitions and macros
 
 # - Excecutable
-EXEC    = GenerateData.exe
+EXEC    = GenerateData
 
 # - Source files
 MAIN    = generateData
