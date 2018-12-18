@@ -95,6 +95,7 @@ Program()
 
 	# Test registration
 	export EXPORT_CORRESPONDENCES="true"
+	export ALPHA="1.5"
 	./Registration.exe bunnyClean.ply bunnyTransform.ply
 
 	if [ -s error.err ] ; then
