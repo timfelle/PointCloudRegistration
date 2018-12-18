@@ -76,8 +76,8 @@ int main(int argc, char *argv[])
 		export_corr = false;
 
 	// Tolerences
-	if ((tol_nu = getenv("TOL_NU")) == NULL) tol_nu="1e-6";
-	if ((tol_e = getenv("TOL_E")) == NULL) tol_e="1e-6";
+	if ((tol_nu = getenv("TOL_NU")) == NULL) PUTENV("TOL_NU=1e-6");
+	if ((tol_e = getenv("TOL_E")) == NULL) PUTENV("TOL_E=1e-6");
 
 	// Radius scaling
 	if ((max_r = getenv("MAX_R")) == NULL) PUTENV("MAX_R=0.010");
