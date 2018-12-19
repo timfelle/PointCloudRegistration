@@ -1,11 +1,11 @@
 #!/bin/sh
 echo "====================================================================="
-echo "sealTest.sh:"
-echo "   This is a full-scale test of the algorithm examining the left"
-echo "   oriented seal dataset"
+echo "bunnyTest.sh:"
+echo "   This is a full-scale test of the algorithm examining the raw"
+echo "   bunny dataset."
 echo " "
 
-FIG=../../figures/sealTest
+FIG=../../figures/bunnyTest
 DAT=../../data
 MAT=../../matlab
 
@@ -13,7 +13,7 @@ export INPUT_PATH="dat/"
 export OUTPUT_PATH="dat/"
 
 mkdir -p dat
-cp -ft dat $DAT/seal/left/pointcloud*
+cp -ft dat $DAT/bunny/*
 # ==============================================================================
 # Generate all the data needed
 
@@ -27,11 +27,11 @@ echo "Commencing tests:                                                    "
 echo " "
 
 # Test registration
-export MIN_R=0.0001
-export MAX_R=0.070
-export STP_R=1.1
+#export MIN_R=0.0001
+#export MAX_R=0.070
+#export STP_R=1.1
 export ALPHA=1.5
-./Registration.exe pointcloud
+./Registration.exe bunny
 
 if [ -s error.err ] ; then
 	echo "Errors have been found. Exiting."
@@ -46,9 +46,9 @@ echo "====================================================================="
 echo "Running matlab to complete visualisation.                            "
 mkdir -p fig $FIG
 matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
-	%displayRegistration('pointcloud','$INPUT_PATH','fig');
+	%displayRegistration('bunny','$INPUT_PATH','fig');
 	displayRegistration('result','$OUTPUT_PATH','fig');
-	%animateRegistration('pointcloud','result','dat/','fig');
+	%animateRegistration('bunny','result','dat/','fig');
 	exit;"
 mv -ft $FIG fig/*
 rm -fr *.ply *.exe *.sh fig dat

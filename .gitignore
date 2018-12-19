@@ -4,6 +4,9 @@
 # Project Specific Files
 fetch_figures.sh
 
+# Python environment
+pyenv
+
 # Folders
 [Bb]uild
 [Gg]lm

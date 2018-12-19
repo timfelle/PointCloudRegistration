@@ -48,9 +48,9 @@ fi
 echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
 matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
-	renderRegistration('bunny','./','fig');
-	renderRegistration('result','./','fig');
-	animateRender('bunny','result','./','fig');
+	renderRegistration('bunny','dat/','fig');
+	renderRegistration('result','dat/','fig');
+	animateRender('bunny','result','dat/','fig');
 	exit;" 
 mv -ft $FIG fig/*
 rm -fr *.ply *.exe *.sh fig dat
