@@ -27,9 +27,10 @@ echo "Commencing tests:                                                    "
 echo " "
 
 # Test registration
-export MIN_R=0.005
+export MIN_R=0.001
 export MAX_R=0.050
 export STP_R=1.1
+export ALPHA=1.5
 ./Registration.exe pointcloud
 
 if [ -s error.err ] ; then

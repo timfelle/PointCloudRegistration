@@ -2,7 +2,7 @@
 # .GITIGNORE FILE - Specification of files ignored by git.
 # =============================================================================
 # Project Specific Files
-merge.sh
+fetch_figures.sh
 
 # Folders
 [Bb]uild
