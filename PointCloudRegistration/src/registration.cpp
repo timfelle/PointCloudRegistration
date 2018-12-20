@@ -108,9 +108,9 @@ int main(int argc, char *argv[])
 	
 	for (int s = 0; s < nSurfaces - 1; s++)
 	{
-		cout << "Computing correspondences." << endl;
 		if (nSurfaces > 2)
-			cout << "   Surface: " << s << ", " << s + 1 << endl;
+			cout << "Surface: " << s << ", " << s + 1 << endl;
+		cout << "   Computing correspondences. ";
 		// ------------------------------------------------------------------------
 		// Estimate Fast Point Feature Histograms and Correspondances.
 		vector<Vector2i> K;
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
 			return EXIT_FAILURE;
 		}
 
-		cout << "   Correspondences found: " << K.size() << endl;
+		cout << K.size() << " found." << endl;
 		if (export_corr)
 		{
 			cout << "   Exporting correspondence sets" << endl;

@@ -110,8 +110,10 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 					distances.erase(distances.begin() + k);
 				}
 			}
-			
-			Neighbours[idx] = neighbours;
+			if (neighbours.size() == 0)
+				Neighbours[idx] = vector<int>{ -1 };
+			else
+				Neighbours[idx] = neighbours;
 
 			// For each neighbour compute the local SPFH values
 			VectorXd spfh = VectorXd::Zero(6);
@@ -175,7 +177,11 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			Vector3d p = model.points_[p_idx];
 
 			VectorXd fpfh = VectorXd::Zero(6);
-			size_t K = Neighbours[idx].size();
+			int K;
+			if (Neighbours[idx][0] != -1)
+				K = Neighbours[idx].size();
+			else K = 0;
+
 			if (K > 0) {
 				for (int k = 0; k < K; k++)
 				{

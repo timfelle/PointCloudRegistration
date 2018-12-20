@@ -64,7 +64,7 @@ Z = double(model.Location(:,3));
 s = 0.01*abs( max([X;Y;Z]) - min([X;Y;Z]));
 hold on
 Q = 10;
-subsample = 0.3;
+subsample = 0.5;
 I = randperm( length(X), floor(length(X)*subsample))';
 light('Position',[-0.4 0.2 0.9],'Style','infinite');
 AX = gca;
