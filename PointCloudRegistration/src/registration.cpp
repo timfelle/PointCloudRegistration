@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 
 		// ------------------------------------------------------------------------
 		// Compute surface registration
-		cout << "Computing registration." << endl;
+		cout << "   Computing registration." << endl;
 		Matrix4d T;
 		T = fastGlobalRegistrationPair(K, model[s], model[s + 1]);
 		model[s + 1].Transform(T);
