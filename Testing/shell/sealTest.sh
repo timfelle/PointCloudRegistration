@@ -28,9 +28,9 @@ echo " "
 
 # Test registration
 export MIN_R=0.0001
-export MAX_R=0.070
-export STP_R=1.1
-export ALPHA=1.5
+export MAX_R=0.0100
+export STP_R=1.01
+export ALPHA=1.7
 ./Registration.exe pointcloud
 
 if [ -s error.err ] ; then

@@ -90,7 +90,6 @@ Program()
 	echo "Commencing tests:                                                    "
 
 	# Test the Gaussian noise
-	echo "   Gaussian noise.                                                   "
 	export NOISE_TYPE=gaussian
 	export NOISE_STRENGTH=1.5
 	./GenerateData.exe bunnyClean.ply bunnyGaussian.ply
@@ -98,7 +97,6 @@ Program()
 	MODEL+="'bunnyGaussian', "
 
 	# Test the Outlier noise
-	echo "   Outlier addition.                                                 "
 	export NOISE_TYPE=outliers
 	export OUTLIER_AMOUNT=5.0
 	./GenerateData.exe bunnyClean.ply bunnyOutliers.ply
@@ -106,7 +104,6 @@ Program()
 	MODEL+="'bunnyOutliers', "
 
 	# Test combination noise
-	echo "   Combined noise and outlier.                                       "
 	export NOISE_TYPE=both
 	export NOISE_STRENGTH=2.0
 	export OUTLIER_AMOUNT=5.0
@@ -115,7 +112,6 @@ Program()
 	MODEL+="'bunnyNoise', "
 
 	# Test transformation
-	echo "   Transformation.                                                   "
 	export NOISE_TYPE=none
 	export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
 	export TRANSLATION="0.0,0.0,0.0"
