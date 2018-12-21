@@ -76,6 +76,6 @@ lighting gouraud
 hold off
 axis vis3d
 axis off
-ExportFigures(F,exportLocation,'asp',1)
+ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',1000)
 close(F);
 end

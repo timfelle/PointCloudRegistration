@@ -45,7 +45,7 @@ axis vis3d
 axis off
 view([0,90])
 
-ExportFigures(F,exportLocation,'asp',1)
+ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',1000)
 close(F);
 end
 
