@@ -52,6 +52,12 @@ else
 	TEST="$@"
 fi
 
+# Update from github.
+git fetch
+git commit -m "Updated from submition script"
+git pull origin master
+git push 
+
 # Make sure the excecutables exists
 cd $EPATH;
 make -s;

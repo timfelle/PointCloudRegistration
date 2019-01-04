@@ -27,10 +27,11 @@ echo "Commencing tests:                                                    "
 echo " "
 
 # Test registration
-export MIN_R=0.0100
-export MAX_R=0.0001
+export MIN_R=0.0500
+export MAX_R=0.0010
 export STP_R=0.9
 export ALPHA=1.7
+export EXPORT_CORRESPONDENCES=true
 ./Registration.exe pointcloud
 
 if [ -s error.err ] ; then
@@ -51,7 +52,7 @@ matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	%animateRegistration('pointcloud','result','dat/','fig');
 	exit;"
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig dat
+rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

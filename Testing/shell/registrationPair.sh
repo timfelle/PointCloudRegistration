@@ -48,12 +48,12 @@ fi
 echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
 matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
-	renderRegistration('bunny','dat/','fig');
-	renderRegistration('result','dat/','fig');
-	animateRender('bunny','result','dat/','fig');
+	displayRegistration('bunny','dat/','fig');
+	displayRegistration('result','dat/','fig');
+	animateRegistration('bunny','result','dat/','fig');
 	exit;" 
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig dat
+rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="
