@@ -2,12 +2,21 @@
 ----------------------------------------------------------------------------
 The registration algorithm is implemented into the registration executable.
 
-Default call to the function will be as bellow, 
+Default call to the function is one of the following, 
 	> ./Registration.exe S0 S1 [S2 ...]
+	> ./Registration.exe S_basename
+	> ./Registration.exe
 
 where the inputs define names of Point Clouds saved in .ply files.
-If no arguments are given, the user will recieve a prompt in the terminal to 
-manually specify the file names.
+
+Called with a "S_basename" will search through the input folder and run 
+registration on all files which match the basename, 
+	> ./Registration.exe pointcloud
+would find all of the files bellow,
+	pointcloud_0.ply, pointcloud_1.ply, pointcloud_2.ply, ...
+
+Called with no input argument the user will be prompted to write the names of
+point clouds which should be aligned through the registration.
 
 ----------------------------------------------------------------------------
 The solver will read for several environment variables and change behavior
@@ -18,7 +27,7 @@ Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)
 	INPUT_PATH: 			[default: ../Testing/data/]
 		Defines where the input files are located.
 
-	OUTPUT_PATH: 			[default: ../Testing/data/]
+	OUTPUT_PATH: 			[default: ../Testing/logs/debugging/]
 		Defines where the output files should be placed.
 
 	OUTPUT_NAME: 			[default: result]
@@ -26,7 +35,7 @@ Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)
 		OUTPUT_NAME_index.ply
 	
 	EXPORT_CORRESPONDENCES: [default: false]
-		Define if correspondences should be exported as pointclouds for
+		Define if correspondences should be exported as point clouds for
 		visualisation. 
 	
 	TOL_NU: 				[default: 1e-6]
@@ -43,6 +52,10 @@ Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)
 
 	STP_R: 					[default: 1.1]
 		Radius stepping size, r_{k+1} = r_k * STP_R.
+		Please note: STP_R can be less than 1.0, however it is then required 
+		that MAX_R < MIN_R. This will cause the loop to start at a large value 
+		and end at a low value. This is useful for emphasising large geometric 
+		features.
 	
 	ALPHA:					[default: 1.96]
 		Scale for when to mark a point as unique. Default value corresponds to

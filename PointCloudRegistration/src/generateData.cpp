@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 		);
 		return EXIT_SUCCESS;
 	}
-	
+
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
 	const char *output_path, *input_path;
@@ -54,16 +54,16 @@ int main(int argc, char *argv[])
 	const char *rotation, *translation;
 
 	// Path variables
-	if ((input_path		= getenv("INPUT_PATH"))		== NULL)
-		input_path		= "../Testing/data/";
-	if ((output_path	= getenv("OUTPUT_PATH"))	== NULL)
-		output_path		= "../Testing/logs/debugging/";
+	if ((input_path = getenv("INPUT_PATH")) == NULL)
+		input_path = "../Testing/data/";
+	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
+		output_path = "../Testing/logs/debugging/";
 
 	// Transformation variables
-	if ((rotation		= getenv("ROTATION"))		== NULL)
-		rotation		= "0.0,0.0,0.0";
-	if ((translation	= getenv("TRANSLATION"))	== NULL)
-		translation		= "0.0,0.0,0.0";
+	if ((rotation = getenv("ROTATION")) == NULL)
+		rotation = "0.0,0.0,0.0";
+	if ((translation = getenv("TRANSLATION")) == NULL)
+		translation = "0.0,0.0,0.0";
 
 	// Noise variables
 	if ((noise_type = getenv("NOISE_TYPE")) == NULL)
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 	// ------------------------------------------------------------------------
 	// Save the results
 	bool status = true;
-	status = WritePointCloud( string(output_path) + dataName[1], model);
+	status = WritePointCloud(string(output_path) + dataName[1], model);
 	if (status)
 	{
 		cout << "Data generated:" << endl << "  ";
@@ -122,9 +122,15 @@ int main(int argc, char *argv[])
 
 		if ((rot.norm() + trans.norm()) >= 1e-6)
 			cout << "  Transformation:\n" << T << endl;
-		if ((getenv("NOISE_TYPE") != NULL) && (string(getenv("NOISE_TYPE")).find("outliers") != string::npos))
+		if ((getenv("NOISE_TYPE") != NULL) && (
+			(string(getenv("NOISE_TYPE")).find("outliers") != string::npos) ||
+			(string(getenv("NOISE_TYPE")).find("both") != string::npos))
+			)
 			cout << "  Outliers: " << outlier_amount << endl;
-		if ((getenv("NOISE_TYPE") != NULL) && (string(getenv("NOISE_TYPE")).find("gaussian") != string::npos))
+		if ((getenv("NOISE_TYPE") != NULL) && (
+			(string(getenv("NOISE_TYPE")).find("gaussian") != string::npos) ||
+			(string(getenv("NOISE_TYPE")).find("both") != string::npos))
+			)
 			cout << "  Gaussian: " << noise_strength << endl;
 		cout << endl;
 	}

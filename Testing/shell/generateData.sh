@@ -75,7 +75,7 @@ mkdir fig $FIG -p
 matlab -nodesktop -nosplash -wait \
 	-r "addpath('$MAT');displayModel({$MODEL},'dat/','fig/');exit;" 
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig dat
+rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

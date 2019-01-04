@@ -30,7 +30,7 @@ echo "   Generating transformed model."
 # Rotation in degrees: 30, 30, 45 
 NOISE_TYPE=none \
 	ROTATION="0.52,0.52,0.79" \
-	TRANSLATION="0.1,0.0,-0.1" \
+	TRANSLATION="0.05,0.0,-0.01" \
 	./GenerateData.exe bunnyTransform.ply bunnyTransform.ply
 
 
@@ -40,7 +40,9 @@ echo " "
 
 echo "Clean ---------------------------------------------------------------"
 echo " "
-OUTPUT_NAME=resultClean  ./Registration.exe bunnyClean.ply bunnyTransform.ply 
+OUTPUT_NAME=resultClean \
+	ALPHA=1.6 MIN_R=0.0001 MAX_R=0.01 \
+	./Registration.exe bunnyClean.ply bunnyTransform.ply 
 echo " "
 echo "Gaussian   ----------------------------------------------------------"
 echo " "
@@ -51,27 +53,19 @@ export NOISE_STRENGTH=0.01
 echo " "
 
 OUTPUT_NAME=resultGauss1 \
-	MIN_R=0.001 \
-	STP_R=1.1 \
-	MAX_R=0.1 \
-	ALPHA=1.96 \
-	./Registration.exe gaussianBunny1.ply gaussianBunny2.ply 
+	ALPHA=1.65 MIN_R=0.0001 MAX_R=0.01 \
+	./Registration.exe gaussianBunny1.ply gaussianBunny2.ply
 echo "----------------------------------------------------------"
 echo " "
-#export NOISE_TYPE=gaussian
-#export NOISE_STRENGTH=0.1
-#./GenerateData.exe bunnyClean.ply gaussianBunny3.ply
-#./GenerateData.exe bunnyTransform.ply gaussianBunny4.ply
-#echo " "
+export NOISE_TYPE=gaussian
+export NOISE_STRENGTH=0.1
+./GenerateData.exe bunnyClean.ply gaussianBunny3.ply 
+./GenerateData.exe bunnyTransform.ply gaussianBunny4.ply 
+echo " "
 
-#OUTPUT_NAME=resultGauss2 \
-#	EXPORT_CORRESPONDENCES=true \
-#	MIN_R=0.001 \
-#	STP_R=1.1 \
-#	MAX_R=0.1 \
-#	ALPHA=1.5 \
-#	./Registration.exe gaussianBunny3.ply gaussianBunny4.ply
-#echo "----------------------------------------------------------"
+OUTPUT_NAME=resultGauss2 \
+	ALPHA=1.6 MIN_R=0.001 MAX_R=0.05 \
+	./Registration.exe gaussianBunny3.ply gaussianBunny4.ply
 
 echo " "
 echo "Outliers   ----------------------------------------------------------"
@@ -82,7 +76,9 @@ export OUTLIER_AMOUNT=1.0
 ./GenerateData.exe bunnyTransform.ply outlierBunny2.ply 
 echo " "
 
-OUTPUT_NAME=resultOut1 ./Registration.exe outlierBunny1.ply outlierBunny2.ply 
+OUTPUT_NAME=resultOut1 \
+	ALPHA=1.6 MIN_R=0.0001 MAX_R=0.01 \
+	./Registration.exe outlierBunny1.ply outlierBunny2.ply 
 
 echo "----------------------------------------------------------"
 echo " "
@@ -92,7 +88,9 @@ export OUTLIER_AMOUNT=5.0
 ./GenerateData.exe bunnyTransform.ply outlierBunny4.ply 
 echo " "
 
-OUTPUT_NAME=resultOut2 ./Registration.exe outlierBunny3.ply outlierBunny4.ply 
+OUTPUT_NAME=resultOut2 \
+	ALPHA=1.6 MIN_R=0.0001 MAX_R=0.01 \
+	./Registration.exe outlierBunny3.ply outlierBunny4.ply 
 
 echo "----------------------------------------------------------"
 echo " "
@@ -102,7 +100,9 @@ export OUTLIER_AMOUNT=10.0
 ./GenerateData.exe bunnyTransform.ply outlierBunny6.ply 
 echo " "
 
-OUTPUT_NAME=resultOut3 ./Registration.exe outlierBunny5.ply outlierBunny6.ply 
+OUTPUT_NAME=resultOut3 \
+	ALPHA=1.6 MIN_R=0.0001 MAX_R=0.01 \
+	./Registration.exe outlierBunny5.ply outlierBunny6.ply 
 echo "----------------------------------------------------------"
 wait
 if [ -s error.err ] ; then
@@ -121,14 +121,13 @@ matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	displayRegistration('bunny','dat/','fig');
 	displayRegistration('resultClean','dat/','fig');
 	displayRegistration('resultGauss1','dat/','fig');
-	%animateCorrespondences('Corr','dat/','fig');
-	%displayRegistration('resultGauss2','dat/','fig');
+	displayRegistration('resultGauss2','dat/','fig');
 	displayRegistration('resultOut1','dat/','fig');
 	displayRegistration('resultOut2','dat/','fig');
 	displayRegistration('resultOut3','dat/','fig');
 	exit;"
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig dat
+rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

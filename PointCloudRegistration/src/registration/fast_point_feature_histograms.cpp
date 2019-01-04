@@ -80,12 +80,11 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	// ********************************************************************* \\
 	// For each radius determine the FPFH and persistent features.
 	
-	for (double r = min_R*R; r >= min_R * R && r <= max_R * R; r *= stp_R)
+	for (double r = min_R * R; (r >= min(min_R,max_R) * R) && (r <= max(min_R,max_R) * R); r *= stp_R)
 	{
 		// Allocate space for needed values
 		MatrixXd SPFH = MatrixXd::Zero(model.points_.size(), 6);
 		vector<vector<int>> Neighbours(P.size());
-
 		// ================================================================= \\
 		// Compute the simplified features for all points.
 		for (int idx = 0; idx < P.size(); idx++)
@@ -177,7 +176,7 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			Vector3d p = model.points_[p_idx];
 
 			VectorXd fpfh = VectorXd::Zero(6);
-			int K;
+			size_t K;
 			if (Neighbours[idx][0] != -1)
 				K = Neighbours[idx].size();
 			else K = 0;
@@ -317,7 +316,7 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0, PointCloud
 	int count = 0;
 
 	// Run through all possible correspondences
-	for (int i = I.size() - 3; i < I.size() && count < K_II.size()*10; )
+	for (size_t i = I.size() - 3; i < I.size() && count < K_II.size()*10; )
 	{
 		shuffle(I.begin(), I.end(), g);
 		vector<int> idx = { I[i], I[i + 1], I[i + 2] };

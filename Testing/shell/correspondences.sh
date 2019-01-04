@@ -9,6 +9,7 @@ FIG=../../figures/Correspondences
 DAT=../../data
 MAT=../../matlab
 
+mkdir dat
 export INPUT_PATH="dat/"
 export OUTPUT_PATH="dat/"
 
@@ -22,8 +23,8 @@ echo "                                                                     "
 
 # Clean model
 echo "   Fetching clean models"
-cp $DAT/bunnyPartial1.ply bunnyClean.ply
-cp $DAT/bunnyPartial2.ply bunnyTransform.ply
+cp $DAT/bunnyPartial1.ply dat/bunnyClean.ply
+cp $DAT/bunnyPartial2.ply dat/bunnyTransform.ply
 
 # Test transformation
 echo "   Generating transformed model."
@@ -50,10 +51,11 @@ fi
 echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
 matlab -wait -nodesktop -nosplash -minimize -r "addpath('$MAT');
-	animateCorrespondences('Corr','./','fig');
+	displayCorrespondences('Corr','dat/','fig');
+	animateCorrespondences('Corr','dat/','fig');
 	exit;"
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig dat
+rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

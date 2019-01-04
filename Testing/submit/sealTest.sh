@@ -81,43 +81,18 @@ Program()
 	echo "Output: $OUTPUT_PATH                                                 "
 	echo "                                                                     "
 	mkdir -p dat
-	# Clean model
-	echo "Fetching clean model"
-	cp $DAT/bunny.ply dat/bunnyClean.ply
-	MODEL="'bunnyClean', "
+	cp -ft dat $DAT/seal/left/pointcloud*
 
 	echo "====================================================================="
 	echo "Commencing tests:                                                    "
+	echo " "
 
-	# Test the Gaussian noise
-	export NOISE_TYPE=gaussian
-	export NOISE_STRENGTH=1.5
-	./GenerateData.exe bunnyClean.ply bunnyGaussian.ply
-
-	MODEL+="'bunnyGaussian', "
-
-	# Test the Outlier noise
-	export NOISE_TYPE=outliers
-	export OUTLIER_AMOUNT=5.0
-	./GenerateData.exe bunnyClean.ply bunnyOutliers.ply
-
-	MODEL+="'bunnyOutliers', "
-
-	# Test combination noise
-	export NOISE_TYPE=both
-	export NOISE_STRENGTH=2.0
-	export OUTLIER_AMOUNT=5.0
-	./GenerateData.exe bunnyClean.ply bunnyNoise.ply
-
-	MODEL+="'bunnyNoise', "
-
-	# Test transformation
-	export NOISE_TYPE=none
-	export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
-	export TRANSLATION="0.0,0.0,0.0"
-	./GenerateData.exe bunnyClean.ply bunnyTransform.ply
-
-	MODEL+="'bunnyTransform' "
+	# Test registration
+	export MIN_R=0.0500
+	export MAX_R=0.0010
+	export STP_R=0.9
+	export ALPHA=1.7
+	./Registration.exe pointcloud
 
 	if [ -s error.err ] ; then
 		echo "Errors have been found. Exiting."
@@ -141,7 +116,7 @@ Visualize()
 	echo ' '
 	echo Visualizing
 	matlab -nodesktop -nosplash \
-		-r "addpath('$MAT');renderModel({$MODEL},'dat/','fig/');exit;"
+		-r "addpath('$MAT');displayRegistration('result','$OUTPUT_PATH','fig');exit;"
 }
 
 # End of Visualize

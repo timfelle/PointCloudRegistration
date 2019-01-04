@@ -46,12 +46,12 @@ echo "====================================================================="
 echo "Running matlab to complete visualisation.                            "
 mkdir -p fig $FIG
 matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
-	%displayRegistration('bunny','$INPUT_PATH','fig');
+	displayRegistration('bunny','$INPUT_PATH','fig');
 	displayRegistration('result','$OUTPUT_PATH','fig');
-	%animateRegistration('bunny','result','dat/','fig');
+	animateRegistration('bunny','result','dat/','fig');
 	exit;"
 mv -ft $FIG fig/*
-rm -fr *.ply *.exe *.sh fig dat
+rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="
