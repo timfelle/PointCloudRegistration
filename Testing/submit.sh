@@ -25,7 +25,7 @@ fi
 git fetch
 git commit -am "Updated from submition script"
 git pull origin master
-git push 
+git push
 
 # Define all needed folders relative to the Testing folder.
 EPATH=../PointCloudRegistration
