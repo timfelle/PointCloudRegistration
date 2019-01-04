@@ -12,8 +12,6 @@ MAT=../../matlab
 export INPUT_PATH="dat/"
 export OUTPUT_PATH="dat/"
 
-mkdir -p dat
-cp -ft dat $DAT/seal/left/pointcloud*
 # ==============================================================================
 # Generate all the data needed
 
@@ -21,6 +19,8 @@ echo "Input and output paths defined by:                                   "
 echo "Input : $INPUT_PATH                                                  "
 echo "Output: $OUTPUT_PATH                                                 "
 echo "                                                                     "
+mkdir -p dat
+cp -ft dat $DAT/seal/left/pointcloud*
 
 echo "====================================================================="
 echo "Commencing tests:                                                    "
@@ -31,7 +31,6 @@ export MIN_R=0.0500
 export MAX_R=0.0010
 export STP_R=0.9
 export ALPHA=1.7
-export EXPORT_CORRESPONDENCES=true
 ./Registration.exe pointcloud
 
 if [ -s error.err ] ; then

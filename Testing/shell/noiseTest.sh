@@ -53,7 +53,7 @@ export NOISE_STRENGTH=0.01
 echo " "
 
 OUTPUT_NAME=resultGauss1 \
-	ALPHA=1.5 MIN_R=0.0001 MAX_R=0.01 \
+	ALPHA=1.65 MIN_R=0.0001 MAX_R=0.01 \
 	./Registration.exe gaussianBunny1.ply gaussianBunny2.ply
 echo "----------------------------------------------------------"
 echo " "
@@ -64,7 +64,7 @@ export NOISE_STRENGTH=0.1
 echo " "
 
 OUTPUT_NAME=resultGauss2 \
-	ALPHA=1.8 MIN_R=0.001 MAX_R=0.05 \
+	ALPHA=1.6 MIN_R=0.001 MAX_R=0.05 \
 	./Registration.exe gaussianBunny3.ply gaussianBunny4.ply
 
 echo " "
