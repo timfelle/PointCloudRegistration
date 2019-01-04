@@ -8,14 +8,6 @@
 # located in the folder shell. These TESTNAME.sh files contain the 
 # definition of the test which should be run.
 
-# Submit function
-submit(){
-	if [ ! -s error.err ]; then
-	 	echo "No error"
-	else
-		echo "We have error"
-	fi
-}
 
 # Help commands
 if  [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
@@ -29,6 +21,11 @@ if  [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
 	exit
 fi
 
+# Update from github.
+git fetch
+git commit -am "Updated from submition script"
+git pull origin master
+git push 
 
 # Define all needed folders relative to the Testing folder.
 EPATH=../PointCloudRegistration
@@ -51,12 +48,6 @@ if [ -z "$1" ] ; then
 else
 	TEST="$@"
 fi
-
-# Update from github.
-git fetch
-git commit -m "Updated from submition script"
-git pull origin master
-git push 
 
 # Make sure the excecutables exists
 cd $EPATH;
