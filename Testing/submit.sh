@@ -22,7 +22,7 @@ if  [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
 fi
 
 # Update from github.
-git fetch
+git fetch 
 git commit -am "Updated from submition script"
 git pull origin master
 git push
