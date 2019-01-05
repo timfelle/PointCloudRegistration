@@ -59,13 +59,13 @@ OUTPUT_NAME=resultGauss1 \
 echo "----------------------------------------------------------"
 echo " "
 export NOISE_TYPE=gaussian
-export NOISE_STRENGTH=0.25
+export NOISE_STRENGTH=0.2
 ./GenerateData.exe bunnyClean.ply gaussianBunny3.ply 
 ./GenerateData.exe bunnyTransform.ply gaussianBunny4.ply 
 echo " "
 
 OUTPUT_NAME=resultGauss2 \
-	ALPHA=1.0 INI_R=0.001 END_R=0.1 NUM_R=10 \
+	ALPHA=1.5 INI_R=0.001 END_R=0.05 NUM_R=1000 \
 	./Registration.exe gaussianBunny3.ply gaussianBunny4.ply
 
 echo " "
