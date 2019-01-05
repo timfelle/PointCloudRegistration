@@ -153,7 +153,7 @@ Finalize()
 	echo ' '
 	echo Finalizing
 
-	mv -ft $FIG fig/*
+	mv -ft $FIG fig/* dat
 	rm -fr *.ply *.exe *.sh fig dat
 
 	echo Figures moved to $FIG.

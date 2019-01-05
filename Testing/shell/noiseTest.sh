@@ -41,7 +41,7 @@ echo " "
 echo "Clean ---------------------------------------------------------------"
 echo " "
 OUTPUT_NAME=resultClean \
-	ALPHA=1.6 MIN_R=0.0001 MAX_R=0.01 \
+	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
 	./Registration.exe bunnyClean.ply bunnyTransform.ply 
 echo " "
 echo "Gaussian   ----------------------------------------------------------"
@@ -53,18 +53,19 @@ export NOISE_STRENGTH=0.01
 echo " "
 
 OUTPUT_NAME=resultGauss1 \
-	ALPHA=1.65 MIN_R=0.0001 MAX_R=0.01 \
+	ALPHA=1.5 INI_R=0.005 END_R=0.1 NUM_R=1000 \
 	./Registration.exe gaussianBunny1.ply gaussianBunny2.ply
+
 echo "----------------------------------------------------------"
 echo " "
 export NOISE_TYPE=gaussian
-export NOISE_STRENGTH=0.1
+export NOISE_STRENGTH=0.25
 ./GenerateData.exe bunnyClean.ply gaussianBunny3.ply 
 ./GenerateData.exe bunnyTransform.ply gaussianBunny4.ply 
 echo " "
 
 OUTPUT_NAME=resultGauss2 \
-	ALPHA=1.6 MIN_R=0.001 MAX_R=0.05 \
+	ALPHA=1.0 INI_R=0.001 END_R=0.1 NUM_R=10 \
 	./Registration.exe gaussianBunny3.ply gaussianBunny4.ply
 
 echo " "
@@ -77,7 +78,7 @@ export OUTLIER_AMOUNT=1.0
 echo " "
 
 OUTPUT_NAME=resultOut1 \
-	ALPHA=1.6 MIN_R=0.0001 MAX_R=0.01 \
+	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
 	./Registration.exe outlierBunny1.ply outlierBunny2.ply 
 
 echo "----------------------------------------------------------"
@@ -89,7 +90,7 @@ export OUTLIER_AMOUNT=5.0
 echo " "
 
 OUTPUT_NAME=resultOut2 \
-	ALPHA=1.6 MIN_R=0.0001 MAX_R=0.01 \
+	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
 	./Registration.exe outlierBunny3.ply outlierBunny4.ply 
 
 echo "----------------------------------------------------------"
@@ -101,7 +102,7 @@ export OUTLIER_AMOUNT=10.0
 echo " "
 
 OUTPUT_NAME=resultOut3 \
-	ALPHA=1.6 MIN_R=0.0001 MAX_R=0.01 \
+	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
 	./Registration.exe outlierBunny5.ply outlierBunny6.ply 
 echo "----------------------------------------------------------"
 wait
@@ -126,7 +127,9 @@ matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	displayRegistration('resultOut2','dat/','fig');
 	displayRegistration('resultOut3','dat/','fig');
 	exit;"
+mkdir $FIG/data -p
 mv -ft $FIG fig/*
+mv -ft $FIG/data dat/*
 rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG

@@ -52,7 +52,7 @@ matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	displayRegistration('result','dat/','fig');
 	animateRegistration('bunny','result','dat/','fig');
 	exit;" 
-mv -ft $FIG fig/*
+mv -ft $FIG fig/* dat
 rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
