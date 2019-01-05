@@ -27,9 +27,9 @@ echo "Commencing tests:                                                    "
 echo " "
 
 # Test registration
-#export MIN_R=0.0001
-#export MAX_R=0.070
-#export STP_R=1.1
+#export INI_R=0.0001
+#export END_R=0.070
+#export NUM_R=1000
 export ALPHA=1.5
 ./Registration.exe bunny
 
@@ -50,7 +50,7 @@ matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	displayRegistration('result','$OUTPUT_PATH','fig');
 	animateRegistration('bunny','result','dat/','fig');
 	exit;"
-mv -ft $FIG fig/*
+mv -ft $FIG fig/* dat
 rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG

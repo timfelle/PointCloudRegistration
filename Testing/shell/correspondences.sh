@@ -54,7 +54,7 @@ matlab -wait -nodesktop -nosplash -minimize -r "addpath('$MAT');
 	displayCorrespondences('Corr','dat/','fig');
 	animateCorrespondences('Corr','dat/','fig');
 	exit;"
-mv -ft $FIG fig/*
+mv -ft $FIG fig/* dat
 rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG

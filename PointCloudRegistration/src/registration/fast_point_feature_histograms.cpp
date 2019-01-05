@@ -60,9 +60,9 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	// ********************************************************************* \\
 	// Initialization of the different values used in the computations.
 	double R = 0.5*(model.GetMaxBound() - model.GetMinBound()).norm();
-	double max_R = atof(getenv("MAX_R"));	// Maximal proportion of R to use.
-	double min_R = atof(getenv("MIN_R"));	// Minimal proportion of R to use.
-	double stp_R = atof(getenv("STP_R"));	// Multiplicative step size for R.
+	double ini_R = atof(getenv("INI_R"));	// Maximal proportion of R to use.
+	double end_R = atof(getenv("END_R"));	// Minimal proportion of R to use.
+	double num_R = atof(getenv("NUM_R"));	// Multiplicative step size for R.
 	double alpha = atof(getenv("ALPHA"));	// Proportion of STD to mark persistent.
 
 	double s1 = 0.0, s2 = 0.0, s3 = 0.0;	// Tolerances for feature cutoff
@@ -79,8 +79,11 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	
 	// ********************************************************************* \\
 	// For each radius determine the FPFH and persistent features.
-	
-	for (double r = min_R * R; (r >= min(min_R,max_R) * R) && (r <= max(min_R,max_R) * R); r *= stp_R)
+
+	double step_r = R * (end_R - ini_R) / num_R;
+	double min_r = R * min(ini_R, end_R);
+	double max_r = R * max(ini_R, end_R);
+	for (double r = ini_R * R; min_r <= r && r <= max_r; r += step_r)
 	{
 		// Allocate space for needed values
 		MatrixXd SPFH = MatrixXd::Zero(model.points_.size(), 6);

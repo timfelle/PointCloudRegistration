@@ -78,9 +78,9 @@ int main(int argc, char *argv[])
 	if (getenv("TOL_E") == NULL) PUTENV("TOL_E=1e-6");
 
 	// Radius scaling
-	if (getenv("MAX_R") == NULL) PUTENV("MAX_R=0.010");
-	if (getenv("MIN_R") == NULL) PUTENV("MIN_R=0.005");
-	if (getenv("STP_R") == NULL) PUTENV("STP_R=1.100");
+	if (getenv("INI_R") == NULL) PUTENV("INI_R=0.005");
+	if (getenv("END_R") == NULL) PUTENV("END_R=0.010");
+	if (getenv("NUM_R") == NULL) PUTENV("NUM_R=100");
 
 	// STD fraction
 	if (getenv("ALPHA") == NULL) PUTENV("ALPHA=1.96");
