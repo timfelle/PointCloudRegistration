@@ -3,7 +3,7 @@
 # --  General options 
 
 # Naming of the job and queue name
-#BSUB -J generateData
+#BSUB -J sealTest
 #BSUB -q hpc
 
 # Specify
@@ -44,7 +44,7 @@ echo --------------------------------------------------------------------------
 #==============================================================================
 # Define Preparation
 
-FIG=../../figures/GenerateData
+FIG=../../figures/$LSB_JOBNAME
 DAT=../../data
 MAT=../../matlab
 
