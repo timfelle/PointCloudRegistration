@@ -81,8 +81,9 @@ Program()
 	echo "Output: $OUTPUT_PATH                                                 "
 	echo "                                                                     "
 	mkdir -p dat
-	cp -ft dat $DAT/Seal/left/pointcloud*
 
+	cp -ft dat $DAT/seal/left/pointcloud*
+	
 	echo "====================================================================="
 	echo "Commencing tests:                                                    "
 	echo " "
@@ -129,7 +130,7 @@ Finalize()
 	echo Finalizing
 
 	mv -ft $FIG fig/*
-	rm -fr *.ply *.exe *.sh fig dat
+	rm -fr *.exe *.sh fig
 
 	echo Figures moved to $FIG.
 	echo Test concluded successfully.
