@@ -3,7 +3,7 @@
 # --  General options 
 
 # Naming of the job and queue name
-#BSUB -J generateData
+#BSUB -J sealTest
 #BSUB -q hpc
 
 # Specify
@@ -44,7 +44,7 @@ echo --------------------------------------------------------------------------
 #==============================================================================
 # Define Preparation
 
-FIG=../../figures/GenerateData
+FIG=../../figures/$LSB_JOBNAME
 DAT=../../data
 MAT=../../matlab
 
@@ -81,7 +81,7 @@ Program()
 	echo "Output: $OUTPUT_PATH                                                 "
 	echo "                                                                     "
 	mkdir -p dat
-	cp -ft dat $DAT/seal/left/pointcloud*
+	cp -ft dat $DAT/Seal/left/pointcloud*
 
 	echo "====================================================================="
 	echo "Commencing tests:                                                    "
@@ -89,9 +89,9 @@ Program()
 
 	# Test registration
 	export MIN_R=0.0500
-	export MAX_R=0.0010
+	export MAX_R=0.0050
 	export STP_R=0.9
-	export ALPHA=1.7
+	export ALPHA=1.8
 	./Registration.exe pointcloud
 
 	if [ -s error.err ] ; then
