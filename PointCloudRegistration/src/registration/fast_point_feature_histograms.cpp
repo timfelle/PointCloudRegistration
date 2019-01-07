@@ -217,12 +217,14 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 		{
 			int p_idx = P[idx];
 			VectorXd fpfh_new = FPFH_new.row(p_idx);
-			dist_vec(idx) = (fpfh_new - mu).norm();
+			dist_vec(idx) = 0.0;
+			for (int i = 0; i < 6; i++)
+				dist_vec(idx) += fpfh_new(i) - mu(i);
 		}
-		VectorXd ones = VectorXd::Ones(dist_vec.size());
-		dist_vec -= ones*dist_vec.mean();
 
 		// Standard Deviation of distances
+		VectorXd ones = VectorXd::Ones(dist_vec.size());
+		dist_vec -= ones * dist_vec.mean();
 		double sigma = ( dist_vec ).norm() / sqrt( P.size() - 1 );
 
 		// ================================================================= \\
@@ -319,7 +321,7 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0, PointCloud
 	int count = 0;
 
 	// Run through all possible correspondences
-	for (size_t i = I.size() - 3; i < I.size() && count < K_II.size()*10; )
+	for (size_t i = I.size() - 3; i < I.size() && count < K_II.size()*1000; )
 	{
 		shuffle(I.begin(), I.end(), g);
 		vector<int> idx = { I[i], I[i + 1], I[i + 2] };
