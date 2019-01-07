@@ -42,31 +42,30 @@ echo "Clean ---------------------------------------------------------------"
 echo " "
 OUTPUT_NAME=resultClean \
 	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
-	./Registration.exe bunnyClean.ply bunnyTransform.ply 
+	./Registration.exe bunnyClean.ply bunnyTransform.ply
 echo " "
 echo "Gaussian   ----------------------------------------------------------"
 echo " "
 export NOISE_TYPE=gaussian
 export NOISE_STRENGTH=0.01
-./GenerateData.exe bunnyClean.ply gaussianBunny1.ply 
-./GenerateData.exe bunnyTransform.ply gaussianBunny2.ply 
+./GenerateData.exe bunnyClean.ply gaussianBunny1.ply
+./GenerateData.exe bunnyTransform.ply gaussianBunny2.ply
 echo " "
-
 
 OUTPUT_NAME=resultGauss1 \
-	ALPHA=1.5 INI_R=0.005 END_R=0.1 NUM_R=1000 \
+	ALPHA=1.6 INI_R=0.0005 END_R=0.01 \
 	./Registration.exe gaussianBunny1.ply gaussianBunny2.ply
 
-echo "----------------------------------------------------------"
+echo "---------------------------------------------------------------------"
 echo " "
 export NOISE_TYPE=gaussian
-export NOISE_STRENGTH=0.2
-./GenerateData.exe bunnyClean.ply gaussianBunny3.ply 
-./GenerateData.exe bunnyTransform.ply gaussianBunny4.ply 
+export NOISE_STRENGTH=0.02
+./GenerateData.exe bunnyClean.ply gaussianBunny3.ply
+./GenerateData.exe bunnyTransform.ply gaussianBunny4.ply
 echo " "
 
 OUTPUT_NAME=resultGauss2 \
-	ALPHA=1.5 INI_R=0.001 END_R=0.05 NUM_R=1000 \
+	ALPHA=1.6 INI_R=0.001 END_R=0.01 \
 	./Registration.exe gaussianBunny3.ply gaussianBunny4.ply
 
 echo " "
@@ -82,7 +81,7 @@ OUTPUT_NAME=resultOut1 \
 	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
 	./Registration.exe outlierBunny1.ply outlierBunny2.ply 
 
-echo "----------------------------------------------------------"
+echo "---------------------------------------------------------------------"
 echo " "
 export NOISE_TYPE=outliers
 export OUTLIER_AMOUNT=5.0
@@ -91,10 +90,10 @@ export OUTLIER_AMOUNT=5.0
 echo " "
 
 OUTPUT_NAME=resultOut2 \
-	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
+	ALPHA=1.6 INI_R=0.0005 END_R=0.01 \
 	./Registration.exe outlierBunny3.ply outlierBunny4.ply 
 
-echo "----------------------------------------------------------"
+echo "---------------------------------------------------------------------"
 echo " "
 export NOISE_TYPE=outliers
 export OUTLIER_AMOUNT=10.0
@@ -105,7 +104,7 @@ echo " "
 OUTPUT_NAME=resultOut3 \
 	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
 	./Registration.exe outlierBunny5.ply outlierBunny6.ply 
-echo "----------------------------------------------------------"
+echo "---------------------------------------------------------------------"
 wait
 if [ -s error.err ] ; then
 	echo "Errors have been found. Exiting."
@@ -116,10 +115,17 @@ fi
 # ==============================================================================
 # Export the figures using matlab
 echo " "
-echo "====================================================================="
+echo "---------------------------------------------------------------------"
 echo "Running matlab to complete visualisation.                            "
 mkdir -p fig $FIG
-matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
+
+if [[ "$OSTYPE" == "cygwin" ]] ; then
+	MFLAGS="-wait -nodesktop -nosplash"
+else
+	MFLAGS="-nodesktop -nosplash"
+fi
+
+matlab $MFLAGS -r "addpath('$MAT');
 	displayRegistration('bunny','dat/','fig');
 	displayRegistration('resultClean','dat/','fig');
 	displayRegistration('resultGauss1','dat/','fig');
@@ -128,10 +134,10 @@ matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	displayRegistration('resultOut2','dat/','fig');
 	displayRegistration('resultOut3','dat/','fig');
 	exit;"
-mkdir $FIG/data -p
+mkdir -p $FIG/data
 mv -ft $FIG fig/*
 mv -ft $FIG/data dat/*
 rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
-echo "====================================================================="
+echo "---------------------------------------------------------------------"

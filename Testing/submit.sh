@@ -8,24 +8,21 @@
 # located in the folder shell. These TESTNAME.sh files contain the 
 # definition of the test which should be run.
 
-
 # Help commands
 if  [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
 	echo "submit.sh TESTNAME [TESTNAME ...]"
 	echo "This function run tests for the executables implemented in the"
 	echo "PointCloudRegistration folder of the project."
-	echo ""
+	echo " "
 	echo "The <TESTNAME> variable refers to the filename of the TESTNAME.sh"
-	echo "files located in the folder shell. These TESTNAME.sh files contain "
+	echo "files located in the folder submit. These TESTNAME.sh files contain "
 	echo "the definition of the test which should be run."
 	exit
 fi
 
 # Update from github.
 git fetch 
-git commit -am "Updated from submition script"
 git pull origin master
-git push
 
 # Define all needed folders relative to the Testing folder.
 EPATH=../PointCloudRegistration
@@ -98,10 +95,10 @@ do
 		bsub < $test.sh
 		cd ../../
 	else
-		>&2 echo "File $SPATH/$test.sh was not found"
+		>&2 echo "  File $SPATH/$test.sh was not found"
 	fi
 done
 echo " "
-echo "------------------------------------------------------------------"
 echo "Tests submited."
+echo "------------------------------------------------------------------"
 # # EOF # #

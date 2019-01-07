@@ -90,7 +90,7 @@ Program()
 	# Test registration
 	export INI_R=0.0500
 	export END_R=0.0010
-	export NUM_R=0.9
+	export NUM_R=10
 	export ALPHA=1.7
 	./Registration.exe pointcloud
 

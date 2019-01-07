@@ -49,8 +49,7 @@ end
 %% Load the data
 F = CreateFigure(name);
 model = pcread(data);
-Color = colormap(jet(2));
-Color = Color(1,:);
+Color = 0.99*ones(3,1);
 
 X = double(model.Location(:,1));
 Y = double(model.Location(:,2));
@@ -62,20 +61,20 @@ subsample = 1.0;
 I = randperm( length(X), floor(length(X)*subsample))';
 light('Position',[-0.4 0.2 0.9],'Style','infinite');
 AX = gca;
-for i = 1:size(I,1)
+for i = 1:length(I)
 	idx = I(i);
     [x,y,z] = sphere(Q);
     A= surf(AX,s*x+X(idx),s*y+Y(idx),s*z+Z(idx));
     A.FaceColor = Color;
     
     A.SpecularStrength =0.0;
-    A.AmbientStrength  =0.0;
+    A.AmbientStrength  =0.2;
     A.LineStyle='none';
 end
 lighting gouraud
 hold off
 axis vis3d
 axis off
-ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',1000)
+ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',320)
 close(F);
 end

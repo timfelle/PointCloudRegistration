@@ -1,6 +1,5 @@
 #!/bin/sh
 
-echo "Cleaning all prior tests and importing figures from cluster."
+echo "Cleaning all prior tests."
 rm -fr logs figures
-mkdir -p logs/debugging
-./fetch_figures.sh
+mkdir -p logs/debugging logs/matlab

@@ -47,6 +47,7 @@ end
 
 %% Load the data
 F = CreateFigure(name);
+hold on
 model = pcread(data);
 
 X = double(model.Location(:,1));
@@ -54,14 +55,16 @@ Y = double(model.Location(:,2));
 Z = double(model.Location(:,3));
 
 A = scatter3(X,Y,Z);
-axis vis3d
-axis off
 
 Color = [0.3,0.5,0.9];
 
 A.MarkerFaceColor = Color;
 A.MarkerEdgeColor = Color*0.2;
 A.LineWidth = 0.1;
+
+hold off
+axis vis3d
+axis off
 view([0,90])
 
 ExportFigures(F,exportLocation,'asp',1)

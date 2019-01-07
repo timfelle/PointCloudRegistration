@@ -33,11 +33,11 @@ dataName = findData(dataPath,inputName);
 
 F = CreateFigure(inputName);
 
-Color = colormap(jet(size(dataName,2)));
+Color = colormap(jet(size(dataName,2)+1));
 drawnow;
 hold on
 for i=1:length(dataName)
-    dispReg(dataName{i},dataPath,Color(i,:))
+    dispReg(dataName{i},dataPath,Color(i+1,:))
 end
 
 hold off
@@ -45,7 +45,7 @@ axis vis3d
 axis off
 view([0,90])
 
-ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',1000)
+ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',320)
 close(F);
 end
 

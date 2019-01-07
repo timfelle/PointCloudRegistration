@@ -8,15 +8,6 @@
 # located in the folder shell. These TESTNAME.sh files contain the 
 # definition of the test which should be run.
 
-# Submit function
-submit(){
-	if [ ! -s error.err ]; then
-	 	echo "No error"
-	else
-		echo "We have error"
-	fi
-}
-
 # Help commands
 if  [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
 	echo "runtest.sh TESTNAME [TESTNAME ...]"
@@ -108,20 +99,23 @@ do
 done
 echo " "
 echo "------------------------------------------------------------------"
-echo "Tests queued."
 wait
-echo "Tests finished:"
+echo "Tests finished:"; echo " "
 for test in $TEST
 do
+	# If the test did exists and was running
 	if [ -f "$SPATH/$test.sh" ] ; then
-		# Move to the directory 
 		cd $LPATH/$test
+		# Check if there were errors. Print them if there were.
 		if [ -s error.err ] ; then
-			echo "  \"$test\" not completed."
-			echo "       See error file for details."
-			echo "       $LPATH/$test/error.err"
+			echo " "
+			echo "  \"$test\" NOT COMPLETED:"
+			echo "============================================================="
+			cat error.err
+			echo "============================================================="
+			echo " "
 		else
-			echo "  \"$test\" completed."
+			echo "  $test."
 		fi
 		cd ../../
 	fi

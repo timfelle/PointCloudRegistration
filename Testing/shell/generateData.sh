@@ -73,8 +73,10 @@ fi
 echo "Running matlab to complete visualisation.                            "
 mkdir fig $FIG -p
 matlab -nodesktop -nosplash -wait \
-	-r "addpath('$MAT');displayModel({$MODEL},'dat/','fig/');exit;" 
-mv -ft $FIG fig/* dat
+	-r "addpath('$MAT');renderModel({$MODEL},'dat/','fig/');exit;" 
+mkdir -p $FIG/data
+mv -ft $FIG fig/*
+mv -ft $FIG/data dat/*
 rm -fr *.exe *.sh fig
 echo "Results placed in folder:                                            "
 echo $FIG
