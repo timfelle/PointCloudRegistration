@@ -52,6 +52,7 @@ export NOISE_STRENGTH=0.01
 ./GenerateData.exe bunnyTransform.ply gaussianBunny2.ply 
 echo " "
 
+
 OUTPUT_NAME=resultGauss1 \
 	ALPHA=1.5 INI_R=0.005 END_R=0.1 NUM_R=1000 \
 	./Registration.exe gaussianBunny1.ply gaussianBunny2.ply
