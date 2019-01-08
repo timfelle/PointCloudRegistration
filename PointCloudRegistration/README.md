@@ -11,8 +11,11 @@ where the inputs define names of Point Clouds saved in .ply files.
 
 Called with a "S_basename" will search through the input folder and run 
 registration on all files which match the basename,  
+
 	> ./Registration.exe pointcloud  
+
 would find all of the files bellow,  
+
 	pointcloud_0.ply, pointcloud_1.ply, pointcloud_2.ply, ...
 
 Called with no input argument the user will be prompted to write the names of
@@ -61,5 +64,3 @@ Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)
 	ALPHA:					[default: 1.96]  
 		Scale for when to mark a point as unique. Default value corresponds to  
 		5% of the normal destribution will be unique.  
-
-% = = EOF = = %
