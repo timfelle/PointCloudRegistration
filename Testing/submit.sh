@@ -80,7 +80,7 @@ echo "------------------------------------------------------------------"
 echo "Queueing tests: "; echo " "
 for test in $TEST
 do
-	echo "  $test."
+	echo "$test."
 	if [ -f "$SPATH/$test.sh" ] ; then
 
 		# Create the folder needed

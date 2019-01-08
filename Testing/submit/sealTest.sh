@@ -55,7 +55,7 @@ Prepare()
 {
 	echo ' '
 	echo Preparing
-	mkdir fig $FIG -p
+	mkdir -p fig $FIG $FIG/data dat
 	lscpu >> $LSB_JOBNAME.cpu
 
 }
@@ -128,8 +128,9 @@ Finalize()
 	echo ' '
 	echo Finalizing
 
-	mv -ft $FIG fig/* dat
-	rm -fr *.exe *.sh fig
+	mv -ft $FIG fig/*
+	mv -ft $FIG/data dat/*
+	rm -fr *.exe *.sh fig dat
 
 	echo Figures moved to $FIG.
 	echo Test concluded successfully.
