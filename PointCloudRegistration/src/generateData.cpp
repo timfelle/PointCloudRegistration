@@ -38,11 +38,12 @@ int main(int argc, char *argv[])
 			"This function accepts the following arguments,\n"
 			"	S1,	name of the surface which should be altered.\n"
 			"The surface is altered based on the environment variables set,\n"
-			"	NOISE_TYPE		=[none,gaussian,outlier]\n"
+			"	NOISE_TYPE		=[none,gaussian,outliers]\n"
 			"	NOISE_STRENGTH	=float\n"
+			"	OUTLIER_AMOUNT	=float\n"
 			"   ROTATION        =pitch,yaw,roll\n"
 			"   TRANSLATION     =x,y,z\n"
-			"\nSee README for additional information.\n"
+			"\nSee README_gen for additional information.\n"
 		);
 		return EXIT_SUCCESS;
 	}

@@ -27,8 +27,7 @@ Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)
 
 	ROTATION:               [default: "0.0,0.0,0.0"]
 		Define the rotation which should be applied to the model. These three  
-		numbers correspond to the rotation around the x, y and z axis measured  
-		in radians.
+		numbers correspond to pitch, yaw and roll measured in radians.
 
 	NOISE_TYPE:             [default: none]
 		Define Type of noise which should be applied, "gaussian", "outliers"   
