@@ -71,13 +71,12 @@ fi
 # ==============================================================================
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "
-mkdir fig $FIG -p
+mkdir -p fig $FIG $FIG/data
 matlab -nodesktop -nosplash -wait \
-	-r "addpath('$MAT');renderModel({$MODEL},'dat/','fig/');exit;" 
-mkdir -p $FIG/data
+	-r "addpath('$MAT');displayModel({$MODEL},'dat/','fig/');exit;" 
 mv -ft $FIG fig/*
 mv -ft $FIG/data dat/*
-rm -fr *.exe *.sh fig
+rm -fr *.exe *.sh fig dat
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

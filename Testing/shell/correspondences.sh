@@ -49,13 +49,14 @@ fi
 # ==============================================================================
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "
-mkdir fig $FIG -p
+mkdir -p fig $FIG $FIG/data
 matlab -wait -nodesktop -nosplash -minimize -r "addpath('$MAT');
 	displayCorrespondences('Corr','dat/','fig');
 	animateCorrespondences('Corr','dat/','fig');
 	exit;"
-mv -ft $FIG fig/* dat
-rm -fr *.exe *.sh fig
+mv -ft $FIG fig/*
+mv -ft $FIG/data dat/*
+rm -fr *.exe *.sh fig dat
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

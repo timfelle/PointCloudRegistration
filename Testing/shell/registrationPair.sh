@@ -28,7 +28,7 @@ cp $DAT/bunnyPartial2.ply bunnyTransform.ply
 echo "   Generating transformed model."
 export NOISE_TYPE=none
 export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
-export TRANSLATION="0.01,-0.04,-0.01"
+export TRANSLATION="0.05,0.0,-0.01"
 ./GenerateData.exe bunnyTransform.ply bunnyTransform.ply
 
 echo "====================================================================="
@@ -46,14 +46,15 @@ fi
 # ==============================================================================
 # Export the figures using matlab
 echo "Running matlab to complete visualisation.                            "
-mkdir fig $FIG -p
+mkdir -p fig $FIG $FIG/data
 matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	displayRegistration('bunny','dat/','fig');
 	displayRegistration('result','dat/','fig');
 	animateRegistration('bunny','result','dat/','fig');
 	exit;" 
-mv -ft $FIG fig/* dat
-rm -fr *.exe *.sh fig
+mv -ft $FIG fig/*
+mv -ft $FIG/data dat/*
+rm -fr *.exe *.sh fig dat
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="
