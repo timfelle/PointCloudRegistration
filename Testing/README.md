@@ -1,6 +1,8 @@
 # Testing
 All tests are defined in shell scripts and can be called in an organised matter
-through the scripts in this folder. 
+through the scripts in this folder. Data used in any test defined in these 
+folders are located in the data folder and visualisations are done through 
+matlab.
 
 ## Run Test
 \> runtest.sh TESTNAME1 [TESTNAME2 ...]

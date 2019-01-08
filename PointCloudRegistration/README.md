@@ -1,18 +1,20 @@
-#README for Registration program
+# README for Registration program
 ----------------------------------------------------------------------------
 The registration algorithm is implemented into the registration executable.
 
-Default call to the function is one of the following, 
-	> ./Registration.exe S0 S1 [S2 ...]
-	> ./Registration.exe S_basename
-	> ./Registration.exe
+Default call to the function is one of the following, \\
+	> ./Registration.exe S0 S1 [S2 ...] \\
+	> ./Registration.exe S_basename \\
+	> ./Registration.exe \\
 
 where the inputs define names of Point Clouds saved in .ply files.
 
 Called with a "S_basename" will search through the input folder and run 
 registration on all files which match the basename, 
+
 	> ./Registration.exe pointcloud
 would find all of the files bellow,
+
 	pointcloud_0.ply, pointcloud_1.ply, pointcloud_2.ply, ...
 
 Called with no input argument the user will be prompted to write the names of
