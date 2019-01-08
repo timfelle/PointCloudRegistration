@@ -23,7 +23,8 @@ The solver will read for several environment variables and change behavior
 based on these. The environment variables supported are listed bellow. Variables
 can be set either before the program is run or through 'export ENV_NAME=value'.
 
-Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)  
+Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)
+
 	INPUT_PATH: 			[default: ../Testing/data/]  
 		Defines where the input files are located.  
 
