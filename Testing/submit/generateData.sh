@@ -18,8 +18,8 @@
 
 # Memory specifications. Amount we need and when to kill the
 # program using too much memory.
-#BSUB -R "rusage[mem=10GB]"
-#BSUB -M 10GB
+#BSUB -R "rusage[mem=20GB]"
+#BSUB -M 20GB
 
 # Time specifications (hh:mm)
 #BSUB -W 24:00
@@ -55,7 +55,7 @@ Prepare()
 {
 	echo ' '
 	echo Preparing
-	mkdir fig $FIG -p
+	mkdir -p fig $FIG $FIG/data dat
 	lscpu >> $LSB_JOBNAME.cpu
 
 }
@@ -153,8 +153,9 @@ Finalize()
 	echo ' '
 	echo Finalizing
 
-	mv -ft $FIG fig/* dat
-	rm -fr *.ply *.exe *.sh fig dat
+	mv -ft $FIG fig/*
+	mv -ft $FIG/data dat/*
+	rm -fr *.exe *.sh fig dat
 
 	echo Figures moved to $FIG.
 	echo Test concluded successfully.
