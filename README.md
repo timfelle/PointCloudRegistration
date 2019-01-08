@@ -1,5 +1,9 @@
 # Point Cloud Registration
-Describe project and reasons behind
+Point cloud registration is the process of aligning 3D point cloud datasets to 
+eachother when they contain overlapping regions. This repository is an 
+implmentation of such an algorithm which is the main focus for my master thesis.
+The thesis is included in the folder as well, describing the implementations and
+theoretical derivation of the algorithm.
 
 ## Folder structure
 The repository contain two folders, 
@@ -19,10 +23,12 @@ In order to compile and run the code the following libraries must be available:
 - Eigen  (3.3.5)
 - Open3D (0.4.0)
 
-### Installing
-Visual Studio 2017 projects are available in the Point Cloud Registration folder 
+### Installation
+Visual Studio 2017 projects are available in the Point Cloud Registration folder
 along with a solution file (.sln). These should be updated to include the 
 correct directories for the libraries.
+Makefiles are also included for compilation of the programs. Again some
+alteration will be required in order to locate the correct libraries.
 
 ## Running the tests
 For direct usage of the program files in the commandline please see the 
