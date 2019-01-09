@@ -81,14 +81,14 @@ Program()
 	echo "Output: $OUTPUT_PATH                                                 "
 	echo "                                                                     "
 	mkdir -p dat
-	cp -ft dat $DAT/sealFull/left/pointcloud*
+	cp -ft dat $DAT/seal/left/pointcloud*
 	
 	echo "====================================================================="
 	echo "Commencing tests:                                                    "
 	echo " "
 
 	# Test registration
-	export INI_R=0.0500
+	export INI_R=0.100
 	export END_R=0.0010
 	export NUM_R=10
 	export ALPHA=1.7
