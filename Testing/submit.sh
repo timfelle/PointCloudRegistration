@@ -20,10 +20,6 @@ if  [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
 	exit
 fi
 
-# Update from github.
-git fetch 
-git pull origin master
-
 # Define all needed folders relative to the Testing folder.
 EPATH=../PointCloudRegistration
 DPATH=data
@@ -99,6 +95,5 @@ do
 	fi
 done
 echo " "
-echo "Tests submited."
 echo "------------------------------------------------------------------"
 # # EOF # #

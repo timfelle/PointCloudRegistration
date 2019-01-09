@@ -44,14 +44,15 @@ fi
 echo " "
 echo "====================================================================="
 echo "Running matlab to complete visualisation.                            "
-mkdir -p fig $FIG
+mkdir -p fig $FIG $FIG/data
 matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
 	displayRegistration('bunny','$INPUT_PATH','fig');
 	displayRegistration('result','$OUTPUT_PATH','fig');
 	animateRegistration('bunny','result','dat/','fig');
 	exit;"
-mv -ft $FIG fig/* dat
-rm -fr *.exe *.sh fig
+mv -ft $FIG fig/*
+mv -ft $FIG/data dat/*
+rm -fr *.exe *.sh fig dat
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "====================================================================="

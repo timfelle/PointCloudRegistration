@@ -65,7 +65,7 @@ export NOISE_STRENGTH=0.02
 echo " "
 
 OUTPUT_NAME=resultGauss2 \
-	ALPHA=1.6 INI_R=0.001 END_R=0.01 \
+	ALPHA=1.4 INI_R=0.001 END_R=0.08 \
 	./Registration.exe gaussianBunny3.ply gaussianBunny4.ply
 
 echo " "
@@ -117,7 +117,7 @@ fi
 echo " "
 echo "---------------------------------------------------------------------"
 echo "Running matlab to complete visualisation.                            "
-mkdir -p fig $FIG
+mkdir -p fig $FIG $FIG/data
 
 if [[ "$OSTYPE" == "cygwin" ]] ; then
 	MFLAGS="-wait -nodesktop -nosplash"
@@ -134,10 +134,9 @@ matlab $MFLAGS -r "addpath('$MAT');
 	displayRegistration('resultOut2','dat/','fig');
 	displayRegistration('resultOut3','dat/','fig');
 	exit;"
-mkdir -p $FIG/data
 mv -ft $FIG fig/*
 mv -ft $FIG/data dat/*
-rm -fr *.exe *.sh fig
+rm -fr *.exe *.sh fig dat
 echo "Results placed in folder:                                            "
 echo $FIG
 echo "---------------------------------------------------------------------"
