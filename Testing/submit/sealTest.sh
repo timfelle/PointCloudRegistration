@@ -73,7 +73,7 @@ Program()
 	# -------------------------------------------------------------------------
 	# Define the actual test part of the script 
 	
-	# ==============================================================================
+	# =========================================================================
 	# Generate all the data needed
 
 	echo "Input and output paths defined by:                                   "
@@ -88,7 +88,7 @@ Program()
 	echo " "
 
 	# Test registration
-	export INI_R=0.100
+	export INI_R=0.1000
 	export END_R=0.0010
 	export NUM_R=10
 	export ALPHA=1.7

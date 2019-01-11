@@ -30,7 +30,8 @@ echo " "
 export INI_R=0.100
 export END_R=0.0010
 export NUM_R=10
-export ALPHA=1.7
+export ALPHA=1.5
+export FPFH_VERSION=local
 ./Registration.exe pointcloud
 
 if [ -s error.err ] ; then
