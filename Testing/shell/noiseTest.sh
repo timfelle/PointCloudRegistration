@@ -37,6 +37,11 @@ echo "====================================================================="
 echo "Commencing tests:                                                    "
 echo " "
 
+start=`date +%N`
+
+export FPFH_VERSION=open3d
+export FGR_VERSION=open3d
+
 echo "Clean ---------------------------------------------------------------"
 echo " "
 OUTPUT_NAME=resultClean \
@@ -104,7 +109,13 @@ OUTPUT_NAME=resultOut3 \
 	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
 	./Registration.exe outlierBunny5.ply outlierBunny6.ply 
 echo "---------------------------------------------------------------------"
+
 wait
+end=`date +%N`
+
+runtime=$((end-start))
+echo "Time spent on computations: $runtime"
+
 if [ -s error.err ] ; then
 	echo "Errors have been found. Exiting."
 	echo " "

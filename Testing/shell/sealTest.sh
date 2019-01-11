@@ -34,6 +34,7 @@ export INI_R=0.0100
 export END_R=0.0005
 export NUM_R=10
 export ALPHA=1.5
+export FPFH_VERSION=open3d
 export FGR_VERSION=local
 ./Registration.exe pointcloud
 
