@@ -13,7 +13,9 @@ std::vector<Eigen::Vector2i> computeCorrespondancePair(
 	open3d::PointCloud &model_0, open3d::PointCloud &model_1);
 
 // Computation of Fast Point Feature Histograms
-Eigen::MatrixXd computeFPFH(open3d::PointCloud &model, double radius, open3d::KDTreeFlann &distTree);
+Eigen::MatrixXd computeFPFH(
+	open3d::PointCloud &model, double radius, 
+	open3d::KDTreeFlann &distTree);
 void computePersistentPoints(
 	open3d::PointCloud &model, std::vector<int> &P_0, Eigen::MatrixXd &FPFH);
 

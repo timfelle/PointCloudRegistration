@@ -113,8 +113,6 @@ Matrix4d fastGlobalRegistrationPair(
 			it_nu = 0;
 		}
 	}
-	cout << "   Error related to diameter: " << err/D << endl;
-	cout << "   Estimated transformation" << endl << T << endl;
 	return T;
 }
 

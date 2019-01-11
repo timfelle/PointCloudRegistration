@@ -215,15 +215,15 @@ void computePersistentPoints(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 		// ================================================================= \\
 		// Compute the FPFH features
 		string FPFH_ver = string(getenv("FPFH_VERSION"));
-		if (FPFH_ver.compare("local") == 0)
+		if (FPFH_ver.compare("open3d") == 0)
+		{
+			Feature feature_0 = *ComputeFPFHFeature(model);
+			FPFH_new = feature_0.data_.transpose();
+			r = max_r + 1;
+		}
+		else 
 		{
 			FPFH_new = computeFPFH(model, r, distTree);
-
-		}
-		else if (FPFH_ver.compare("open3d") == 0)
-		{
-			Feature feature_0 = *ComputeFPFHFeature(model,KDTreeSearchParamRadius(r));
-			FPFH_new = feature_0.data_.transpose();
 		}
 
 		// ================================================================= \\
