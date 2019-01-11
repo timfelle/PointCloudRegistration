@@ -22,25 +22,25 @@ vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &mode
 	// Compute FPFH for the two surfaces
 	vector<int> P_0, P_1;
 	MatrixXd FPFH_0, FPFH_1;
-	computeFPFH(model_0, P_0, FPFH_0);
-	computeFPFH(model_1, P_1, FPFH_1);
+	vector<Vector2i> K_I_0, K_I_1, K_II, K_III;
 
 	// Build the 2 search trees
 	KDTreeFlann KDTree_0;
 	KDTreeFlann KDTree_1;
 
+	computePersistentPoints(model_0, P_0, FPFH_0);
+	computePersistentPoints(model_1, P_1, FPFH_1);
+
 	KDTree_0.SetMatrixData(FPFH_0.transpose());
 	KDTree_1.SetMatrixData(FPFH_1.transpose());
 
-	// Set up correspondances
-	vector<Vector2i> K_I_0, K_I_1, K_II, K_III;
-	
 	K_I_0 = nearestNeighbour(P_0, P_1, FPFH_0, KDTree_1);
 	K_I_1 = nearestNeighbour(P_1, P_0, FPFH_1, KDTree_0);
 
 	K_II = mutualNN(K_I_0, K_I_1);
 	K_III = tupleTest(K_II, model_0, model_1);
 
+	// Set up correspondances
 	if (K_III.size() == 0)
 	{
 		cerr << "Error in " << __func__ << endl;
@@ -55,7 +55,132 @@ vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &mode
 
 // ============================================================================
 // COMPUTE FPFH
-void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
+
+MatrixXd computeFPFH(PointCloud &model, double radius, KDTreeFlann &distTree)
+{
+	int N = model.points_.size();
+	double s1 = 0.0, s2 = 0.0, s3 = 0.0;	// Tolerances for feature cutoff
+
+	// Allocate space for needed values
+	MatrixXd SPFH = MatrixXd::Zero(N, 6);
+	vector<vector<int>> Neighbours(N);
+	// ================================================================= \\
+		// Compute the simplified features for all points.
+	for (int idx = 0; idx < N; idx++)
+	{
+		int p_idx = idx;
+
+		// Read the current point and the normal of the point.
+		Vector3d p = model.points_[p_idx];
+		Vector3d n = model.normals_[p_idx];
+
+		// Neighbours are the indices of the neighbours in the model.
+		vector<int> neighbours;
+		vector<double> distances;
+		distTree.SearchRadius(p, radius, neighbours, distances);
+
+		// Make sure the point itself is not a neighbour
+		for (int k = 0; k < neighbours.size(); k++)
+		{
+			if (neighbours[k] == p_idx)
+			{
+				neighbours.erase(neighbours.begin() + k);
+				distances.erase(distances.begin() + k);
+			}
+		}
+		if (neighbours.size() == 0)
+			Neighbours[idx] = vector<int>{ -1 };
+		else
+			Neighbours[idx] = neighbours;
+
+		// For each neighbour compute the local SPFH values
+		VectorXd spfh = VectorXd::Zero(6);
+		for (int k = 0; k < neighbours.size(); k++)
+		{
+			int pk_idx = neighbours[k];
+			Vector3d p_k = model.points_[pk_idx];
+			Vector3d n_k = model.normals_[pk_idx];
+
+			// Determine the order of p and p_k
+			Vector3d p_i, p_j, n_i, n_j;
+			Vector3d line = p - p_k;
+
+			double angle_p = acos(n.dot(line) /
+				(n.norm()*line.norm()));
+			double angle_pk = acos(n_k.dot(line) /
+				(n_k.norm()*line.norm()));
+			if (angle_p <= angle_pk)
+			{
+				p_i = p; p_j = p_k;
+				n_i = n; n_j = n_k;
+			}
+			else {
+				p_i = p_k; p_j = p;
+				n_i = n_k; n_j = n;
+			}
+
+
+			// Define the Darboux frame
+			Vector3d u = n_i;
+			Vector3d v = (p_j - p_i).cross(u);
+			Vector3d w = u.cross(v);
+
+			// Compute features
+			double f_1 = v.dot(n_j);
+			double f_2 = (u.dot(p_j - p_i)) / ((p_j - p_i).norm());
+			double f_3 = atan2(w.dot(n_j), u.dot(n_j));
+			if (line.norm() == 0) {
+				f_1 = 0.0; f_2 = 0.0; f_3 = 0.0;
+			}
+
+			// Compute simplified histogram
+			if (f_1 < s1) spfh(0)++;
+			if (f_1 >= s1) spfh(1)++;
+			if (f_2 < s2) spfh(2)++;
+			if (f_2 >= s2) spfh(3)++;
+			if (f_3 < s3) spfh(4)++;
+			if (f_3 >= s3) spfh(5)++;
+		}
+
+		if (neighbours.size() != 0)
+			SPFH.row(idx) = spfh / neighbours.size();
+	}
+
+	// ================================================================= \\
+		// Compute the FPFH for each point
+	MatrixXd FPFH_new = MatrixXd::Zero(N, 6);
+	for (int idx = 0; idx < N; idx++)
+	{
+		int p_idx = idx;
+		Vector3d p = model.points_[p_idx];
+
+		VectorXd fpfh = VectorXd::Zero(6);
+		size_t K;
+		if (Neighbours[idx][0] != -1)
+			K = Neighbours[idx].size();
+		else K = 0;
+
+		if (K > 0) {
+			for (int k = 0; k < K; k++)
+			{
+				int pk_idx = Neighbours[idx][k];
+				Vector3d pk = model.points_[pk_idx];
+				fpfh += SPFH.row(pk_idx) / (1 + (p - pk).norm());
+			}
+			VectorXd spfh = SPFH.row(idx);
+			fpfh = spfh + 1.0 / ((double)K)*fpfh;
+			FPFH_new.row(p_idx) = fpfh.cwiseMax(1e-6);
+
+		}
+		else FPFH_new.row(p_idx) = (SPFH.row(idx)).cwiseMax(1e-6);
+	}
+	return FPFH_new;
+}
+
+
+// ============================================================================
+// COMPUTE PERSISTENT POINTS
+void computePersistentPoints(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 {
 	// ********************************************************************* \\
 	// Initialization of the different values used in the computations.
@@ -65,17 +190,19 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	double num_R = atof(getenv("NUM_R"));	// Multiplicative step size for R.
 	double alpha = atof(getenv("ALPHA"));	// Proportion of STD to mark persistent.
 
-	double s1 = 0.0, s2 = 0.0, s3 = 0.0;	// Tolerances for feature cutoff
 	int n_scales = 0;
+	int N = model.points_.size();
 	
 	// Initialize the persistent set as all points in the set.
 	P = vector<int>(model.points_.size());
-	FPFH = MatrixXd::Zero(P.size(), 6);
+
+	MatrixXd FPFH_new;
 	for (int id = 0; id < P.size(); id++)
 		P[id] = id;
 
 	// Precompute the KDTree used for distance search.
-	KDTreeFlann distTree(model);
+	KDTreeFlann distTree;
+	distTree.SetGeometry(model);
 	
 	// ********************************************************************* \\
 	// For each radius determine the FPFH and persistent features.
@@ -85,140 +212,40 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	double max_r = R * max(ini_R, end_R);
 	for (double r = ini_R * R; min_r <= r && r <= max_r; r += step_r)
 	{
-		// Allocate space for needed values
-		MatrixXd SPFH = MatrixXd::Zero(model.points_.size(), 6);
-		vector<vector<int>> Neighbours(P.size());
 		// ================================================================= \\
-		// Compute the simplified features for all points.
-		for (int idx = 0; idx < P.size(); idx++)
+		// Compute the FPFH features
+		string FPFH_ver = string(getenv("FPFH_VERSION"));
+		if (FPFH_ver.compare("local") == 0)
 		{
-			int p_idx = P[idx];
+			FPFH_new = computeFPFH(model, r, distTree);
 
-			// Read the current point and the normal of the point.
-			Vector3d p = model.points_[p_idx];
-			Vector3d n = model.normals_[p_idx];
-
-			// Neighbours are the indices of the neighbours in the model.
-			vector<int> neighbours;
-			vector<double> distances;
-			distTree.SearchRadius(p, r, neighbours, distances);
-
-			// Make sure the point itself is not a neighbour
-			for (int k = 0; k < neighbours.size(); k++)
-			{
-				if (neighbours[k] == p_idx)
-				{
-					neighbours.erase(neighbours.begin() + k);
-					distances.erase(distances.begin() + k);
-				}
-			}
-			if (neighbours.size() == 0)
-				Neighbours[idx] = vector<int>{ -1 };
-			else
-				Neighbours[idx] = neighbours;
-
-			// For each neighbour compute the local SPFH values
-			VectorXd spfh = VectorXd::Zero(6);
-			for (int k = 0; k < neighbours.size(); k++)
-			{
-				int pk_idx = neighbours[k];
-				Vector3d p_k = model.points_[pk_idx];
-				Vector3d n_k = model.normals_[pk_idx];
-
-				// Determine the order of p and p_k
-				Vector3d p_i, p_j, n_i, n_j;
-				Vector3d line = p - p_k;
-
-				double angle_p = acos(n.dot(line) /
-					(n.norm()*line.norm()));
-				double angle_pk = acos(n_k.dot(line) /
-					(n_k.norm()*line.norm()));
-				if (angle_p <= angle_pk)
-				{
-					p_i = p; p_j = p_k;
-					n_i = n; n_j = n_k;
-				}
-				else {
-					p_i = p_k; p_j = p;
-					n_i = n_k; n_j = n;
-				}
-
-
-				// Define the Darboux frame
-				Vector3d u = n_i;
-				Vector3d v = (p_j - p_i).cross(u);
-				Vector3d w = u.cross(v);
-
-				// Compute features
-				double f_1 = v.dot(n_j);
-				double f_2 = (u.dot(p_j - p_i)) / ((p_j - p_i).norm());
-				double f_3 = atan2(w.dot(n_j), u.dot(n_j));
-				if (line.norm() == 0) {
-					f_1 = 0.0; f_2 = 0.0; f_3 = 0.0;
-				}
-
-				// Compute simplified histogram
-				if (f_1 <  s1) spfh(0)++;
-				if (f_1 >= s1) spfh(1)++;
-				if (f_2 <  s2) spfh(2)++;
-				if (f_2 >= s2) spfh(3)++;
-				if (f_3 <  s3) spfh(4)++;
-				if (f_3 >= s3) spfh(5)++;
-			}
-
-			if (neighbours.size() != 0)
-				SPFH.row(idx) = spfh / neighbours.size();
 		}
-
-		// ================================================================= \\
-		// Compute the FPFH for each point
-		MatrixXd FPFH_new = MatrixXd::Zero(FPFH.rows(),6);
-		for (int idx = 0; idx < P.size(); idx++)
+		else if (FPFH_ver.compare("open3d") == 0)
 		{
-			int p_idx = P[idx];
-			Vector3d p = model.points_[p_idx];
-
-			VectorXd fpfh = VectorXd::Zero(6);
-			size_t K;
-			if (Neighbours[idx][0] != -1)
-				K = Neighbours[idx].size();
-			else K = 0;
-
-			if (K > 0) {
-				for (int k = 0; k < K; k++)
-				{
-					int pk_idx = Neighbours[idx][k];
-					Vector3d pk = model.points_[pk_idx];
-					fpfh += SPFH.row(pk_idx) / (1 + (p - pk).norm());
-				}
-				VectorXd spfh = SPFH.row(idx);
-				fpfh = spfh + 1.0 / ((double)K)*fpfh;
-				FPFH_new.row(p_idx) = fpfh.cwiseMax(1e-6);
-				
-			}
-			else FPFH_new.row(p_idx) = (SPFH.row(idx)).cwiseMax(1e-6);
+			Feature feature_0 = *ComputeFPFHFeature(model,KDTreeSearchParamRadius(r));
+			FPFH_new = feature_0.data_.transpose();
 		}
 
 		// ================================================================= \\
 		// Compute the mean and standard deviation of the feature histograms.
-		VectorXd mu = VectorXd::Zero(6);
+		VectorXd mu = VectorXd::Zero(FPFH_new.cols());
 
 		// Mean FPFH value
-		for (int idx = 0; idx < P.size(); idx++)
+		for (int idx = 0; idx < N; idx++)
 		{
-			int p_idx = P[idx];
+			int p_idx = idx;
 			VectorXd fpfh_new = FPFH_new.row(p_idx);
-			mu += fpfh_new / (double) P.size();
+			mu += fpfh_new / (double) N;
 		}
 
 		// Setup distance from mu.
-		VectorXd dist_vec = VectorXd::Zero(P.size());
-		for (int idx = 0; idx < P.size(); idx++)
+		VectorXd dist_vec = VectorXd::Zero(N);
+		for (int idx = 0; idx < N; idx++)
 		{
-			int p_idx = P[idx];
+			int p_idx = idx;
 			VectorXd fpfh_new = FPFH_new.row(p_idx);
 			dist_vec(idx) = 0.0;
-			for (int i = 0; i < 6; i++)
+			for (int i = 0; i < FPFH_new.cols(); i++)
 				dist_vec(idx) += fpfh_new(i) - mu(i);
 		}
 
@@ -232,9 +259,10 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 		vector<int> P_new;
 		for (int idx = 0; idx < P.size(); idx++)
 		{
-			if ( abs(dist_vec(idx)) > alpha*sigma )
+			int p_idx = P[idx];
+			if ( abs(dist_vec(p_idx)) > alpha*sigma )
 			{
-				P_new.push_back(P[idx]);
+				P_new.push_back(p_idx);
 			}
 		}
 
@@ -242,12 +270,15 @@ void computeFPFH(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 		if (P_new.size() >= 0.005*model.points_.size())
 		{
 			P = P_new;
-			FPFH += FPFH_new;
+			if (n_scales == 0)
+				FPFH = FPFH_new;
+			else
+				FPFH += FPFH_new;
 			n_scales++;
 		}
 	}
 	
-	MatrixXd FPFH_temp = MatrixXd::Zero(P.size(),6);
+	MatrixXd FPFH_temp = MatrixXd::Zero(P.size(),FPFH_new.cols());
 	for (int idx = 0; idx < P.size(); idx++)
 	{
 		int p_idx = P[idx];
