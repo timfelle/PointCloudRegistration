@@ -50,12 +50,6 @@ int main(int argc, char *argv[])
 		);
 		return EXIT_SUCCESS;
 	}
-	else
-	{
-		cout << "Registration started for the surfaces:" << endl;
-		for (int i = 1; i < argc; i++)
-			cout << "   " << argv[i] << endl;
-	}
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
 	const char *output_path, *input_path, *output_name;
@@ -96,6 +90,9 @@ int main(int argc, char *argv[])
 	{
 		return EXIT_FAILURE;
 	}
+	cout << "Registration started for the surfaces:" << endl;
+	for (int i = 0; i < dataName.size(); i++)
+		cout << "  " << i << ": " << dataName[i] << endl;
 	SetVerbosityLevel(VerbosityLevel::VerboseError);
 	// ------------------------------------------------------------------------
 	// Load the datafiles
