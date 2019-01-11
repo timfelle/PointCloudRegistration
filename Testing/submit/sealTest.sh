@@ -69,11 +69,11 @@ Program()
 	echo ' '
 	echo Running computations
 
-	start=`date +%s`
+	start=`date +%N`
 	# -------------------------------------------------------------------------
 	# Define the actual test part of the script 
 	
-	# ==============================================================================
+	# =========================================================================
 	# Generate all the data needed
 
 	echo "Input and output paths defined by:                                   "
@@ -88,10 +88,7 @@ Program()
 	echo " "
 
 	# Test registration
-	export INI_R=0.100
-	export END_R=0.0010
-	export NUM_R=10
-	export ALPHA=1.7
+	export FPFH_VERSION=open3d
 	./Registration.exe pointcloud
 
 	if [ -s error.err ] ; then
@@ -101,10 +98,10 @@ Program()
 		exit
 	fi
 	# -------------------------------------------------------------------------
-	end=`date +%s`
+	end=`date +%N`
 
-	runtime=$((end-start))
-	echo "Time spent on computations: $runtime"
+	runtime=$(( (end-start)/1000000 ))
+	echo "Time spent on computations: $runtime sec"
 }
 
 # End of Program

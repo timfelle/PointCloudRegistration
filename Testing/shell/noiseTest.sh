@@ -33,10 +33,14 @@ NOISE_TYPE=none \
 	TRANSLATION="0.05,0.0,-0.01" \
 	./GenerateData.exe bunnyTransform.ply bunnyTransform.ply
 
-
 echo "====================================================================="
 echo "Commencing tests:                                                    "
 echo " "
+
+start=`date +%N`
+
+export FPFH_VERSION=open3d
+export FGR_VERSION=open3d
 
 echo "Clean ---------------------------------------------------------------"
 echo " "
@@ -59,13 +63,13 @@ OUTPUT_NAME=resultGauss1 \
 echo "---------------------------------------------------------------------"
 echo " "
 export NOISE_TYPE=gaussian
-export NOISE_STRENGTH=0.02
+export NOISE_STRENGTH=0.2
 ./GenerateData.exe bunnyClean.ply gaussianBunny3.ply
 ./GenerateData.exe bunnyTransform.ply gaussianBunny4.ply
 echo " "
 
 OUTPUT_NAME=resultGauss2 \
-	ALPHA=1.4 INI_R=0.001 END_R=0.08 \
+	ALPHA=1.5 INI_R=0.001 END_R=0.08 \
 	./Registration.exe gaussianBunny3.ply gaussianBunny4.ply
 
 echo " "
@@ -78,7 +82,7 @@ export OUTLIER_AMOUNT=1.0
 echo " "
 
 OUTPUT_NAME=resultOut1 \
-	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
+	ALPHA=1.5 INI_R=0.0001 END_R=0.01 \
 	./Registration.exe outlierBunny1.ply outlierBunny2.ply 
 
 echo "---------------------------------------------------------------------"
@@ -105,7 +109,13 @@ OUTPUT_NAME=resultOut3 \
 	ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
 	./Registration.exe outlierBunny5.ply outlierBunny6.ply 
 echo "---------------------------------------------------------------------"
+
 wait
+end=`date +%N`
+
+runtime=$((end-start))
+echo "Time spent on computations: $runtime"
+
 if [ -s error.err ] ; then
 	echo "Errors have been found. Exiting."
 	echo " "

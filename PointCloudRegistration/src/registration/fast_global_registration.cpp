@@ -6,6 +6,7 @@
 #include <numeric>
 #include <random>
 #include <Open3D/Core/Core.h>
+#include <Open3D/Core/Registration/FastGlobalRegistration.h>
 #include <Eigen/Dense>
 #include <unsupported/Eigen/MatrixFunctions>
 
@@ -21,8 +22,27 @@ using namespace open3d;
 // ============================================================================
 // COMPUTE REGISTRATION
 Matrix4d fastGlobalRegistrationPair(
-	vector<Vector2i> K, PointCloud &model_0, PointCloud &model_1)
+	vector<Vector2i> &K, PointCloud &model_0, PointCloud &model_1)
 {
+	// If the FGR version is set to use the open3d implementation
+	string FGR_ver = string(getenv("FGR_VERSION"));
+	if (FGR_ver.compare("open3d") == 0)
+	{
+		FastGlobalRegistrationOption opts;
+		opts.iteration_number_ = 100; 
+		opts.division_factor_ = 1.1;
+		opts.decrease_mu_ = true;
+
+
+		Feature feature_0 = *ComputeFPFHFeature(model_0);
+		Feature feature_1 = *ComputeFPFHFeature(model_1);
+		RegistrationResult result = FastGlobalRegistration(model_1, model_0, feature_1, feature_0,opts);
+		K = result.correspondence_set_;
+		return result.transformation_;
+	}
+
+
+
 	// Initialize values
 	double tol_nu = atof(getenv("TOL_NU"));			// Tolerance on nu
 	double tol_e = atof(getenv("TOL_E"));			// Tolerance on e
@@ -93,8 +113,6 @@ Matrix4d fastGlobalRegistrationPair(
 			it_nu = 0;
 		}
 	}
-	cout << "   Error related to diameter: " << err/D << endl;
-	cout << "   Estimated transformation" << endl << T << endl;
 	return T;
 }
 

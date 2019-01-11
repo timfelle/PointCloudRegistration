@@ -10,7 +10,7 @@
 // Function prototypes
 // Main function for computing the registration.
 Eigen::Matrix4d fastGlobalRegistrationPair(
-	std::vector<Eigen::Vector2i> K, open3d::PointCloud &model_0,
+	std::vector<Eigen::Vector2i> &K, open3d::PointCloud &model_0,
 	open3d::PointCloud &model_1);
 
 // Utility function

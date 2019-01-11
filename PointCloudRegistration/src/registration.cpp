@@ -50,12 +50,6 @@ int main(int argc, char *argv[])
 		);
 		return EXIT_SUCCESS;
 	}
-	else
-	{
-		cout << "Registration started for the surfaces:" << endl;
-		for (int i = 1; i < argc; i++)
-			cout << "   " << argv[i] << endl;
-	}
 	// ------------------------------------------------------------------------
 	// Handle Environment variables
 	const char *output_path, *input_path, *output_name;
@@ -72,11 +66,15 @@ int main(int argc, char *argv[])
 		output_name = "result";
 	if (getenv("EXPORT_CORRESPONDENCES") == NULL)
 		export_corr = false;
+	if (getenv("FPFH_VERSION") == NULL)
+		PUTENV("FPFH_VERSION=local");
+	if (getenv("FGR_VERSION") == NULL)
+		PUTENV("FGR_VERSION=local");
 
 	// Tolerences
 	if (getenv("TOL_NU") == NULL) PUTENV("TOL_NU=1e-6");
 	if (getenv("TOL_E") == NULL) PUTENV("TOL_E=1e-6");
-
+	
 	// Radius scaling
 	if (getenv("INI_R") == NULL) PUTENV("INI_R=0.005");
 	if (getenv("END_R") == NULL) PUTENV("END_R=0.010");
@@ -92,6 +90,10 @@ int main(int argc, char *argv[])
 	{
 		return EXIT_FAILURE;
 	}
+	cout << "Registration started for the surfaces:" << endl;
+	for (int i = 0; i < dataName.size(); i++)
+		cout << "  " << i << ": " << dataName[i] << endl;
+	cout << endl;
 	SetVerbosityLevel(VerbosityLevel::VerboseError);
 	// ------------------------------------------------------------------------
 	// Load the datafiles
@@ -99,63 +101,87 @@ int main(int argc, char *argv[])
 	vector<PointCloud> model(nSurfaces);
 	for (int i = 0; i < nSurfaces; i++)
 		ReadPointCloud(dataName[i], model[i]);
-
 	// ------------------------------------------------------------------------
 	// Compute normals if needed
 	for (int i = 0; i < nSurfaces; i++)
-		if (!model[i].HasNormals()) EstimateNormals(model[i]);
-
+	{
+		if (!model[i].HasNormals())
+		{
+			EstimateNormals(model[i]);
+			model[i].NormalizeNormals();
+		}
+	}
 	
+	string FGR_ver = string(getenv("FGR_VERSION"));
+	PointCloud model_tmp = model[0];
 	for (int s = 0; s < nSurfaces - 1; s++)
 	{
-		if (nSurfaces > 2)
-			cout << "Surface: " << s << ", " << s + 1 << endl;
-		cout << "   Computing correspondences. ";
-		// ------------------------------------------------------------------------
-		// Estimate Fast Point Feature Histograms and Correspondances.
+		if (nSurfaces > 2) cout << "Surface: " << s << ", " << s + 1 << endl << "   ";
+
 		vector<Vector2i> K;
-		K = computeCorrespondancePair(model[s], model[s + 1]);
-		if (K.size() == 0)
-		{
-			return EXIT_FAILURE;
-		}
-
-		cout << K.size() << " found." << endl;
-		if (export_corr)
-		{
-			cout << "   Exporting correspondence sets" << endl;
-			PointCloud correspondence_0, correspondence_1;
-			for (int i = 0; i < K.size(); i++)
-			{
-				correspondence_0.points_.push_back(model[s].points_[K[i](0)]);
-				correspondence_1.points_.push_back(model[s].points_[K[i](1)]);
-			}
-			WritePointCloud(string(output_path) + string("Corr_0.ply"), correspondence_0);
-			WritePointCloud(string(output_path) + string("Corr_1.ply"), correspondence_1);
-		}
-
-		// ------------------------------------------------------------------------
-		// Compute surface registration
-		cout << "   Computing registration." << endl;
 		Matrix4d T;
-		T = fastGlobalRegistrationPair(K, model[s], model[s + 1]);
-		model[s + 1].Transform(T);
 
-		if (export_corr)
+		if (FGR_ver.compare("open3d") == 0)
 		{
-			PointCloud correspondence_0, correspondence_1;
-			for (int i = 0; i < K.size(); i++)
-			{
-				correspondence_0.points_.push_back(model[s].points_[K[i](0)]);
-				correspondence_1.points_.push_back(model[s + 1].points_[K[i](1)]);
-			}
-			WritePointCloud(string(output_path) + string("CorrT_0.ply"), correspondence_0);
-			WritePointCloud(string(output_path) + string("CorrT_1.ply"), correspondence_1);
+			T = fastGlobalRegistrationPair(K, model_tmp, model[s + 1]);
+			model[s + 1].Transform(T);
 		}
+		else
+		{
+			// ------------------------------------------------------------------------
+			// Estimate Fast Point Feature Histograms and Correspondances.
+			K = computeCorrespondancePair(model[s], model[s + 1]);
+			if (K.size() == 0)
+			{
+				cout << endl;
+				return EXIT_FAILURE;
+			}
+
+
+			if (export_corr)
+			{
+				PointCloud correspondence_0, correspondence_1;
+				for (int i = 0; i < K.size(); i++)
+				{
+					correspondence_0.points_.push_back(model[s].points_[K[i](0)]);
+					correspondence_1.points_.push_back(model[s].points_[K[i](1)]);
+				}
+				WritePointCloud(string(output_path) + string("Corr_0.ply"), correspondence_0);
+				WritePointCloud(string(output_path) + string("Corr_1.ply"), correspondence_1);
+			}
+
+			// ------------------------------------------------------------------------
+			// Compute surface registration
+			T = fastGlobalRegistrationPair(K, model[s], model[s + 1]);
+			
+			model[s + 1].Transform(T);
+
+			if (export_corr)
+			{
+				PointCloud correspondence_0, correspondence_1;
+				for (int i = 0; i < K.size(); i++)
+				{
+					correspondence_0.points_.push_back(model[s].points_[K[i](0)]);
+					correspondence_1.points_.push_back(model[s + 1].points_[K[i](1)]);
+				}
+				WritePointCloud(string(output_path) + string("CorrT_0.ply"), correspondence_0);
+				WritePointCloud(string(output_path) + string("CorrT_1.ply"), correspondence_1);
+			}
+		}
+		cout << "Estimated transformation" << endl << T << endl;
+
+		/*
+		for (int i = 0; i < model[s + 1].points_.size(); i++)
+		{
+			model_tmp.points_.push_back(model[s + 1].points_[i]);
+			model_tmp.normals_.push_back(model[s + 1].normals_[i]);
+		}
+		*/
+
 	}
 	// ------------------------------------------------------------------------
 	// Save the results
-	cout << "Result complete, exporting surfaces:" << endl;
+	cout << "\nResult complete, exporting surfaces:" << endl;
 	string resultName;
 	for (int i = 0; i < nSurfaces; i++) {
 		resultName = string(output_path) + string(output_name) + string("_")
