@@ -20,18 +20,21 @@ echo "Input : $INPUT_PATH                                                  "
 echo "Output: $OUTPUT_PATH                                                 "
 echo "                                                                     "
 mkdir -p dat
-cp -ft dat $DAT/seal/left/pointcloud*
+cp -ft dat $DAT/seal/left/pointcloud_0[0,1]*
 
 echo "====================================================================="
 echo "Commencing tests:                                                    "
 echo " "
+
+export ROTATION=1.7,0.0,1.5
+./GenerateData pointcloud_00.ply pointcloud_00.ply
 
 # Test registration
 export INI_R=0.100
 export END_R=0.0010
 export NUM_R=10
 export ALPHA=1.5
-export FPFH_VERSION=local
+export FGR_VERSION=open3d
 ./Registration.exe pointcloud
 
 if [ -s error.err ] ; then
@@ -47,8 +50,8 @@ echo "====================================================================="
 echo "Running matlab to complete visualisation.                            "
 mkdir -p fig $FIG $FIG/data
 matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
-	%displayRegistration('pointcloud','$INPUT_PATH','fig');
-	displayRegistration('result','$OUTPUT_PATH','fig');
+	displayRegistration('pointcloud_00','$INPUT_PATH','fig');
+	%displayRegistration('result','$OUTPUT_PATH','fig');
 	%animateRegistration('pointcloud','result','dat/','fig');
 	exit;"
 mv -ft $FIG fig/*
