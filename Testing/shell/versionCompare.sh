@@ -53,7 +53,6 @@ Prepare()
 	export INPUT_PATH="dat/"
 	export OUTPUT_PATH="dat/"
 	mkdir -p fig $FIG $FIG/data dat
-	lscpu >> $LSB_JOBNAME.cpu
 
 	
 	echo "Input and output paths defined by:"
@@ -72,6 +71,10 @@ Prepare()
 	export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
 	export TRANSLATION="0.0,0.0,0.0"
 	./GenerateData.exe bunnyTransform.ply bunnyTransform.ply
+
+	export ROTATION="0.32,0.32,0.59" # degrees: 30, 30, 45
+	export TRANSLATION="0.0,0.2,0.01"
+	./GenerateData.exe bunnyclean.ply bunnyTransform2.ply
 
 }
 
@@ -95,32 +98,32 @@ Program()
 	export ALPHA="1.5"
 
 	echo "Testing local for both"
-	start=`date +%s`
+	start=`date +%s.%N`
 	FPFH_VERSION=local FGR_VERSION=local \
 		OUTPUT_NAME=local \
-		./Registration.exe bunnyClean.ply bunnyTransform.ply
-	end=`date +%s`
-	runtime=$((end-start))
+		./Registration.exe bunny
+	end=`date +%s.%N`
+	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
 	echo "Local: $runtime"
 	echo " "
 
 	echo "Testing FPFH open3d"
-	start=`date +%s`
+	start=`date +%s.%N`
 	FPFH_VERSION=open3d FGR_VERSION=local \
 		OUTPUT_NAME=fpfh_open3d \
-		./Registration.exe bunnyClean.ply bunnyTransform.ply
+		./Registration.exe bunny
 	end=`date +%s`
-	runtime=$((end-start))
+	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
 	echo "FPFH: $runtime"
 	echo " "
 
 	echo "Testing FGR open3d"
-	start=`date +%s`
+	start=`date +%s.%N`
 	FPFH_VERSION=open3d FGR_VERSION=open3d \
-		OUTPUT_NAME=gr_open3d \
-		./Registration.exe bunnyClean.ply bunnyTransform.ply
-	end=`date +%s`
-	runtime=$((end-start))
+		OUTPUT_NAME=fgr_open3d \
+		./Registration.exe bunny
+	end=`date +%s.%N`
+	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
 	echo "FGR: $runtime"
 
 
@@ -137,7 +140,11 @@ Visualize()
 {
 	echo ' '
 	echo Visualizing
-	matlab -r "addpath('$MAT');animateCorrespondences('Corr','dat/','fig');exit;"
+	matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
+		displayRegistration('local','dat/','fig/');
+		displayRegistration('fpfh_open3d','dat/','fig/');
+		displayRegistration('fgr_open3d','dat/','fig/');
+		exit;"
 }
 
 # End of Visualize

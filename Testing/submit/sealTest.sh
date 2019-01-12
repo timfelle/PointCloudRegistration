@@ -101,7 +101,7 @@ Program()
 	# -------------------------------------------------------------------------
 	end=`date +%N`
 
-	runtime=$(( (end-start)/1000000 ))
+	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
 	echo "Time spent on computations: $runtime sec"
 }
 
