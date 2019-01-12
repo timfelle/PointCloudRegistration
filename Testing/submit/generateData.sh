@@ -142,7 +142,7 @@ Visualize()
 	echo ' '
 	echo Visualizing
 	matlab -nodesktop -nosplash \
-		-r "addpath('$MAT');renderModel({$MODEL},'dat/','fig/');exit;"
+		-r "addpath('$MAT');displayModel({$MODEL},'dat/','fig/');exit;"
 }
 
 # End of Visualize

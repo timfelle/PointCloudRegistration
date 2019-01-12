@@ -35,7 +35,11 @@ echo "====================================================================="
 echo "Commencing tests:                                                    "
 
 # Test registration
+
 ./Registration.exe bunnyClean.ply bunnyTransform.ply
+
+
+
 
 if [ -s error.err ] ; then
 	echo "Errors have been found. Exiting."

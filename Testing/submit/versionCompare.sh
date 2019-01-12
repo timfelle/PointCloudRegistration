@@ -3,7 +3,7 @@
 # --  General options 
 
 # Naming of the job and queue name
-#BSUB -J sealTest
+#BSUB -J versionCompare
 #BSUB -q hpc
 
 # Specify
@@ -18,11 +18,11 @@
 
 # Memory specifications. Amount we need and when to kill the
 # program using too much memory.
-#BSUB -R "rusage[mem=30GB]"
-#BSUB -M 30GB
+#BSUB -R "rusage[mem=5GB]"
+#BSUB -M 5GB
 
 # Time specifications (hh:mm)
-#BSUB -W 24:00
+#BSUB -W 00:30
 
 # -- Notification options
 
@@ -44,19 +44,34 @@ echo --------------------------------------------------------------------------
 #==============================================================================
 # Define Preparation
 
-FIG=../../figures/$LSB_JOBNAME
-DAT=../../data
-MAT=../../matlab
-
-export INPUT_PATH="dat/"
-export OUTPUT_PATH="dat/"
-
 Prepare()
 {
-	echo ' '
-	echo Preparing
+	FIG=../../figures/Correspondences
+	DAT=../../data
+	MAT=../../matlab
+
+	export INPUT_PATH="dat/"
+	export OUTPUT_PATH="dat/"
 	mkdir -p fig $FIG $FIG/data dat
 	lscpu >> $LSB_JOBNAME.cpu
+
+	
+	echo "Input and output paths defined by:"
+	echo "Input : $INPUT_PATH"
+	echo "Output: $OUTPUT_PATH"
+	echo " "
+
+	# Clean model
+	echo "   Fetching clean models"
+	cp $DAT/bunnyPartial1.ply dat/bunnyClean.ply
+	cp $DAT/bunnyPartial2.ply dat/bunnyTransform.ply
+
+	# Test transformation
+	echo "   Generating transformed model."
+	export NOISE_TYPE=none
+	export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
+	export TRANSLATION="0.0,0.0,0.0"
+	./GenerateData.exe bunnyTransform.ply bunnyTransform.ply
 
 }
 
@@ -69,40 +84,49 @@ Program()
 	echo ' '
 	echo Running computations
 
-	start=`date +%N`
+	
 	# -------------------------------------------------------------------------
 	# Define the actual test part of the script 
-	
-	# =========================================================================
-	# Generate all the data needed
+		
 
-	echo "Input and output paths defined by:                                   "
-	echo "Input : $INPUT_PATH                                                  "
-	echo "Output: $OUTPUT_PATH                                                 "
-	echo "                                                                     "
-	mkdir -p dat
-	cp -ft dat $DAT/seal/left/pointcloud*
-	
 	echo "====================================================================="
 	echo "Commencing tests:                                                    "
+
+	export ALPHA="1.5"
+
+	echo "Testing local for both"
+	start=`date +%s`
+	FPFH_VERSION=local FGR_VERSION=local \
+		OUTPUT_NAME=local \
+		./Registration.exe bunnyClean.ply bunnyTransform.ply
+	end=`date +%s`
+	runtime=$((end-start))
+	echo "Local: $runtime"
 	echo " "
 
-	# Test registration
-	export ALPHA=1.5
-	export FPFH_VERSION=open3d
-	./Registration.exe pointcloud
+	echo "Testing FPFH open3d"
+	start=`date +%s`
+	FPFH_VERSION=open3d FGR_VERSION=local \
+		OUTPUT_NAME=fpfh_open3d \
+		./Registration.exe bunnyClean.ply bunnyTransform.ply
+	end=`date +%s`
+	runtime=$((end-start))
+	echo "FPFH: $runtime"
+	echo " "
 
-	if [ -s error.err ] ; then
-		echo "Errors have been found. Exiting."
-		echo " "
-		rm -fr *.ply *.exe *.sh fig dat
-		exit
-	fi
+	echo "Testing FGR open3d"
+	start=`date +%s`
+	FPFH_VERSION=open3d FGR_VERSION=open3d \
+		OUTPUT_NAME=gr_open3d \
+		./Registration.exe bunnyClean.ply bunnyTransform.ply
+	end=`date +%s`
+	runtime=$((end-start))
+	echo "FGR: $runtime"
+
+
+
 	# -------------------------------------------------------------------------
-	end=`date +%N`
 
-	runtime=$(( (end-start)/1000000 ))
-	echo "Time spent on computations: $runtime sec"
 }
 
 # End of Program
@@ -113,8 +137,7 @@ Visualize()
 {
 	echo ' '
 	echo Visualizing
-	matlab -nodesktop -nosplash \
-		-r "addpath('$MAT');displayRegistration('result','$OUTPUT_PATH','fig');exit;"
+	matlab -r "addpath('$MAT');animateCorrespondences('Corr','dat/','fig');exit;"
 }
 
 # End of Visualize
@@ -156,6 +179,13 @@ echo ' '
 echo --------------------------------------------------------------------------
 
 Program
+
+if [ -s error.err ] ; then
+	echo "Errors have been found. Exiting."
+	echo " "
+	rm -fr *.ply *.exe *.sh fig dat
+	exit
+fi
 
 echo ' '
 echo --------------------------------------------------------------------------

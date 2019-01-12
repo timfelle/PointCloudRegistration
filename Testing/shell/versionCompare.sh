@@ -3,7 +3,7 @@
 # --  General options 
 
 # Naming of the job and queue name
-#BSUB -J correspondences
+#BSUB -J versionCompare
 #BSUB -q hpc
 
 # Specify
@@ -44,39 +44,22 @@ echo --------------------------------------------------------------------------
 #==============================================================================
 # Define Preparation
 
-FIG=../../figures/Correspondences
-DAT=../../data
-MAT=../../matlab
-
-export INPUT_PATH="dat/"
-export OUTPUT_PATH="dat/"
-
 Prepare()
 {
-	echo ' '
-	echo Preparing
+	FIG=../../figures/Correspondences
+	DAT=../../data
+	MAT=../../matlab
+
+	export INPUT_PATH="dat/"
+	export OUTPUT_PATH="dat/"
 	mkdir -p fig $FIG $FIG/data dat
 	lscpu >> $LSB_JOBNAME.cpu
 
-}
-
-# End of Preparation
-#==============================================================================
-# Define Program
-
-Program()
-{
-	echo ' '
-	echo Running computations
-
-	start=`date +%s`
-	# -------------------------------------------------------------------------
-	# Define the actual test part of the script 
-		
-	echo "Input and output paths defined by:                                   "
-	echo "Input : $INPUT_PATH                                                  "
-	echo "Output: $OUTPUT_PATH                                                 "
-	echo "                                                                     "
+	
+	echo "Input and output paths defined by:"
+	echo "Input : $INPUT_PATH"
+	echo "Output: $OUTPUT_PATH"
+	echo " "
 
 	# Clean model
 	echo "   Fetching clean models"
@@ -90,25 +73,60 @@ Program()
 	export TRANSLATION="0.0,0.0,0.0"
 	./GenerateData.exe bunnyTransform.ply bunnyTransform.ply
 
+}
+
+# End of Preparation
+#==============================================================================
+# Define Program
+
+Program()
+{
+	echo ' '
+	echo Running computations
+
+	
+	# -------------------------------------------------------------------------
+	# Define the actual test part of the script 
+		
+
 	echo "====================================================================="
 	echo "Commencing tests:                                                    "
 
-	# Test registration
-	export EXPORT_CORRESPONDENCES="true"
 	export ALPHA="1.5"
-	./Registration.exe bunnyClean.ply bunnyTransform.ply
 
-	if [ -s error.err ] ; then
-		echo "Errors have been found. Exiting."
-		echo " "
-		rm -fr *.ply *.exe *.sh fig dat
-		exit
-	fi
-	# -------------------------------------------------------------------------
+	echo "Testing local for both"
+	start=`date +%s`
+	FPFH_VERSION=local FGR_VERSION=local \
+		OUTPUT_NAME=local \
+		./Registration.exe bunnyClean.ply bunnyTransform.ply
 	end=`date +%s`
-
 	runtime=$((end-start))
-	echo "Time spent on computations: $runtime"
+	echo "Local: $runtime"
+	echo " "
+
+	echo "Testing FPFH open3d"
+	start=`date +%s`
+	FPFH_VERSION=open3d FGR_VERSION=local \
+		OUTPUT_NAME=fpfh_open3d \
+		./Registration.exe bunnyClean.ply bunnyTransform.ply
+	end=`date +%s`
+	runtime=$((end-start))
+	echo "FPFH: $runtime"
+	echo " "
+
+	echo "Testing FGR open3d"
+	start=`date +%s`
+	FPFH_VERSION=open3d FGR_VERSION=open3d \
+		OUTPUT_NAME=gr_open3d \
+		./Registration.exe bunnyClean.ply bunnyTransform.ply
+	end=`date +%s`
+	runtime=$((end-start))
+	echo "FGR: $runtime"
+
+
+
+	# -------------------------------------------------------------------------
+
 }
 
 # End of Program
@@ -161,6 +179,13 @@ echo ' '
 echo --------------------------------------------------------------------------
 
 Program
+
+if [ -s error.err ] ; then
+	echo "Errors have been found. Exiting."
+	echo " "
+	rm -fr *.ply *.exe *.sh fig dat
+	exit
+fi
 
 echo ' '
 echo --------------------------------------------------------------------------
