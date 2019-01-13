@@ -108,6 +108,7 @@ do
 
 		# Move to the directory submit the code and return
 		cd $LPATH/$test
+		bkill -J $test
 		bsub < submit$test.sh
 		cd ../../
 	fi
