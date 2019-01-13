@@ -75,7 +75,7 @@ Visualize()
 {
 	echo ' '
 	echo Visualizing
-	MATOPT="-wait -nodesktop -nosplash"
+	MATOPT="-wait -nodesktop -nosplash -softwareopengl"
 
 	DISREG="'foxLeft','foxRight','foxUpright','foxUpsidedown'"
 

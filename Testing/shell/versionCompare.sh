@@ -138,7 +138,7 @@ Visualize()
 {
 	echo ' '
 	echo Visualizing
-	MATOPT="-wait -nodesktop -nosplash"
+	MATOPT="-wait -nodesktop -nosplash -softwareopengl"
 	MATTESTS="'local','fpfh_open3d','fgr_open3d'"
 	matlab $MATOPT \
 	-r "addpath('$MAT');displayRegistration({$MATTESTS},'dat/','fig/');exit"

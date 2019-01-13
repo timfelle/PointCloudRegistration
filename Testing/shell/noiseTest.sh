@@ -123,7 +123,7 @@ Visualize()
 	MATTESTS+="'resultGauss1','resultGauss2',"
 	MATTESTS+="'resultOut1','resultOut2','resultOut3'"
 
-	MATOPT="-wait -nodesktop -nosplash"
+	MATOPT="-wait -nodesktop -nosplash -softwareopengl"
 	matlab $MATOPT \
 	-r "addpath('$MAT');displayRegistration({$MATTESTS},'dat/','fig/');exit"
 }
