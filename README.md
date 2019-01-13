@@ -1,10 +1,10 @@
 # Point Cloud Registration
 Point cloud registration is the process of aligning 3D point cloud datasets to 
-eachother when they contain overlapping regions. This repository is an 
+eachother when they contain overlapping regions. This repository contain an 
 implmentation of such an algorithm which is the main focus for my master thesis.
 The thesis is included in the folder as well, describing the implementations and
 theoretical derivation of the algorithm.  
-Most of the work are based on articles by Qian-Yi Zhou, Jaesik Park and Vladlen 
+Most of the work is based on articles by Qian-Yi Zhou, Jaesik Park and Vladlen 
 Koltun, who are the authors of the Open3D library.
 
 ## Folder structure
@@ -15,7 +15,7 @@ The repository contain two folders,
 		describing the functionality of the programs in depth.
 - Testing
 	- 	Containg shell scripts and matlab code used for testing and visualizing
-		the results of the program.
+		the functionality of the program.
 [//]: # - Technical report describing the process of developing the code and the 
 [//]: #   theory the behind problem and method.
 
@@ -38,7 +38,8 @@ readmes located in the PointCloudRegistration folder. These describes the
 functionality in depth.
 The test scripts located in Testing/shell is designed to run through the main 
 test script runtest.sh. Runtest.sh is designed to setup temporary file locations
-and log files for the tests.
+and log files for the tests. Additional information can be found in the README 
+located in the testing folder.  
 Matlab version R2018b is used for testing.
 
 ## Authors
