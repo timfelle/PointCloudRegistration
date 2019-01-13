@@ -21,13 +21,13 @@ function animateRegistration(preName,postName,dataPath,exportLocation)
 
 %% Handle input
 if ~exist('preName','var') || isempty(preName)
-    preName = 'bunny';
+    preName = 'bunnyPartial';
 end
 if ~exist('postName','var') || isempty(postName)
-    postName = 'resultClean';
+    postName = 'bunnyPartial';
 end
 if ~exist('dataPath','var') || isempty(dataPath)
-    dataPath = '../logs/debugging/';
+    dataPath = '../data/';
 end
 if ~exist('exportLocation','var') || isempty(dataPath)
     exportLocation = '../logs/matlab';
@@ -35,6 +35,7 @@ end
 dataNamePre = findData(dataPath,preName);
 dataNamePos = findData(dataPath,postName);
 if isempty(dataNamePre) || isempty(dataNamePos)
+    disp('No data');
     return;
 end
 
@@ -61,20 +62,24 @@ hold off
 % Find the axes in question
 axis(A1,'vis3d','off');
 axis(A2,'vis3d','off');
+cam1 = campos(A1);
+cam2 = campos(A2);
+campos(A1,cam1 + [0.0,0.6,0.1]);
+campos(A2,cam2 + [0.0,0.6,0.1]);
 
 F.WindowStyle = 'normal';
-F.Position = [50,50,1500,700];
+drawnow;
+F.Position = [50,50,1500,1000];
 v = VideoWriter([exportLocation,'/',F.Name],'Motion JPEG AVI');
 
 % Settings for the video
-v.Quality = 95;
+v.Quality = 99;
 v.FrameRate = 60;
-Time = 15;
+Time = 12;
 
 
 Frames = Time*v.FrameRate;
 angle = 360/Frames;
-
 open(v);
 for i = 1 : Frames
     camorbit(A1,angle,0);
@@ -95,13 +100,19 @@ end
 
 %% Load the data
 model = pcread([dataPath,data]);
+normal = pcnormals(model);
 
-X = double(model.Location(:,1));
-Y = double(model.Location(:,2));
-Z = double(model.Location(:,3));
-A = scatter3(X,Y,Z,20 + randi(100));
-A.MarkerFaceColor = Color;
-A.MarkerEdgeColor = Color*0.2;
-A.LineWidth = 0.1;
+L = [0,1,1];
+ambient = 0.1;
+L = L./norm(L);
+I = normal(:,1).*L(1) + normal(:,2).*L(2) + normal(:,3).*L(3);
+I = abs(I)*(1.0-ambient) + ambient;
+
+A = pcshow(model,'MarkerSize',36);
+A = A.Children(1);
+A.CData = I*Color;
+A.Marker = 'O';
+A.MarkerEdgeColor = 'flat';
+A.MarkerFaceColor = 'flat';
 
 end

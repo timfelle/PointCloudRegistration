@@ -29,6 +29,10 @@ end
 if ~exist('exportLocation','var') || isempty(dataPath)
     exportLocation = '../logs/matlab';
 end
+if ischar(inputName)
+    inputName = {inputName};
+end
+
 for input=1:length(inputName)
 	dataName = findData(dataPath,inputName{input});
 
@@ -45,9 +49,13 @@ for input=1:length(inputName)
 	axis vis3d
 	axis off
 	view([0,90])
+    cam = campos;
+    campos(cam - [0,0,0.4])
 
-	ExportFigures(F,exportLocation,'asp',1)
-	close(F)
+    if nargin ~= 0
+        ExportFigures(F,exportLocation,'asp',1)
+        close(F)
+    end
 end
 end
 
@@ -59,13 +67,18 @@ end
 
 %% Load the data
 model = pcread([dataPath,data]);
+normal = pcnormals(model);
 
-X = double(model.Location(:,1));
-Y = double(model.Location(:,2));
-Z = double(model.Location(:,3));
-A = scatter3(X,Y,Z);
-A.MarkerFaceColor = Color;
-A.MarkerEdgeColor = Color*0.2;
-A.LineWidth = 0.1;
+L = [0,1,1];
+ambient = 0.1;
+L = L./norm(L);
+I = normal(:,1).*L(1) + normal(:,2).*L(2) + normal(:,3).*L(3);
+I = abs(I)*(1.0-ambient-0.1) + ambient;
 
+A = pcshow(model,'MarkerSize',36);
+A = A.Children(1);
+A.CData = I*Color;
+A.Marker = 'O';
+A.MarkerEdgeColor = 'flat';
+A.MarkerFaceColor = 'flat';
 end

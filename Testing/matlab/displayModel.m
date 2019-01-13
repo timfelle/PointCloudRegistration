@@ -47,25 +47,30 @@ end
 
 %% Load the data
 F = CreateFigure(name);
-hold on
-model = pcread(data);
-
-X = double(model.Location(:,1));
-Y = double(model.Location(:,2));
-Z = double(model.Location(:,3));
-
-A = scatter3(X,Y,Z);
-
 Color = [0.3,0.5,0.9];
 
-A.MarkerFaceColor = Color;
-A.MarkerEdgeColor = Color*0.2;
-A.LineWidth = 0.1;
+model = pcread(data);
+normal = pcnormals(model);
+
+L = [0,1,1];
+ambient = 0.1;
+L = L./norm(L);
+I = normal(:,1).*L(1) + normal(:,2).*L(2) + normal(:,3).*L(3);
+I = abs(I)*(1.0-ambient) + ambient;
+
+A = pcshow(model,'MarkerSize',36);
+A = A.Children(1);
+A.CData = I*Color;
+A.Marker = 'O';
+A.MarkerEdgeColor = 'flat';
+A.MarkerFaceColor = 'flat';
 
 hold off
 axis vis3d
 axis off
 view([0,90])
+cam = campos;
+campos(cam - [0,0,0.4])
 
 ExportFigures(F,exportLocation,'asp',1)
 end
