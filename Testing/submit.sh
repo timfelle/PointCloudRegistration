@@ -83,7 +83,6 @@ EXEC="$EPATH/Registration.exe $EPATH/GenerateData.exe"
 mkdir -p $DPATH $FPATH $LPATH
 
 # Run the tests
-set -e
 echo " "
 echo "------------------------------------------------------------------"
 echo "Queueing tests: "; echo " "
