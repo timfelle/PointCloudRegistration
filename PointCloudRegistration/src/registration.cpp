@@ -88,6 +88,11 @@ int main(int argc, char *argv[])
 	vector<string> dataName = readInputFiles(argc, argv, input_path);
 	if (dataName.size() < 2)
 	{
+		cerr << "Error in registration: " << endl;
+		cerr << "   ./Registration ";
+		for (int i = 1; i < argc; i++)
+			cerr << argv[i] << " ";
+		cerr << "\n   No pointclouds found." << endl;
 		return EXIT_FAILURE;
 	}
 	cout << "Registration started for the surfaces:" << endl;
@@ -186,7 +191,7 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < nSurfaces; i++) {
 		resultName = string(output_path) + string(output_name) + string("_")
 			+ to_string(i) + string(".ply");
-		cout << "   " << dataName[i] << " >> " << resultName << endl;
+		cout << "   " << resultName << " << " << dataName[i] << endl;
 		WritePointCloud(resultName, model[i]);
 	}
 
