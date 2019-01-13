@@ -10,7 +10,7 @@ Prepare()
 	DAT=../../data
 	MAT=../../matlab
 
-	mkdir -p fig $FIG $FIG/data dat
+	mkdir -p fig $FIG $FIG/data dat/left dat/right dat/upright dat/upsidedown
 
 	# Define input and output paths
 	export INPUT_PATH="dat/"
@@ -21,19 +21,14 @@ Prepare()
 	echo "   Output: $OUTPUT_PATH"
 	echo ' '
 
-	# Fetch the data needed from the data folder
-	cp $DAT/bunnyPartial1.ply dat/bunnyClean.ply
-	cp $DAT/bunnyPartial2.ply dat/bunnyTransform.ply
-
-	mkdir -p dat/seal2 dat/seal4 dat/seal6
-	cp -ft dat/seal2 $DAT/seal/left/pointcloud_0[0-1].ply
-	cp -ft dat/seal4 $DAT/seal/left/pointcloud_0[0-3].ply
-	cp -ft dat/seal6 $DAT/seal/left/pointcloud_0[0-3].ply
-
-	# Alter the moddels as needed
-	ROTATION="0.52,0.52,0.79" \
-	TRANSLATION="0.0,0.0,0.0" \
-		./GenerateData.exe bunnyTransform.ply bunnyTransform.ply
+	case "$OSTYPE" in
+		linux*)   DATA="*" ;;
+		cygwin*)  DATA="0[0-1]*" ;;
+	esac
+	cp -ft dat/left $DAT/fox/left/pointcloud_$DATA
+	cp -ft dat/right $DAT/fox/right/pointcloud_$DATA
+	cp -ft dat/upright $DAT/fox/upright/pointcloud_$DATA
+	cp -ft dat/upsidedown $DAT/fox/upsidedown/pointcloud_$DATA
 
 }
 
@@ -43,91 +38,33 @@ Prepare()
 
 Program()
 {
-	# Tests using the bunny data ----------------------------------------------
-	export ALPHA="1.5"
-
-	echo 'Testing local implementation'
-	start=`date +%s.%N`
-
-	FPFH_VERSION=local \
-	FGR_VERSION=local \
-	OUTPUT_NAME=local \
-		./Registration.exe bunny
-
-	end=`date +%s.%N`
-	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
-	echo ' '
-	echo "Local: $runtime"
-	echo ' '
-	echo ---------------------------------------------------------------
-
-	echo 'Testing FPFH open3d'
-	start=`date +%s.%N`
-	
+	ALPHA=1.5 \
 	FPFH_VERSION=open3d \
 	FGR_VERSION=local \
-	OUTPUT_NAME=fpfh_open3d \
-		./Registration.exe bunny
+	INPUT_PATH=dat/left/ \
+	OUTPUT_NAME=foxLeft \
+		./Registration.exe pointcloud
 
-	end=`date +%s.%N`
-	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
-	echo ' '
-	echo "FPFH: $runtime"
-	echo ' '
-	echo ---------------------------------------------------------------
-
-	echo 'Testing FGR open3d'
-	start=`date +%s.%N`
-
+	ALPHA=1.5 \
 	FPFH_VERSION=open3d \
-	FGR_VERSION=open3d \
-	OUTPUT_NAME=fgr_open3d \
-		./Registration.exe bunny
+	FGR_VERSION=local \
+	INPUT_PATH=dat/right/ \
+	OUTPUT_NAME=foxRight \
+		./Registration.exe pointcloud
 
-	end=`date +%s.%N`
-	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
-	echo ' '
-	echo "FGR: $runtime"
+	ALPHA=1.5 \
+	FPFH_VERSION=open3d \
+	FGR_VERSION=local \
+	INPUT_PATH=dat/upright/ \
+	OUTPUT_NAME=foxUpright \
+		./Registration.exe pointcloud
 
-	# -------------------------------------------------------------------------
-
-	seal="2 4 6"
-	for s in $seal; do
-		start=`date +%s.%N`
-
-		FPFH_VERSION=local \
-		FGR_VERSION=local \
-		INPUT_PATH=dat/seal$s/ \
-			./Registration.exe pointcloud >> tmp.txt
-
-		end=`date +%s.%N`
-		runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
-		echo "Local seal $s: $runtime"
-	done
-	for s in $seal; do
-		start=`date +%s.%N`
-
-		FPFH_VERSION=open3d \
-		FGR_VERSION=local \
-		INPUT_PATH=dat/seal$s/ \
-			./Registration.exe pointcloud >> tmp.txt
-
-		end=`date +%s.%N`
-		runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
-		echo "FPFH seal $s: $runtime"
-	done
-	for s in $seal; do
-		start=`date +%s.%N`
-
-		FPFH_VERSION=open3d \
-		FGR_VERSION=open3d \
-		INPUT_PATH=dat/seal$s/ \
-			./Registration.exe pointcloud >> tmp.txt
-
-		end=`date +%s.%N`
-		runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
-		echo "FGR seal $s: $runtime"
-	done
+	ALPHA=1.5 \
+	FPFH_VERSION=open3d \
+	FGR_VERSION=local \
+	INPUT_PATH=dat/upsidedown/ \
+	OUTPUT_NAME=foxUpsidedown \
+		./Registration.exe pointcloud	
 }
 
 # End of Program
@@ -139,9 +76,12 @@ Visualize()
 	echo ' '
 	echo Visualizing
 	MATOPT="-wait -nodesktop -nosplash"
-	MATTESTS="'local','fpfh_open3d','fgr_open3d'"
+
+	DISREG="'foxLeft','foxRight','foxUpright','foxUpsidedown'"
+
 	matlab $MATOPT \
-	-r "addpath('$MAT');displayRegistration({$MATTESTS},'dat/','fig/');exit"
+	-r "addpath('$MAT');displayRegistration({$DISREG},'dat/','fig/');exit"
+
 }
 
 # End of Visualize

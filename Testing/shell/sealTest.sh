@@ -35,9 +35,6 @@ Prepare()
 
 Program()
 {
-	INI_R=0.0100 \
-	END_R=0.0005 \
-	NUM_R=10 \
 	ALPHA=1.5 \
 	FPFH_VERSION=open3d \
 	FGR_VERSION=local \
