@@ -20,6 +20,7 @@ function F = displayCorrespondences(inputName,dataPath,exportLocation,export)
 %  See also EXPORTFIGURES.
 
 opengl software
+set(0, 'DefaultFigureRenderer', 'opengl');
 
 %% Handle input
 if ~exist('inputName','var') || isempty(inputName)
