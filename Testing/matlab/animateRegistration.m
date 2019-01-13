@@ -111,8 +111,7 @@ L = L./norm(L);
 I = normal(:,1).*L(1) + normal(:,2).*L(2) + normal(:,3).*L(3);
 I = abs(I)*(1.0-ambient) + ambient;
 
-A = pcshow(model,'MarkerSize',36);
-A = A.Children(1);
+A = scatter3(model.Location(:,1),model.Location(:,2),model.Location(:,3));
 A.CData = I*Color;
 A.Marker = 'O';
 A.MarkerEdgeColor = 'flat';
