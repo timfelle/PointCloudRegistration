@@ -3,7 +3,7 @@
 # --  General options 
 
 # Naming of the job and queue name
-#BSUB -J sealTest
+#BSUB -J foxTest
 #BSUB -q hpc
 
 # Specify
