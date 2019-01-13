@@ -19,11 +19,11 @@
 # Memory specifications. Amount we need and when to kill the
 # program using too much memory.
 
-#BSUB -R "rusage[mem=5GB]"
-#BSUB -M 5GB
+#BSUB -R "rusage[mem=10GB]"
+#BSUB -M 10GB
 
 # Time specifications (hh:mm)
-#BSUB -W 00:30
+#BSUB -W 10:00
 
 # -- Notification options
 
