@@ -2,7 +2,9 @@
 All tests are defined in shell scripts and can be called in an organised matter
 through the scripts in this folder. Data used in any test defined in these 
 folders are located in the data folder and visualisations are done through 
-matlab.
+matlab. 
+Both testing scripts allow the input "all" which will automatically 
+locate and run all defined tests.
 
 ## Run Test
 
@@ -18,6 +20,7 @@ errors will be located in the log folder for the test.
 
 	> submit.sh TESTNAME1 [TESTNAME2 ...]
 
-This function will sort the files nescesary for testing into logfolders and 
+This function will organise the files nescesary for testing into logfolders and 
 submit the tests onto the LSF based system on the DTU HPC cluster. The defined 
-tests are located in the folder called submit.
+tests are located in the folder called shell/ and LSF settings are defined by
+files in submit/.

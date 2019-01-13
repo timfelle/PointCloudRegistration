@@ -3,7 +3,9 @@ Point cloud registration is the process of aligning 3D point cloud datasets to
 eachother when they contain overlapping regions. This repository is an 
 implmentation of such an algorithm which is the main focus for my master thesis.
 The thesis is included in the folder as well, describing the implementations and
-theoretical derivation of the algorithm.
+theoretical derivation of the algorithm.  
+Most of the work are based on articles by Qian-Yi Zhou, Jaesik Park and Vladlen 
+Koltun, who are the authors of the Open3D library.
 
 ## Folder structure
 The repository contain two folders, 
