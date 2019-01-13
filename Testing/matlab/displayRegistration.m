@@ -19,6 +19,8 @@ function displayRegistration(inputName,dataPath,exportLocation)
 %
 %  See also EXPORTFIGURES.
 
+opengl software
+
 %% Handle input
 if ~exist('inputName','var') || isempty(inputName)
     inputName = 'bunnyPartial';

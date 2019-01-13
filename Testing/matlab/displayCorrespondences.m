@@ -19,6 +19,8 @@ function F = displayCorrespondences(inputName,dataPath,exportLocation,export)
 %
 %  See also EXPORTFIGURES.
 
+opengl software
+
 %% Handle input
 if ~exist('inputName','var') || isempty(inputName)
     inputName = 'Corr';
