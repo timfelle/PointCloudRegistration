@@ -103,7 +103,7 @@ do
 		mkdir -p $LPATH/$test
 
 		# Copy all files needed
-		cp $SPATH/$test.sh $LPATH/$test/submit$test.sh
+		cp submit/$test.sh $LPATH/$test/submit$test.sh
 		cp -t $LPATH/$test -f $SPATH/$test.sh $EXEC
 
 		# Move to the directory submit the code and return
