@@ -19,9 +19,6 @@ function displayRegistration(inputName,dataPath,exportLocation)
 %
 %  See also EXPORTFIGURES.
 
-opengl software
-set(0, 'DefaultFigureRenderer', 'opengl');
-
 %% Handle input
 if ~exist('inputName','var') || isempty(inputName)
     inputName = 'bunnyPartial';

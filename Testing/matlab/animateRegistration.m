@@ -19,9 +19,6 @@ function animateRegistration(preName,postName,dataPath,exportLocation)
 %
 %  See also EXPORTFIGURES.
 
-opengl software
-set(0, 'DefaultFigureRenderer', 'opengl');
-
 %% Handle input
 if ~exist('preName','var') || isempty(preName)
     preName = 'bunnyPartial';

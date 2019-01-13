@@ -77,7 +77,7 @@ Visualize()
 {
 	echo ' '
 	echo Visualizing
-	MATOPT="-wait -nodesktop -nosplash -softwareopengl"
+	MATOPT="-wait -nodesktop -nosplash"
 	matlab $MATOPT \
 		-r "addpath('$MAT');displayModel({$MODEL},'dat/','fig/');exit;"
 }
