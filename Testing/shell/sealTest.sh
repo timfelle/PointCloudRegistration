@@ -1,63 +1,133 @@
 #!/bin/sh
-echo "====================================================================="
-echo "sealTest.sh:"
-echo "   This is a full-scale test of the algorithm examining the left"
-echo "   oriented seal dataset"
-echo " "
+#==============================================================================
+# Define Preparation of data ect.
 
-FIG=../../figures/sealTest
-DAT=../../data
-MAT=../../matlab
+Prepare()
+{
+	# Setup folders needed
+	TNAME=`basename -- "$0"`
+	FIG=../../figures/${TNAME%.*}
+	DAT=../../data
+	MAT=../../matlab
 
-export INPUT_PATH="dat/"
-export OUTPUT_PATH="dat/"
+	mkdir -p fig $FIG $FIG/data dat
 
-# ==============================================================================
-# Generate all the data needed
+	# Define input and output paths
+	export INPUT_PATH="dat/"
+	export OUTPUT_PATH="dat/"
 
-echo "Input and output paths defined by:                                   "
-echo "Input : $INPUT_PATH                                                  "
-echo "Output: $OUTPUT_PATH                                                 "
-echo "                                                                     "
-mkdir -p dat
-cp -ft dat $DAT/seal/left/pointcloud_0[2-3]*
+	echo "Input and output paths defined by:"
+	echo "   Input : $INPUT_PATH"
+	echo "   Output: $OUTPUT_PATH"
+	echo ' '
 
-echo "====================================================================="
-echo "Commencing tests:                                                    "
-echo " "
+	case "$OSTYPE" in
+		linux*)   DATA="*" ;;
+		cygwin*)  DATA="0[2-3]*" ;;
+	esac
+	cp -ft dat $DAT/seal/left/pointcloud_$DATA
 
-export ROTATION=1.7,0.0,1.5
-#./GenerateData pointcloud_00.ply pointcloud_00.ply
+}
 
-# Test registration
-export INI_R=0.0100
-export END_R=0.0005
-export NUM_R=10
-export ALPHA=1.5
-export FPFH_VERSION=open3d
-export FGR_VERSION=local
-./Registration.exe pointcloud
+# End of Preparation
+#==============================================================================
+# Define the actual test part of the script 
 
-if [ -s error.err ] ; then
-	echo "Errors have been found. Exiting."
-	echo " "
+Program()
+{
+	INI_R=0.0100 \
+	END_R=0.0005 \
+	NUM_R=10 \
+	ALPHA=1.5 \
+	FPFH_VERSION=open3d \
+	FGR_VERSION=local \
+		./Registration.exe pointcloud
+}
+
+# End of Program
+#==============================================================================
+# Define Visualize
+
+Visualize()
+{
+	echo ' '
+	echo Visualizing
+	MATOPT="-wait -nodesktop -nosplash"
+
+	DISREG="'pointcloud','result'"
+
+	matlab $MATOPT \
+	-r "addpath('$MAT');displayRegistration({$DISREG},'dat/','fig/');exit"
+	matlab $MATOPT \
+	-r "addpath('$MAT');animateRegistration('pointcloud','result','dat/','fig');exit;"
+}
+
+# End of Visualize
+#==============================================================================
+# Define Finalize
+
+Finalize()
+{
+	mv -ft $FIG fig/*
+	mv -ft $FIG/data dat/*
+	rm -fr *.exe *.sh fig dat
+
+	echo '   Figures moved to $FIG.'
+	echo '   Data used located in $FIG/data'
+	echo 'Test concluded successfully.'
+}
+
+# End of Visualize
+#==============================================================================
+# Define Early Termination
+
+Early()
+{
 	rm -fr *.ply *.exe *.sh fig dat
+	echo ' '
+	echo ' ================= WARNING: EARLY TERMINATION ================= '
+	cat error.err 
+	echo ' ===================== ERRORS SHOWN ABOVE ===================== '
+	echo ' '
+}
+
+# End of Early Termination
+#==============================================================================
+# Call Functions
+echo __________________________________________________________________________
+echo 'Preparing data and folders'
+echo ' '
+
+Prepare
+
+echo ' '
+echo __________________________________________________________________________
+echo 'Commencing tests:'
+echo ' '
+test_start=`date +%s.%N`
+
+Program
+
+test_end=`date +%s.%N`
+runtime=$(echo $test_end $test_start | awk '{ printf "%f", $1 - $2 }')
+echo "Computation time for test: $runtime seconds."
+if [ -s error.err ] ; then
+	Early
 	exit
 fi
-# ==============================================================================
-# Export the figures using matlab
-echo " "
-echo "====================================================================="
-echo "Running matlab to complete visualisation.                            "
-mkdir -p fig $FIG $FIG/data
-matlab -wait -nodesktop -nosplash -r "addpath('$MAT');
-	displayRegistration('pointcloud','$INPUT_PATH','fig');
-	displayRegistration('result','$OUTPUT_PATH','fig');
-	%animateRegistration('pointcloud','result','dat/','fig');
-	exit;"
-mv -ft $FIG fig/*
-mv -ft $FIG/data dat/*
-rm -fr *.exe *.sh fig dat
-echo "Results placed in folder:                                            "
-echo $FIG
-echo "====================================================================="
+
+echo ' '
+echo __________________________________________________________________________
+
+Visualize
+
+echo ' '
+echo __________________________________________________________________________
+echo ' '
+echo Finalizing
+
+Finalize
+
+echo ' '
+echo __________________________________________________________________________
+# ==============================   End of File   ==============================

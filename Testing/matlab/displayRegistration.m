@@ -29,24 +29,26 @@ end
 if ~exist('exportLocation','var') || isempty(dataPath)
     exportLocation = '../logs/matlab';
 end
-dataName = findData(dataPath,inputName);
+for input=1:length(inputName)
+	dataName = findData(dataPath,inputName{input});
 
-F = CreateFigure(inputName);
+	F = CreateFigure(inputName{input});
 
-Color = colormap(jet(size(dataName,2)));
+	Color = colormap(jet(size(dataName,2)));
 
-hold on
-for i=1:length(dataName)
-    dispReg(dataName{i},dataPath,Color(i,:))
+	hold on
+	for i=1:length(dataName)
+	    dispReg(dataName{i},dataPath,Color(i,:))
+	end
+
+	hold off
+	axis vis3d
+	axis off
+	view([0,90])
+
+	ExportFigures(F,exportLocation,'asp',1)
+	close(F)
 end
-
-hold off
-axis vis3d
-axis off
-view([0,90])
-
-ExportFigures(F,exportLocation,'asp',1)
-close(F)
 end
 
 function dispReg(name,dataPath,Color)

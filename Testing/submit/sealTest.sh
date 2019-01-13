@@ -18,6 +18,7 @@
 
 # Memory specifications. Amount we need and when to kill the
 # program using too much memory.
+
 #BSUB -R "rusage[mem=30GB]"
 #BSUB -M 50GB
 
@@ -27,8 +28,6 @@
 # -- Notification options
 
 # Set the email to recieve to and when to recieve it
-##BSUB -u your_email_address
-#BSUB -B		# Send notification at start
 #BSUB -N 		# Send notification at completion
 
 echo --------------------------------------------------------------------------
@@ -40,133 +39,7 @@ echo LSB: total number of processors is $LSB_MAX_NUM_PROCESSORS
 echo LSB: working directory is $LSB_OUTDIR
 echo --------------------------------------------------------------------------
 
-# End of LSB info
-#==============================================================================
-# Define Preparation
+lscpu >> $LSB_JOBNAME.cpu
+./$LSB_JOBNAME.sh
 
-FIG=../../figures/$LSB_JOBNAME
-DAT=../../data
-MAT=../../matlab
-
-export INPUT_PATH="dat/"
-export OUTPUT_PATH="dat/"
-
-Prepare()
-{
-	echo ' '
-	echo Preparing
-	mkdir -p fig $FIG $FIG/data dat
-	lscpu >> $LSB_JOBNAME.cpu
-
-}
-
-# End of Preparation
-#==============================================================================
-# Define Program
-
-Program()
-{
-	echo ' '
-	echo Running computations
-
-	start=`date +%N`
-	# -------------------------------------------------------------------------
-	# Define the actual test part of the script 
-	
-	# =========================================================================
-	# Generate all the data needed
-
-	echo "Input and output paths defined by:                                   "
-	echo "Input : $INPUT_PATH                                                  "
-	echo "Output: $OUTPUT_PATH                                                 "
-	echo "                                                                     "
-	mkdir -p dat
-	cp -ft dat $DAT/seal/left/pointcloud*
-	
-	echo "====================================================================="
-	echo "Commencing tests:                                                    "
-	echo " "
-
-	# Test registration
-	export ALPHA=1.5
-	export FPFH_VERSION=open3d
-	./Registration.exe pointcloud
-
-	if [ -s error.err ] ; then
-		echo "Errors have been found. Exiting."
-		echo " "
-		rm -fr *.ply *.exe *.sh fig dat
-		exit
-	fi
-	# -------------------------------------------------------------------------
-	end=`date +%N`
-
-	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
-	echo "Time spent on computations: $runtime sec"
-}
-
-# End of Program
-#==============================================================================
-# Define Visualize
-
-Visualize()
-{
-	echo ' '
-	echo Visualizing
-	matlab -nodesktop -nosplash \
-		-r "addpath('$MAT');displayRegistration('result','$OUTPUT_PATH','fig');exit;"
-}
-
-# End of Visualize
-#==============================================================================
-# Define Finalize
-
-Finalize()
-{
-	echo ' '
-	echo Finalizing
-
-	mv -ft $FIG fig/*
-	mv -ft $FIG/data dat/*
-	rm -fr *.exe *.sh fig dat
-
-	echo Figures moved to $FIG.
-	echo Test concluded successfully.
-}
-
-# End of Visualize
-#==============================================================================
-# Define Early Termination
-
-early()
-{
-	echo ' '
-	echo ' ================= WARNING: EARLY TERMINATION ================= '
-	echo ' '
-}
-trap 'early' 2 9 15
-
-# End of Early Termination
-#==============================================================================
-# Call Functions
-
-Prepare
-
-echo ' '
-echo --------------------------------------------------------------------------
-
-Program
-
-echo ' '
-echo --------------------------------------------------------------------------
-
-Visualize
-
-echo ' '
-echo --------------------------------------------------------------------------
-
-Finalize
-
-echo ' '
-echo --------------------------------------------------------------------------
 # ==============================   End of File   ==============================

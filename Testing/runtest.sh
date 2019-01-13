@@ -20,6 +20,16 @@ if  [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
 	exit
 fi
 
+# Find all tests if specified
+if [ "$1" = "all" ] ; then
+	for test in `ls shell/*`;
+	do 
+		t_name=`basename -- "$test"`
+		tests+="${t_name%.*} "
+	done
+	./runtest.sh $tests
+	exit
+fi
 
 # Define all needed folders relative to the Testing folder.
 EPATH=../PointCloudRegistration
@@ -109,8 +119,9 @@ do
 		# Check if there were errors. Print them if there were.
 		if [ -s error.err ] ; then
 			echo " "
-			echo "  \"$test\" NOT COMPLETED:"
 			echo "============================================================="
+			echo "\"$test\" NOT COMPLETED:"
+			echo ' '
 			cat error.err
 			echo "============================================================="
 			echo " "

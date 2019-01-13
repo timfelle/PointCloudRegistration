@@ -20,12 +20,23 @@ if  [ "$1" = "-h" ] || [ "$1" = "--help" ] ; then
 	exit
 fi
 
+# Find all tests if specified
+if [ "$1" = "all" ] ; then
+	for test in `ls submit/*`;
+	do 
+		t_name=`basename -- "$test"`
+		tests+="${t_name%.*} "
+	done
+	./submit.sh $tests
+	exit
+fi
+
 # Define all needed folders relative to the Testing folder.
 EPATH=../PointCloudRegistration
 DPATH=data
 FPATH=figures
 LPATH=logs
-SPATH=submit
+SPATH=shell
 
 # Check for test specifications
 if [ -z "$1" ] ; then
@@ -44,7 +55,9 @@ fi
 
 # Make sure the excecutables exists
 cd $EPATH;
-make -s;
+if [ ! -f GenerateData.exe ] || [ ! -f Registration.exe ] ; then
+	make -s;
+fi
 if [ ! -f GenerateData.exe ] ; then
 	>&2 echo "================================================================="
 	>&2 echo "| ERROR in submit.sh: (Missing executable)                      |"
@@ -77,21 +90,26 @@ echo "Queueing tests: "; echo " "
 for test in $TEST
 do
 	echo "$test."
-	if [ -f "$SPATH/$test.sh" ] ; then
-
+	if [ ! -f "$SPATH/$test.sh" ] || [ ! -f "submit/$test.sh" ] ; then
+		if [ ! -f "$SPATH/$test.sh" ] ; then
+			>&2 echo "  $SPATH/$test.sh: Test not found."
+		fi 
+		if [ ! -f "submit/$test.sh" ] ; then
+			>&2 echo "  submit/$test.sh: Settings not found."
+		fi
+	else
 		# Create the folder needed
-		rm -fr $LPATH/submit$test
-		mkdir -p $LPATH/submit$test
+		rm -fr $LPATH/$test
+		mkdir -p $LPATH/$test
 
 		# Copy all files needed
-		cp -t $LPATH/submit$test -f $SPATH/$test.sh $EXEC
+		cp $SPATH/$test.sh $LPATH/$test/submit$test.sh
+		cp -t $LPATH/$test -f $SPATH/$test.sh $EXEC
 
 		# Move to the directory submit the code and return
-		cd $LPATH/submit$test
-		bsub < $test.sh
+		cd $LPATH/$test
+		bsub < submit$test.sh
 		cd ../../
-	else
-		>&2 echo "  File $SPATH/$test.sh was not found"
 	fi
 done
 echo " "

@@ -1,82 +1,153 @@
 #!/bin/sh
-echo "====================================================================="
-echo "generateData.sh:                                                     "
-echo "   This is the test generateData. This test will display the effect  "
-echo "   of several settings for the data generation program.              "
-echo "                                                                     "
+#==============================================================================
+# Define Preparation of data ect.
 
-FIG=../../figures/GenerateData
-DAT=../../data
-MAT=../../matlab
+Prepare()
+{
+	# Setup folders needed
+	TNAME=`basename -- "$0"`
+	FIG=../../figures/${TNAME%.*}
+	DAT=../../data
+	MAT=../../matlab
 
-export INPUT_PATH="dat/"
-export OUTPUT_PATH="dat/"
+	mkdir -p fig $FIG $FIG/data dat
 
-# ==============================================================================
-# Generate all the data needed
+	# Define input and output paths
+	export INPUT_PATH="dat/"
+	export OUTPUT_PATH="dat/"
 
-echo "Input and output paths defined by:                                   "
-echo "Input : $INPUT_PATH                                                  "
-echo "Output: $OUTPUT_PATH                                                 "
-echo "                                                                     "
-mkdir dat
-# Clean model
-echo "Fetching clean model"
-cp $DAT/bunny.ply dat/bunnyClean.ply
-MODEL="'bunnyClean', "
+	echo "Input and output paths defined by:"
+	echo "   Input : $INPUT_PATH"
+	echo "   Output: $OUTPUT_PATH"
+	echo ' '
 
-echo "====================================================================="
-echo "Commencing tests:                                                    "
+	# Fetch the data needed from the data folder
+	cp $DAT/bunny.ply dat/bunnyClean.ply
+}
 
-# Test the Gaussian noise
-echo "   Gaussian noise.                                                   "
-export NOISE_TYPE=gaussian
-export NOISE_STRENGTH=1.5
-./GenerateData.exe bunnyClean.ply bunnyGaussian.ply
+# End of Preparation
+#==============================================================================
+# Define the actual test part of the script 
 
-MODEL+="'bunnyGaussian', "
+Program()
+{
+	MODEL="'bunnyClean', "
 
-# Test the Outlier noise
-echo "   Outlier addition.                                                 "
-export NOISE_TYPE=outliers
-export OUTLIER_AMOUNT=5.0
-./GenerateData.exe bunnyClean.ply bunnyOutliers.ply
+	# Test the Gaussian noise
+	echo "   Gaussian noise."
+	export NOISE_TYPE=gaussian
+	export NOISE_STRENGTH=1.5
+	./GenerateData.exe bunnyClean.ply bunnyGaussian.ply
 
-MODEL+="'bunnyOutliers', "
+	MODEL+="'bunnyGaussian', "
 
-# Test combination noise
-echo "   Combined noise and outlier.                                       "
-export NOISE_TYPE=both
-export NOISE_STRENGTH=2.0
-export OUTLIER_AMOUNT=5.0
-./GenerateData.exe bunnyClean.ply bunnyNoise.ply
+	# Test the Outlier noise
+	echo "   Outlier addition."
+	export NOISE_TYPE=outliers
+	export OUTLIER_AMOUNT=5.0
+	./GenerateData.exe bunnyClean.ply bunnyOutliers.ply
 
-MODEL+="'bunnyNoise', "
+	MODEL+="'bunnyOutliers', "
 
-# Test transformation
-echo "   Transformation.                                                   "
-export NOISE_TYPE=none
-export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
-export TRANSLATION="0.0,0.0,0.0"
-./GenerateData.exe bunnyClean.ply bunnyTransform.ply
+	# Test combination noise
+	echo "   Combined noise and outlier."
+	export NOISE_TYPE=both
+	export NOISE_STRENGTH=2.0
+	export OUTLIER_AMOUNT=5.0
+	./GenerateData.exe bunnyClean.ply bunnyNoise.ply
 
-MODEL+="'bunnyTransform' "
+	MODEL+="'bunnyNoise', "
 
-if [ -s error.err ] ; then
-	echo "Errors have been found. Exiting."
-	echo " "
+	# Test transformation
+	echo "   Transformation."
+	export NOISE_TYPE=none
+	export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
+	export TRANSLATION="0.0,0.0,0.0"
+	./GenerateData.exe bunnyClean.ply bunnyTransform.ply
+
+	MODEL+="'bunnyTransform' "
+
+}
+
+# End of Program
+#==============================================================================
+# Define Visualize
+
+Visualize()
+{
+	echo ' '
+	echo Visualizing
+	MATOPT="-wait -nodesktop -nosplash"
+	matlab $MATOPT \
+		-r "addpath('$MAT');displayModel({$MODEL},'dat/','fig/');exit;"
+}
+
+# End of Visualize
+#==============================================================================
+# Define Finalize
+
+Finalize()
+{
+	mv -ft $FIG fig/*
+	mv -ft $FIG/data dat/*
+	rm -fr *.exe *.sh fig dat
+
+	echo '   Figures moved to $FIG.'
+	echo '   Data used located in $FIG/data'
+	echo 'Test concluded successfully.'
+}
+
+# End of Visualize
+#==============================================================================
+# Define Early Termination
+
+Early()
+{
 	rm -fr *.ply *.exe *.sh fig dat
+	echo ' '
+	echo ' ================= WARNING: EARLY TERMINATION ================= '
+	cat error.err 
+	echo ' ===================== ERRORS SHOWN ABOVE ===================== '
+	echo ' '
+}
+
+# End of Early Termination
+#==============================================================================
+# Call Functions
+echo __________________________________________________________________________
+echo 'Preparing data and folders'
+echo ' '
+
+Prepare
+
+echo ' '
+echo __________________________________________________________________________
+echo 'Commencing tests:'
+echo ' '
+test_start=`date +%s.%N`
+
+Program
+
+test_end=`date +%s.%N`
+runtime=$(echo $test_end $test_start | awk '{ printf "%f", $1 - $2 }')
+echo "Computation time for test: $runtime seconds."
+if [ -s error.err ] ; then
+	Early
 	exit
 fi
-# ==============================================================================
-# Export the figures using matlab
-echo "Running matlab to complete visualisation.                            "
-mkdir -p fig $FIG $FIG/data
-matlab -nodesktop -nosplash -wait \
-	-r "addpath('$MAT');displayModel({$MODEL},'dat/','fig/');exit;" 
-mv -ft $FIG fig/*
-mv -ft $FIG/data dat/*
-rm -fr *.exe *.sh fig dat
-echo "Results placed in folder:                                            "
-echo $FIG
-echo "====================================================================="
+
+echo ' '
+echo __________________________________________________________________________
+
+Visualize
+
+echo ' '
+echo __________________________________________________________________________
+echo ' '
+echo Finalizing
+
+Finalize
+
+echo ' '
+echo __________________________________________________________________________
+# ==============================   End of File   ==============================
