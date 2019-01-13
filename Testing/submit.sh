@@ -97,6 +97,8 @@ do
 			>&2 echo "  submit/$test.sh: Settings not found."
 		fi
 	else
+		bkill -J $test
+		
 		# Create the folder needed
 		rm -fr $LPATH/$test
 		mkdir -p $LPATH/$test
@@ -107,7 +109,6 @@ do
 
 		# Move to the directory submit the code and return
 		cd $LPATH/$test
-		bkill -J $test
 		bsub < submit$test.sh
 		cd ../../
 	fi
