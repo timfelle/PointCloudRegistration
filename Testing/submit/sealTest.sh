@@ -20,7 +20,7 @@
 # program using too much memory.
 
 #BSUB -R "rusage[mem=30GB]"
-#BSUB -M 50GB
+#BSUB -M 30GB
 
 # Time specifications (hh:mm)
 #BSUB -W 24:00

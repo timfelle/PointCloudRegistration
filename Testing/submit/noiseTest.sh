@@ -3,7 +3,7 @@
 # --  General options 
 
 # Naming of the job and queue name
-#BSUB -J generateData
+#BSUB -J noiseTest
 #BSUB -q hpc
 
 # Specify
@@ -23,7 +23,7 @@
 #BSUB -M 5GB
 
 # Time specifications (hh:mm)
-#BSUB -W 0:30
+#BSUB -W 3:00
 
 # -- Notification options
 
