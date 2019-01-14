@@ -49,8 +49,6 @@ for input=1:length(inputName)
 	axis vis3d
 	axis off
 	view([0,90])
-    cam = campos;
-    campos(cam - [0,0,0.4])
 
     if nargin ~= 0
         ExportFigures(F,exportLocation,'asp',1)
