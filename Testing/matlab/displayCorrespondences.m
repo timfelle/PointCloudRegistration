@@ -73,6 +73,7 @@ grid on
 T = suptitle('Before registration and after registration');
 T.FontSize = 15;
 T.FontWeight = 'bold';
+set([A1,A2],'Projection','perspective')
 
 if export
     ExportFigures(F,exportLocation,'asp',2)

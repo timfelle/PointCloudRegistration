@@ -26,7 +26,7 @@ end
 if ~exist('dataPath','var') || isempty(dataPath)
     dataPath = '../data/';
 end
-if ~exist('exportLocation','var') || isempty(dataPath)
+if ~exist('exportLocation','var') || isempty(exportLocation)
     exportLocation = '../logs/matlab';
 end
 if ischar(inputName)
@@ -38,7 +38,11 @@ for input=1:length(inputName)
 
 	F = CreateFigure(inputName{input});
 
-	Color = colormap(jet(size(dataName,2)));
+	if (size(dataName,2) <= 3)
+		Color = flipud(colormap(gray(3)));
+	else
+		Color = flipud(colormap(white(3)));
+	end
 
 	hold on
 	for i=1:length(dataName)
@@ -48,7 +52,7 @@ for input=1:length(inputName)
 	hold off
 	axis vis3d
 	axis off
-	view([0,90])
+    view([90,20])
 
     if nargin ~= 0
         ExportFigures(F,exportLocation,'asp',1)
@@ -78,4 +82,5 @@ A.CData = I*Color;
 A.Marker = 'O';
 A.MarkerEdgeColor = 'flat';
 A.MarkerFaceColor = 'flat';
+set(gca,'Projection', 'perspective');
 end

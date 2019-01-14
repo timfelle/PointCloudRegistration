@@ -28,7 +28,7 @@ Prepare()
 	mkdir -p dat/seal2 dat/seal4 dat/seal6
 	cp -ft dat/seal2 $DAT/seal/left/pointcloud_0[0-1].ply
 	cp -ft dat/seal4 $DAT/seal/left/pointcloud_0[0-3].ply
-	cp -ft dat/seal6 $DAT/seal/left/pointcloud_0[0-3].ply
+	cp -ft dat/seal6 $DAT/seal/left/pointcloud_0[0-5].ply
 
 	# Alter the moddels as needed
 	ROTATION="0.52,0.52,0.79" \
@@ -150,12 +150,15 @@ Visualize()
 
 Finalize()
 {
+	rm -fr $FIG
+	mkdir -p fig $FIG $FIG/data 
+	
 	mv -ft $FIG fig/*
 	mv -ft $FIG/data dat/*
 	rm -fr *.exe *.sh fig dat
 
-	echo '   Figures moved to $FIG.'
-	echo '   Data used located in $FIG/data'
+	echo "   Figures moved to $FIG."
+	echo "   Data used located in $FIG/data"
 }
 
 # End of Visualize

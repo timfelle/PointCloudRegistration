@@ -42,6 +42,7 @@ A1 = findobj('Tag','A1');
 A2 = findobj('Tag','A2');
 axis(A1,'vis3d','off');
 axis(A2,'vis3d','off');
+set([A1,A2],'Projection','perspective')
 
 F.WindowStyle = 'normal';
 F.Position = [50,50,1500,700];

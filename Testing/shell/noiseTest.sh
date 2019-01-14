@@ -134,13 +134,15 @@ Visualize()
 
 Finalize()
 {
+	rm -fr $FIG
+	mkdir -p fig $FIG $FIG/data 
+
 	mv -ft $FIG fig/*
 	mv -ft $FIG/data dat/*
 	rm -fr *.exe *.sh fig dat
 
-	echo '   Figures moved to $FIG.'
-	echo '   Data used located in $FIG/data'
-	echo 'Test concluded successfully.'
+	echo "   Figures moved to $FIG."
+	echo "   Data used located in $FIG/data"
 }
 
 # End of Visualize

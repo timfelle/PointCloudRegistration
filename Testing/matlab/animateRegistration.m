@@ -40,7 +40,11 @@ if isempty(dataNamePre) || isempty(dataNamePos)
 end
 
 %% Generate the correspondence plots
-Color = colormap(jet(size(dataNamePre,2)));
+if (size(dataNamePos,2) == 2)
+	Color = flipud(colormap(gray(3)));
+else
+	Color = flipud(colormap(white(3)));
+end
 F = CreateFigure('aniReg');
 
 A1 = subplot(121);
@@ -66,6 +70,7 @@ cam1 = campos(A1);
 cam2 = campos(A2);
 campos(A1,cam1 + [0.0,0.6,0.1]);
 campos(A2,cam2 + [0.0,0.6,0.1]);
+set([A1,A2],'Projection','perspective')
 
 F.WindowStyle = 'normal';
 drawnow;

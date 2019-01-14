@@ -21,55 +21,58 @@ function displayModel(inputName,dataPath,exportLocation)
 
 %% Handle input
 if ~exist('inputName','var') || isempty(inputName)
-    inputName = 'bunnyPartial1';
+    inputName = 'bunnyT';
 end
 if ~exist('dataPath','var') || isempty(dataPath)
     dataPath = '../data/';
 end
-if ~exist('exportLocation','var') || isempty(dataPath)
+if ~exist('exportLocation','var') || isempty(exportLocation)
     exportLocation = '../logs/matlab';
 end
+if ischar(inputName)
+    inputName = {inputName};
+end
 
-if iscell(inputName)
-    for i=1:length(inputName)
-        dispMod(inputName{i},dataPath,exportLocation)
+for input=1:length(inputName)
+    dataName = [dataPath,inputName{input},'.ply'];
+
+	F = CreateFigure(inputName{input});
+
+	Color = [0.9,0.9,0.9];
+    hold on
+    dispMod(dataName,dataPath,Color);
+    hold off
+	axis vis3d
+	axis off
+    view([90,20])
+
+    if nargin ~= 0
+        ExportFigures(F,exportLocation,'asp',1)
+        close(F)
     end
-else
-    dispMod(inputName,dataPath,exportLocation)
 end
 end
 
-function dispMod(name,dataPath,exportLocation)
-data = [ dataPath, name, '.ply' ];
-if ~exist(data,'file')
+function dispMod(name,dataPath,Color)
+data = name ;
+if ~exist([dataPath,data],'file')
     return;
 end
 
 %% Load the data
-F = CreateFigure(name);
-Color = [0.3,0.5,0.9];
-
-model = pcread(data);
+model = pcread([dataPath,data]);
 normal = pcnormals(model);
 
 L = [0,1,1];
 ambient = 0.1;
 L = L./norm(L);
 I = normal(:,1).*L(1) + normal(:,2).*L(2) + normal(:,3).*L(3);
-I = abs(I)*(1.0-ambient) + ambient;
+I = abs(I)*(1.0-ambient-0.1) + ambient;
 
 A = scatter3(model.Location(:,1),model.Location(:,2),model.Location(:,3));
 A.CData = I*Color;
 A.Marker = 'O';
 A.MarkerEdgeColor = 'flat';
 A.MarkerFaceColor = 'flat';
-
-hold off
-axis vis3d
-axis off
-view([0,90])
-cam = campos;
-campos(cam - [0,0,0.4])
-
-ExportFigures(F,exportLocation,'asp',1)
+set(gca,'Projection', 'perspective');
 end
