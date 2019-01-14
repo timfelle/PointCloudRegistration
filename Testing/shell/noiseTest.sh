@@ -166,6 +166,11 @@ echo ' '
 
 Prepare
 
+if [ -s error.err ] ; then
+	Early
+	exit
+fi
+
 echo ' '
 echo __________________________________________________________________________
 echo 'Commencing tests:'
@@ -187,6 +192,11 @@ echo __________________________________________________________________________
 
 Visualize
 
+if [ -s error.err ] ; then
+	Early
+	exit
+fi
+
 echo ' '
 echo __________________________________________________________________________
 echo ' '
@@ -194,6 +204,10 @@ echo Finalizing
 
 Finalize
 
-echo ' '
+if [ -s error.err ] ; then
+	Early
+	exit
+fi
+echo 'Test concluded successfully.'
 echo __________________________________________________________________________
 # ==============================   End of File   ==============================
