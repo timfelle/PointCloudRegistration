@@ -92,18 +92,20 @@ Program()
 	# -------------------------------------------------------------------------
 
 	seal="2 4 6"
-	for s in $seal; do
-		start=`date +%s.%N`
+	start=`date +%s.%N`
 
-		FPFH_VERSION=local \
-		FGR_VERSION=local \
-		INPUT_PATH=dat/seal$s/ \
-			./Registration.exe pointcloud >> tmp.txt
+	FPFH_VERSION=local \
+	FGR_VERSION=local \
+	INPUT_PATH=dat/seal2/ \
+		./Registration.exe pointcloud >> tmp.txt
 
-		end=`date +%s.%N`
-		runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
-		echo "Local seal $s: $runtime"
-	done
+	end=`date +%s.%N`
+	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
+	echo "Local seal 2: $runtime"
+	echo "Local seal 4: NA"
+	echo "Local seal 6: NA"
+
+
 	for s in $seal; do
 		start=`date +%s.%N`
 

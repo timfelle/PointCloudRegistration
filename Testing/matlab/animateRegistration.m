@@ -43,7 +43,7 @@ end
 if (size(dataNamePos,2) == 2)
 	Color = flipud(colormap(gray(3)));
 else
-	Color = flipud(colormap(white(3)));
+	Color = flipud(colormap(white(size(dataName,2))));
 end
 F = CreateFigure('aniReg');
 

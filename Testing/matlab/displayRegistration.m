@@ -41,7 +41,7 @@ for input=1:length(inputName)
 	if (size(dataName,2) <= 3)
 		Color = flipud(colormap(gray(3)));
 	else
-		Color = flipud(colormap(white(3)));
+		Color = flipud(colormap(white(size(dataName,2))));
 	end
 
 	hold on
