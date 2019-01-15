@@ -68,7 +68,7 @@ end
 function dispReg(name,dataPath,Color)
 data = name ;
 if ~exist([dataPath,data],'file')
-	error('File not found at all');
+	error('File %s not found.',data); 
 end
 
 %% Load the data

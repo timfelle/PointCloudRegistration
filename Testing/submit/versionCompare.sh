@@ -23,7 +23,7 @@
 #BSUB -M 10GB
 
 # Time specifications (hh:mm)
-#BSUB -W 10:00
+#BSUB -W 4:00
 
 # -- Notification options
 

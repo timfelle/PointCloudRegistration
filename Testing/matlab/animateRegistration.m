@@ -34,15 +34,18 @@ if ~exist('exportLocation','var') || isempty(dataPath)
 end
 dataNamePre = findData(dataPath,preName);
 dataNamePos = findData(dataPath,postName);
-if isempty(dataNamePre) || isempty(dataNamePos)
-    error('File not found at all');
+if isempty(dataNamePre)
+    error('File %s not found.',dataNamePre);
+end
+if isempty(dataNamePos)
+    error('File %s not found.',dataNamePos);
 end
 
 %% Generate the correspondence plots
 if (size(dataNamePos,2) == 2)
 	Color = flipud(colormap(gray(3)));
 else
-	Color = flipud(colormap(white(size(dataName,2))));
+	Color = flipud(colormap(white(max(size(dataNamePos,2),size(dataNamePre,2)))));
 end
 F = CreateFigure('aniReg');
 

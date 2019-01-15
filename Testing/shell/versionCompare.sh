@@ -157,7 +157,7 @@ Finalize()
 	
 	mv -ft $FIG fig/*
 	mv -ft $FIG/data dat/*
-	rm -fr *.exe *.sh fig dat
+	rm -fr *.exe *.txt *.sh fig dat
 
 	echo "   Figures moved to $FIG."
 	echo "   Data used located in $FIG/data"
@@ -169,7 +169,7 @@ Finalize()
 
 Early()
 {
-	rm -fr *.ply *.exe *.sh fig dat
+	rm -fr *.ply *.txt *.exe *.sh fig dat
 	echo ' '
 	echo ' ================= WARNING: EARLY TERMINATION ================= '
 	cat error.err 

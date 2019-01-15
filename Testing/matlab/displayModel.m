@@ -21,7 +21,7 @@ function displayModel(inputName,dataPath,exportLocation)
 
 %% Handle input
 if ~exist('inputName','var') || isempty(inputName)
-    inputName = 'bunnyT';
+    inputName = 'bunny';
 end
 if ~exist('dataPath','var') || isempty(dataPath)
     dataPath = '../data/';
@@ -37,7 +37,7 @@ for input=1:length(inputName)
     dataName = [inputName{input},'.ply'];
     
     if ~exist([dataPath,dataName],'file')
-        error('File not found at all');
+        error('File %s not found.',dataName);
     end
 	F = CreateFigure(inputName{input});
 

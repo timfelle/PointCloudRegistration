@@ -31,7 +31,7 @@ if ~exist('exportLocation','var') || isempty(dataPath)
 end
 dataName = findData(dataPath,inputName);
 if isempty(dataName) 
-    error('File not found at all'); 
+    error('File %s not found.',inputName); 
 end
 
 %% Generate the correspondence plots
