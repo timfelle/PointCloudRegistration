@@ -55,7 +55,11 @@ for input=1:length(inputName)
     view([90,20])
 
     if nargin ~= 0
-        ExportFigures(F,exportLocation,'asp',1)
+		if ~isunix
+        	ExportFigures(F,exportLocation,'asp',1)
+		else
+			ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',600)
+		end
         close(F)
     end
 end

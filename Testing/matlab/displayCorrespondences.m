@@ -76,7 +76,11 @@ T.FontWeight = 'bold';
 set([A1,A2],'Projection','perspective')
 
 if export
-    ExportFigures(F,exportLocation,'asp',2)
+		if ~isunix
+        	ExportFigures(F,exportLocation,'asp',1)
+		else
+			ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',600)
+		end
 end
 end
 
