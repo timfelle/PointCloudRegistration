@@ -43,6 +43,14 @@ Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)
 		Define if correspondences should be exported as point clouds for  
 		visualisation.   
 	
+	FPFH_VERSION:			[default: local]  
+		Defines if the locally implemented version of the algorithm should be 
+		used or the version included in open3d. [local,open3d]  
+
+	FGR_VERSION:			[default: local]  
+		Defines if the locally implemented version of the algorithm should be 
+		used or the version included in open3d. [local,open3d]  
+
 	TOL_NU:                 [default: 1e-6]  
 		Tolerence for penalty variable nu.  
 
@@ -56,8 +64,8 @@ Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)
 		Minimal radius for neighbourhoods used in feature estimation.  
 
 	NUM_R:                  [default: 100]  
-		Number of scales between the initial and end scales.
+		Number of scales between the initial and end scales.  
 	
-	ALPHA:                  [default: 1.96]  
+	ALPHA:                  [default: 1.50]  
 		Scale for when to mark a point as unique. Default value corresponds to  
 		5% of the normal destribution will be unique.  

@@ -34,7 +34,7 @@ if ~exist('export','var') || isempty(export)
 end 
 dataName = findData(dataPath,inputName);
 if isempty(dataName) 
-    return;
+    error('File not found at all');
 end
 F = CreateFigure(inputName);
 

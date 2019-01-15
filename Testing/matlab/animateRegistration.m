@@ -35,8 +35,7 @@ end
 dataNamePre = findData(dataPath,preName);
 dataNamePos = findData(dataPath,postName);
 if isempty(dataNamePre) || isempty(dataNamePos)
-    disp('No data');
-    return;
+    error('File not found at all');
 end
 
 %% Generate the correspondence plots

@@ -34,8 +34,11 @@ if ischar(inputName)
 end
 
 for input=1:length(inputName)
-    dataName = [dataPath,inputName{input},'.ply'];
-
+    dataName = [inputName{input},'.ply'];
+    
+    if ~exist([dataPath,dataName],'file')
+        error('File not found at all');
+    end
 	F = CreateFigure(inputName{input});
 
 	Color = [0.9,0.9,0.9];
@@ -57,14 +60,10 @@ for input=1:length(inputName)
 end
 end
 
-function dispMod(name,dataPath,Color)
-data = name ;
-if ~exist([dataPath,data],'file')
-    return;
-end
+function dispMod(dataName,dataPath,Color)
 
 %% Load the data
-model = pcread([dataPath,data]);
+model = pcread([dataPath,dataName]);
 normal = pcnormals(model);
 
 L = [0,1,1];
