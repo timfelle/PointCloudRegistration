@@ -42,12 +42,13 @@ if isempty(dataNamePos)
 end
 
 %% Generate the correspondence plots
+F = CreateFigure('aniReg');
+
 if (size(dataNamePos,2) == 2)
 	Color = flipud(colormap(gray(3)));
 else
 	Color = flipud(colormap(white(max(size(dataNamePos,2),size(dataNamePre,2)))));
 end
-F = CreateFigure('aniReg');
 
 A1 = subplot(121);
 hold on
