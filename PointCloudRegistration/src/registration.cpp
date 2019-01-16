@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 	if (getenv("NUM_R") == NULL) PUTENV("NUM_R=100");
 
 	// STD fraction
-	if (getenv("ALPHA") == NULL) PUTENV("ALPHA=1.50");
+	if (getenv("ALPHA") == NULL) PUTENV("ALPHA=1.96");
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names

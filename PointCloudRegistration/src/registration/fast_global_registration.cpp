@@ -41,8 +41,6 @@ Matrix4d fastGlobalRegistrationPair(
 		return result.transformation_;
 	}
 
-
-
 	// Initialize values
 	double tol_nu = atof(getenv("TOL_NU"));			// Tolerance on nu
 	double tol_e = atof(getenv("TOL_E"));			// Tolerance on e
