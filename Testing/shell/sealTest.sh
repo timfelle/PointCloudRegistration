@@ -38,6 +38,11 @@ Program()
 	ALPHA=1.5 \
 	FPFH_VERSION=open3d \
 	FGR_VERSION=local \
+	OUTPUT_NAME=local \
+		./Registration.exe pointcloud
+	
+	FGR_VERSION=open3d \
+	OUTPUT_NAME=open3d \
 		./Registration.exe pointcloud
 }
 
@@ -51,12 +56,10 @@ Visualize()
 	echo Visualizing
 	MATOPT="-wait -nodesktop -nosplash"
 
-	DISREG="'pointcloud','result'"
+	DISREG="'pointcloud','local','open3d'"
 
 	matlab $MATOPT \
 	-r "addpath('$MAT');displayRegistration({$DISREG},'dat/','fig/');exit"
-	matlab $MATOPT \
-	-r "addpath('$MAT');animateRegistration('pointcloud','result','dat/','fig');exit;"
 }
 
 # End of Visualize

@@ -16,6 +16,9 @@
 #BSUB -n 1
 #BSUB -R "span[ptile=1]"
 
+# Specify desired CPU
+#BSUB -R "select[model == XeonE5_2650v4]"
+
 # Memory specifications. Amount we need and when to kill the
 # program using too much memory.
 
