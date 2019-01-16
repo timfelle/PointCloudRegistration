@@ -119,7 +119,7 @@ Early()
 echo __________________________________________________________________________
 echo 'Preparing data and folders'
 echo ' '
-
+full_start=`date +%s.%N`
 Prepare
 
 if [ -s error.err ] ; then
@@ -164,6 +164,9 @@ if [ -s error.err ] ; then
 	Early
 	exit
 fi
+full_end=`date +%s.%N`
+runtime=$(echo $full_end $full_start | awk '{ printf "%f", $1 - $2 }')
+echo "Computation time for full test: $runtime seconds."
 echo 'Test concluded successfully.'
 echo __________________________________________________________________________
 # ==============================   End of File   ==============================
