@@ -73,13 +73,18 @@ end
 
 %% Load the data
 model = pcread([dataPath,data]);
-normal = pcnormals(model);
+normal = pcnormals(model,25);
 
-L = [0,1,1];
+L1 = [0,1,1];
+L2 = [1,0,0];
 ambient = 0.1;
-L = L./norm(L);
-I = normal(:,1).*L(1) + normal(:,2).*L(2) + normal(:,3).*L(3);
-I = abs(I)*(1.0-ambient-0.1) + ambient;
+highlight = 0.1;
+L1 = L1./norm(L1);
+L2 = L2./norm(L2);
+I1 = normal(:,1).*L1(1) + normal(:,2).*L1(2) + normal(:,3).*L1(3);
+I2 = normal(:,1).*L2(1) + normal(:,2).*L2(2) + normal(:,3).*L2(3);
+
+I = abs((I1 + I2)./2).*(1.0-ambient-highlight) + ambient;
 
 A = scatter3(model.Location(:,1),model.Location(:,2),model.Location(:,3));
 A.CData = I*Color;
