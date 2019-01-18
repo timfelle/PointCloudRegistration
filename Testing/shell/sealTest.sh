@@ -7,7 +7,7 @@ Prepare()
 	# Setup folders needed
 	TNAME=`basename -- "$0"`
 	FIG=../../figures/${TNAME%.*}
-	DAT=../../data
+	DAT=../../data/seal
 	MAT=../../matlab
 
 	mkdir -p fig $FIG $FIG/data dat
@@ -25,8 +25,12 @@ Prepare()
 		linux*)   DATA="*" ;;
 		cygwin*)  DATA="0[2-3]*" ;;
 	esac
-	cp -ft dat $DAT/seal/left/pointcloud_$DATA
 
+	SETS="left right upright"
+	for orientation in $SETS ; do
+		mkdir -p dat/$orientation 
+		cp -ft dat/$orientation/ $DAT/$orientation/pointcloud_$DATA
+	done
 }
 
 # End of Preparation
@@ -35,15 +39,26 @@ Prepare()
 
 Program()
 {
-	ALPHA=1.5 \
-	FPFH_VERSION=open3d \
-	FGR_VERSION=local \
-	OUTPUT_NAME=local \
-		./Registration.exe pointcloud
-	
-	FGR_VERSION=open3d \
-	OUTPUT_NAME=open3d \
-		./Registration.exe pointcloud
+	export ALPHA=1.5
+
+	DISREG="'pointcloud','local','open3d'"
+
+	for s in $SETS ; 
+	do
+		FPFH_VERSION=open3d \
+		FGR_VERSION=local \
+		INPUT_PATH=dat/$s/ \
+		OUTPUT_PATH=dat/$s/ \
+		OUTPUT_NAME=local \
+			./Registration.exe pointcloud
+		
+		FPFH_VERSION=open3d \
+		FGR_VERSION=open3d \
+		INPUT_PATH=dat/$s/ \
+		OUTPUT_PATH=dat/$s/ \
+		OUTPUT_NAME=open3d \
+			./Registration.exe pointcloud
+	done
 }
 
 # End of Program
@@ -56,10 +71,11 @@ Visualize()
 	echo Visualizing
 	MATOPT="-wait -nodesktop -nosplash"
 
-	DISREG="'pointcloud','local','open3d'"
-
-	matlab $MATOPT \
-	-r "addpath('$MAT');displayRegistration({$DISREG},'dat/','fig/');exit"
+	for s in $SETS;
+	do
+		matlab $MATOPT \
+		-r "addpath('$MAT');displayRegistration({$DISREG},'dat/$s','fig/$s');"
+	done
 }
 
 # End of Visualize

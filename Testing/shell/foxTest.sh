@@ -7,10 +7,10 @@ Prepare()
 	# Setup folders needed
 	TNAME=`basename -- "$0"`
 	FIG=../../figures/${TNAME%.*}
-	DAT=../../data
+	DAT=../../data/fox
 	MAT=../../matlab
 
-	mkdir -p fig dat/left dat/right dat/upright dat/upsidedown
+	mkdir -p fig 
 
 	# Define input and output paths
 	export INPUT_PATH="dat/"
@@ -25,11 +25,13 @@ Prepare()
 		linux*)   DATA="*" ;;
 		cygwin*)  DATA="0[0-1]*" ;;
 	esac
-	cp -ft dat/left $DAT/fox/left/pointcloud_$DATA
-	cp -ft dat/right $DAT/fox/right/pointcloud_$DATA
-	cp -ft dat/upright $DAT/fox/upright/pointcloud_$DATA
-	cp -ft dat/upsidedown $DAT/fox/upsidedown/pointcloud_$DATA
 
+	SETS="left right upright upsidedown"
+	SETS="left"
+	for orientation in $SETS ; do
+		mkdir -p dat/$orientation fig/$orientation
+		cp -ft dat/$orientation/ $DAT/$orientation/pointcloud_$DATA
+	done
 }
 
 # End of Preparation
@@ -38,33 +40,26 @@ Prepare()
 
 Program()
 {
-	ALPHA=1.5 \
-	FPFH_VERSION=open3d \
-	FGR_VERSION=local \
-	INPUT_PATH=dat/left/ \
-	OUTPUT_NAME=foxLeft \
-		./Registration.exe pointcloud
+	export ALPHA=1.5
 
-	ALPHA=1.5 \
-	FPFH_VERSION=open3d \
-	FGR_VERSION=local \
-	INPUT_PATH=dat/right/ \
-	OUTPUT_NAME=foxRight \
-		./Registration.exe pointcloud
+	DISREG="'pointcloud','local','open3d'"
 
-	ALPHA=1.5 \
-	FPFH_VERSION=open3d \
-	FGR_VERSION=local \
-	INPUT_PATH=dat/upright/ \
-	OUTPUT_NAME=foxUpright \
-		./Registration.exe pointcloud
-
-	ALPHA=1.5 \
-	FPFH_VERSION=open3d \
-	FGR_VERSION=local \
-	INPUT_PATH=dat/upsidedown/ \
-	OUTPUT_NAME=foxUpsidedown \
-		./Registration.exe pointcloud	
+	for s in $SETS ; 
+	do
+		FPFH_VERSION=open3d \
+		FGR_VERSION=local \
+		INPUT_PATH=dat/$s/ \
+		OUTPUT_PATH=dat/$s/ \
+		OUTPUT_NAME=local \
+			./Registration.exe pointcloud
+		
+		FPFH_VERSION=open3d \
+		FGR_VERSION=open3d \
+		INPUT_PATH=dat/$s/ \
+		OUTPUT_PATH=dat/$s/ \
+		OUTPUT_NAME=open3d \
+			./Registration.exe pointcloud
+	done
 }
 
 # End of Program
@@ -77,11 +72,11 @@ Visualize()
 	echo Visualizing
 	MATOPT="-wait -nodesktop -nosplash"
 
-	DISREG="'foxLeft','foxRight','foxUpright','foxUpsidedown'"
-
-	matlab $MATOPT \
-	-r "addpath('$MAT');displayRegistration({$DISREG},'dat/','fig/');exit"
-
+	for s in $SETS;
+	do
+		matlab $MATOPT \
+		-r "addpath('$MAT');displayRegistration({$DISREG},'dat/$s','fig/$s');"
+	done
 }
 
 # End of Visualize
