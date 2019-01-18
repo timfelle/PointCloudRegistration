@@ -27,7 +27,6 @@ Prepare()
 	esac
 
 	SETS="left right upright upsidedown"
-	SETS="left"
 	for orientation in $SETS ; do
 		mkdir -p dat/$orientation fig/$orientation
 		cp -ft dat/$orientation/ $DAT/$orientation/pointcloud_$DATA
