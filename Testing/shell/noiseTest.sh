@@ -55,7 +55,7 @@ Program()
 	echo " "
 
 	OUTPUT_NAME=resultGauss1 \
-		ALPHA=1.6 INI_R=0.005 END_R=0.05 NUM_R=10\
+		ALPHA=1.6 INI_R=0.005 END_R=0.1 NUM_R=10\
 		./Registration.exe gaussianBunny1.ply gaussianBunny2.ply
 
 	echo "---------------------------------------------------------------------"
