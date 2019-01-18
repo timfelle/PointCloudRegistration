@@ -1,4 +1,4 @@
-function displayRegistration(inputName,dataPath,exportLocation)
+function displayRegistration(inputName,dataPath,exportLocation,denoise)
 %DISPLAYMODEL
 %  This function displays a .ply point cloud as a 3d scatter.
 %  __________________________________________________________________
@@ -29,6 +29,9 @@ end
 if ~exist('exportLocation','var') || isempty(exportLocation)
     exportLocation = '../logs/matlab';
 end
+if ~exist('denoise','var') || isempty('denoise')
+    denoise = false;
+end
 if ischar(inputName)
     inputName = {inputName};
 end
@@ -46,11 +49,12 @@ for input=1:length(inputName)
 
 	hold on
 	for i=1:length(dataName)
-	    dispReg(dataName{i},dataPath,Color(i,:))
+	    dispReg(dataName{i},dataPath,Color(i,:),denoise)
 	end
 
 	hold off
-	axis vis3d
+	set(gca,'PlotBoxAspectRatio',[1,1,1],'DataAspectRatio',[1,1,1]);
+    axis vis3d
 	axis off
     view([90,20])
 
@@ -65,7 +69,7 @@ for input=1:length(inputName)
 end
 end
 
-function dispReg(name,dataPath,Color)
+function dispReg(name,dataPath,Color,denoise)
 data = name ;
 if ~exist([dataPath,data],'file')
 	error('File %s not found.',data); 
@@ -73,7 +77,10 @@ end
 
 %% Load the data
 model = pcread([dataPath,data]);
-normal = pcnormals(model,25);
+if denoise == true
+    model = pcdenoise(model);
+end
+normal = pcnormals(model,40);
 
 L1 = [0,1,1];
 L2 = [1,0,0];
@@ -86,10 +93,9 @@ I2 = normal(:,1).*L2(1) + normal(:,2).*L2(2) + normal(:,3).*L2(3);
 
 I = abs((I1 + I2)./2).*(1.0-ambient-highlight) + ambient;
 
-A = scatter3(model.Location(:,1),model.Location(:,2),model.Location(:,3));
-A.CData = I*Color;
-A.Marker = 'O';
-A.MarkerEdgeColor = 'flat';
-A.MarkerFaceColor = 'flat';
+scatter3(...
+    model.Location(:,1), model.Location(:,2), model.Location(:,3),...
+    [],I*Color,'filled','O');
+
 set(gca,'Projection', 'perspective');
 end

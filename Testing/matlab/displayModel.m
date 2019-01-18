@@ -1,4 +1,4 @@
-function displayModel(inputName,dataPath,exportLocation)
+function displayModel(inputName,dataPath,exportLocation,denoise)
 %DISPLAYMODEL
 %  This function displays a .ply point cloud as a 3d scatter.
 %  __________________________________________________________________
@@ -29,12 +29,18 @@ end
 if ~exist('exportLocation','var') || isempty(exportLocation)
     exportLocation = '../logs/matlab';
 end
+if ~exist('denoise','var') || isempty('denoise')
+    denoise = false;
+end
 if ischar(inputName)
     inputName = {inputName};
 end
 
 for input=1:length(inputName)
-    dataName = [inputName{input},'.ply'];
+    dataName = [inputName{input}];
+    if length(dataName ) < 4 || ~strcmp(dataName(end-3:end),'.ply')
+        dataName = [dataName,'.ply']; %#ok<AGROW>
+    end
     
     if ~exist([dataPath,dataName],'file')
         error('File %s not found.',dataName);
@@ -43,9 +49,10 @@ for input=1:length(inputName)
 
 	Color = [0.9,0.9,0.9];
     hold on
-    dispMod(dataName,dataPath,Color);
+    dispMod(dataName,dataPath,Color,denoise);
     hold off
-	axis equal
+    set(gca,'PlotBoxAspectRatio',[1,1,1],'DataAspectRatio',[1,1,1]);
+    axis vis3d
 	axis off
     view([90,20])
 
@@ -60,10 +67,13 @@ for input=1:length(inputName)
 end
 end
 
-function dispMod(dataName,dataPath,Color)
+function dispMod(dataName,dataPath,Color,denoise)
 
 %% Load the data
 model = pcread([dataPath,dataName]);
+if denoise == true
+    model = pcdenoise(model);
+end
 normal = pcnormals(model,40);
 
 
@@ -78,10 +88,9 @@ I2 = normal(:,1).*L2(1) + normal(:,2).*L2(2) + normal(:,3).*L2(3);
 
 I = abs((I1 + I2)./2).*(1.0-ambient-highlight) + ambient;
 
-A = scatter3(model.Location(:,1),model.Location(:,2),model.Location(:,3));
-A.CData = I*Color;
-A.Marker = 'O';
-A.MarkerEdgeColor = 'flat';
-A.MarkerFaceColor = 'flat';
+scatter3(...
+    model.Location(:,1), model.Location(:,2), model.Location(:,3),...
+    [],I*Color,'filled','O');
+
 set(gca,'Projection', 'perspective');
 end
