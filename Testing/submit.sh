@@ -98,7 +98,7 @@ do
 		fi
 	else
 		bkill -J $test
-		sleep 2
+		sleep 1
 		# Create the folder needed
 		rm -fr $LPATH/$test
 		mkdir -p $LPATH/$test
