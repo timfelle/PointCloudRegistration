@@ -45,11 +45,11 @@ for input=1:length(inputName)
     hold on
     dispMod(dataName,dataPath,Color);
     hold off
-	axis vis3d
+	axis equal
 	axis off
     view([90,20])
 
-    if nargin ~= 0
+    if nargin == 3
 		if ~isunix
         	ExportFigures(F,exportLocation,'asp',1)
 		else
