@@ -36,6 +36,10 @@ if ischar(inputName)
     inputName = {inputName};
 end
 
+if ~strcmp(dataPath(end),'/')
+	dataPath = [dataPath,'/'];
+end
+
 for input=1:length(inputName)
     dataName = [inputName{input}];
     if length(dataName ) < 4 || ~strcmp(dataName(end-3:end),'.ply')
@@ -46,16 +50,22 @@ for input=1:length(inputName)
         error('File %s not found.',dataName);
     end
 	F = CreateFigure(inputName{input});
+	A = axes();
+	axis tight
+	set(A,'DataAspectRatio',[1,1,1]);
+    axis vis3d
 
 	Color = [0.9,0.9,0.9];
     hold on
-    dispMod(dataName,dataPath,Color,denoise);
-    hold off
-    set(gca,'PlotBoxAspectRatio',[1,1,1],'DataAspectRatio',[1,1,1]);
-    axis vis3d
+    	dispMod(dataName,dataPath,Color,denoise);
+	hold off
+	
 	axis off
-    view([90,20])
-
+	view([90,20])
+	
+	if isempty(A.Children)
+		error('No Plots generated');
+	end
     if nargin == 3
 		if ~isunix
         	ExportFigures(F,exportLocation,'asp',1)

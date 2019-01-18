@@ -35,11 +35,18 @@ end
 if ischar(inputName)
     inputName = {inputName};
 end
+if ~strcmp(dataPath(end),'/')
+	dataPath = [dataPath,'/'];
+end
 
 for input=1:length(inputName)
 	dataName = findData(dataPath,inputName{input});
 
 	F = CreateFigure(inputName{input});
+	A = axes();
+	axis tight
+	set(A,'DataAspectRatio',[1,1,1]);
+    axis vis3d
 
 	if (size(dataName,2) <= 3)
 		Color = flipud(colormap(gray(3)));
@@ -53,11 +60,12 @@ for input=1:length(inputName)
 	end
 
 	hold off
-	set(gca,'PlotBoxAspectRatio',[1,1,1],'DataAspectRatio',[1,1,1]);
-    axis vis3d
 	axis off
     view([90,20])
 
+	if isempty(A.Children)
+		error('No Plots generated');
+	end
     if nargin ~= 0
 		if ~isunix
         	ExportFigures(F,exportLocation,'asp',1)
