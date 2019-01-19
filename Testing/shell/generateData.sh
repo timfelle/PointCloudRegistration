@@ -79,7 +79,7 @@ Visualize()
 	echo Visualizing
 	MATOPT="-wait -nodesktop -nosplash"
 	matlab $MATOPT \
-		-r "addpath('$MAT');displayModel({$MODEL},'dat/','fig/');exit;"
+		-r "addpath('$MAT');displayRegistration({$MODEL},'dat/','fig/');exit;"
 }
 
 # End of Visualize
