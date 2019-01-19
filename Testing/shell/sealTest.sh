@@ -41,8 +41,6 @@ Program()
 {
 	export ALPHA=1.5
 
-	DISREG="'pointcloud','local','open3d'"
-
 	for s in $SETS ; 
 	do
 		FPFH_VERSION=open3d \
@@ -70,7 +68,8 @@ Visualize()
 	echo ' '
 	echo Visualizing
 	MATOPT="-wait -nodesktop -nosplash"
-
+	DISREG="'pointcloud','local','open3d'"
+	
 	for s in $SETS;
 	do
 		matlab $MATOPT \
