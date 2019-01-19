@@ -39,20 +39,18 @@ Prepare()
 
 Program()
 {
-	export ALPHA=1.5
+	export ALPHA=1.7
 
 	DISREG="'pointcloud','local','open3d'"
 
 	for s in $SETS ; 
 	do
 		FPFH_VERSION=open3d \
-		FGR_VERSION=local \
 		INPUT_PATH=dat/$s/ \
 		OUTPUT_PATH=dat/$s/ \
 		OUTPUT_NAME=local \
 			./Registration.exe pointcloud
 		
-		FPFH_VERSION=open3d \
 		FGR_VERSION=open3d \
 		INPUT_PATH=dat/$s/ \
 		OUTPUT_PATH=dat/$s/ \
