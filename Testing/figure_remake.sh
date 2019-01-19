@@ -55,7 +55,7 @@ do
 		;;
 		sealTest)
 			FIGS="'pointcloud','local','open3d'"
-			VER="left right upright upsidedown"
+			VER="left right upright"
 			for v in $VER ;
 			do
 				matlab -wait -nodesktop -nosplash -r "
