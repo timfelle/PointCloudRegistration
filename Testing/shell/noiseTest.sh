@@ -61,7 +61,7 @@ Program()
 	echo "---------------------------------------------------------------------"
 	echo " "
 	export NOISE_TYPE=gaussian
-	export NOISE_STRENGTH=0.2
+	export NOISE_STRENGTH=0.05
 	./GenerateData.exe bunnyClean.ply gaussianBunny3.ply
 	./GenerateData.exe bunnyTransform.ply gaussianBunny4.ply
 	echo " "

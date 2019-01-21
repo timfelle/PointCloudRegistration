@@ -7,10 +7,10 @@ Prepare()
 	# Setup folders needed
 	TNAME=`basename -- "$0"`
 	FIG=../../figures/${TNAME%.*}
-	DAT=../../data/fox
+	DAT=../../data
 	MAT=../../matlab
 
-	mkdir -p fig 
+	mkdir -p fig $FIG $FIG/data dat
 
 	# Define input and output paths
 	export INPUT_PATH="dat/"
@@ -21,16 +21,16 @@ Prepare()
 	echo "   Output: $OUTPUT_PATH"
 	echo ' '
 
-	case "$OSTYPE" in
-		linux*)   DATA="*" ;;
-		cygwin*)  DATA="0[0-1]*" ;;
-	esac
+	# Fetch the data needed from the data folder
+	cp $DAT/bunnyPartial1.ply dat/bunnyClean.ply
+	cp $DAT/bunnyPartial2.ply dat/bunnyTransform.ply
 
-	SETS="left right upright upsidedown"
-	for orientation in $SETS ; do
-		mkdir -p dat/$orientation fig/$orientation
-		cp -ft dat/$orientation/ $DAT/$orientation/pointcloud_$DATA
-	done
+	# Rotation in degrees: 30, 30, 45 
+	NOISE_TYPE=none \
+	ROTATION="0.52,0.52,0.79" \
+	TRANSLATION="0.05,0.0,-0.01" \
+		./GenerateData.exe bunnyTransform.ply bunnyTransform.ply
+
 }
 
 # End of Preparation
@@ -39,24 +39,22 @@ Prepare()
 
 Program()
 {
-	export ALPHA=1.7
+	export NOISE_TYPE=gaussian
+	export NOISE_STRENGTH=0.2
+	./GenerateData.exe bunnyClean.ply gaussianBunny1.ply
+	./GenerateData.exe bunnyTransform.ply gaussianBunny2.ply
+	echo " "
 
-	DISREG="'pointcloud','local','open3d'"
+	export ALPHA=1.6
+	export INI_R=0.14
+	export END_R=0.15
+	export NUM_R=2
+	export EXPORT_CORRESPONDENCES=true
 
-	for s in $SETS ; 
-	do
-		FPFH_VERSION=open3d \
-		INPUT_PATH=dat/$s/ \
-		OUTPUT_PATH=dat/$s/ \
-		OUTPUT_NAME=local \
-			./Registration.exe pointcloud
-		
-		FGR_VERSION=open3d \
-		INPUT_PATH=dat/$s/ \
-		OUTPUT_PATH=dat/$s/ \
-		OUTPUT_NAME=open3d \
-			./Registration.exe pointcloud
-	done
+	OUTPUT_NAME=bunny  ./Registration.exe bunny
+
+	OUTPUT_NAME=gaussian ./Registration.exe gaussian
+
 }
 
 # End of Program
@@ -67,13 +65,12 @@ Visualize()
 {
 	echo ' '
 	echo Visualizing
-	MATOPT="-wait -nodesktop -nosplash"
 
-	for s in $SETS;
-	do
-		matlab $MATOPT \
-		-r "addpath('$MAT');displayRegistration({$DISREG},'dat/$s','fig/$s');exit;"
-	done
+	MATTESTS="'bunny','gaussian'"
+
+	MATOPT="-wait -nodesktop -nosplash"
+	matlab $MATOPT \
+	-r "addpath('$MAT');displayCorrespondences({$MATTESTS},'dat/','fig/');exit"
 }
 
 # End of Visualize

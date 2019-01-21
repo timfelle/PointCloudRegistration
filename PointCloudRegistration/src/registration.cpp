@@ -149,10 +149,11 @@ int main(int argc, char *argv[])
 				for (int i = 0; i < K.size(); i++)
 				{
 					correspondence_0.points_.push_back(model[s].points_[K[i](0)]);
-					correspondence_1.points_.push_back(model[s].points_[K[i](1)]);
+					correspondence_1.points_.push_back(model[s+1].points_[K[i](1)]);
 				}
-				WritePointCloud(string(output_path) + string("Corr_0.ply"), correspondence_0);
-				WritePointCloud(string(output_path) + string("Corr_1.ply"), correspondence_1);
+				string corr_name = string(output_path) + string(output_name) + string("_corr_pre_");
+				WritePointCloud(corr_name + to_string(s) + string(".ply"), correspondence_0);
+				WritePointCloud(corr_name + to_string(s+1) + string(".ply"), correspondence_1);
 			}
 
 			// ------------------------------------------------------------------------
@@ -169,8 +170,9 @@ int main(int argc, char *argv[])
 					correspondence_0.points_.push_back(model[s].points_[K[i](0)]);
 					correspondence_1.points_.push_back(model[s + 1].points_[K[i](1)]);
 				}
-				WritePointCloud(string(output_path) + string("CorrT_0.ply"), correspondence_0);
-				WritePointCloud(string(output_path) + string("CorrT_1.ply"), correspondence_1);
+				string corr_name = string(output_path) + string(output_name) + string("_corr_post_");
+				WritePointCloud(corr_name + to_string(s) + string(".ply"), correspondence_0);
+				WritePointCloud(corr_name + to_string(s + 1) + string(".ply"), correspondence_1);
 			}
 		}
 		cout << "Estimated transformation" << endl << T << endl;

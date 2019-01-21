@@ -64,7 +64,7 @@ for input=1:length(inputName)
     view([90,20])
 
 	if isempty(A.Children)
-		error('No Plots generated');
+		error('Plots are empty, displayRegistration(%s)',inputName{input});
 	end
     if nargin ~= 0
 		if ~isunix
