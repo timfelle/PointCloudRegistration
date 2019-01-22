@@ -111,7 +111,7 @@ bool checkFileName(std::string input)
 vector<string> readInputFiles(int argc, char *argv[], const char *input_path)
 {
 	vector<string> dataName;
-	// Read the input from terminal.
+	// Read data names directly from input
 	if (argc >= 3)
 	{
 		for (int i = 0; i < argc - 1; i++)
@@ -128,6 +128,7 @@ vector<string> readInputFiles(int argc, char *argv[], const char *input_path)
 				dataName.push_back(input_path + input);
 		}
 	}
+	// Read all data from directory with basename
 	else if (argc == 2)
 	{
 		string baseName = string(argv[1]);
@@ -139,7 +140,9 @@ vector<string> readInputFiles(int argc, char *argv[], const char *input_path)
 			if (fileName.find(baseName) != string::npos)
 				dataName.push_back(input_path + fileName);
 		}
+		sort(dataName.begin(), dataName.end());
 	}
+	// Prompt user for datanames
 	else
 	{
 		string input;
