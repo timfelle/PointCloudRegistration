@@ -64,8 +64,9 @@ $(EXEC) : $(OBJECTS) DEPS
 
 # - Dependencies
 DEPS : 
-	@echo -e "Make dependency: GenerateData.exe"
-	@make -sf Makefile.GenerateData
+	@echo -e "make: dependencies."
+	@make -f Makefile.GenerateData
+	@echo -e "make: completed dependencies."
 
 # - C Files
 .SUFFIXES: .cpp
