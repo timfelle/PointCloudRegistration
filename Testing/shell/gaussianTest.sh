@@ -46,15 +46,22 @@ Program()
 	echo " "
 
 	export ALPHA=1.6
-	export INI_R=0.14
-	export END_R=0.15
 	export NUM_R=2
 	export EXPORT_CORRESPONDENCES=true
 
-	OUTPUT_NAME=bunny  ./Registration.exe bunny
+	INI_R=0.99 END_R=0.1 \
+	OUTPUT_NAME=bun10  ./Registration.exe bunny > tmp.txt &
 
-	OUTPUT_NAME=gaussian ./Registration.exe gaussian
+	INI_R=0.99 END_R=0.1 \
+	OUTPUT_NAME=gauss10 ./Registration.exe gaussian > tmp.txt &
+	
+	
+	INI_R=0.14 END_R=0.15 \
+	OUTPUT_NAME=bun15  ./Registration.exe bunny > tmp.txt &
 
+	INI_R=0.14 END_R=0.15 \
+	OUTPUT_NAME=gauss15 ./Registration.exe gaussian > tmp.txt &
+	wait
 }
 
 # End of Program
@@ -66,7 +73,7 @@ Visualize()
 	echo ' '
 	echo Visualizing
 
-	MATTESTS="'bunny','gaussian'"
+	MATTESTS="'bun10','gauss10','bun15','gauss15'"
 
 	MATOPT="-wait -nodesktop -nosplash"
 	matlab $MATOPT \

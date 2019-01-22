@@ -54,7 +54,7 @@ do
 			done
 		;;
 		sealTest)
-			FIGS="'pointcloud','local','open3d'"
+			FIGS="local','open3d'"
 			VER="left right upright"
 			for v in $VER ;
 			do

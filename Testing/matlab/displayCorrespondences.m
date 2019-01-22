@@ -33,35 +33,41 @@ if dataPath(end) ~= '/'
     dataPath = [dataPath,'/'];
 end
 
+F = CreateFigure(inputName);
+A = zeros(length(inputName),1);
 for i = 1:length(inputName)
     dataName = findData(dataPath,inputName{i});
     if isempty(dataName)
         error('File %s not found.',inputName{i});
     end
-    F = CreateFigure(inputName{i});
-	A = axes();
+    figure(F{i});
+    A(i) = axes();
+	
 	axis tight
-	set(A,'DataAspectRatio',[1,1,1]);
+	set(A(i),'DataAspectRatio',[1,1,1]);
     axis vis3d
     
     Corr_pre  = { dataName{ contains(dataName,'pre') }};
+    if length(Corr_pre) < 2
+        error('Not enough datasets found');
+    end
     
-    Color = colormap(jet(length(Corr_pre)+1));
+    Color = colormap(gray(length(Corr_pre)+1));
     hold on
-    dispPC(Corr_pre{1},dataPath,Color(3,:))
-    dispPC(Corr_pre{2},dataPath,Color(2,:))
+    dispPC(Corr_pre{1},dataPath,Color(2,:))
+    dispPC(Corr_pre{2},dataPath,Color(1,:))
     hold off
-	axis off
+	grid on
     view([120,20])
-    
-    set(A,'Projection','perspective');
-    
-	if ~isunix
-		ExportFigures(F,exportLocation,'asp',1);
-	else
-		ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',600);
-	end
 end
+set(A,'Projection','perspective');
+set(A,'XLim',get(A(1),'XLim'),'YLim',get(A(1),'YLim'),'ZLim',get(A(1),'ZLim'));
+
+if ~isunix
+		ExportFigures([F{:}],exportLocation,'asp',1);
+	else
+		ExportFigures([F{:}],exportLocation,'asp',1,'ext','png','dpi',600);
+	end
 end
 
 function dispPC(name,dataPath,Color)
@@ -79,11 +85,11 @@ L2 = L2./norm(L2);
 I1 = normal(:,1).*L1(1) + normal(:,2).*L1(2) + normal(:,3).*L1(3);
 I2 = normal(:,1).*L2(1) + normal(:,2).*L2(2) + normal(:,3).*L2(3);
 
-I = abs((I1 + I2)./2).*(1.0-ambient-highlight) + ambient;
+I = 1;%abs((I1 + I2)./2).*(1.0-ambient-highlight) + ambient;
 
 scatter3(...
     model.Location(:,1), model.Location(:,2), model.Location(:,3),...
-    [],I*Color,'filled','O');
+    100,I*Color,'filled','O');
 
 set(gca,'Projection', 'perspective');
 end
