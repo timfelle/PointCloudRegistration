@@ -146,7 +146,9 @@ fi
 echo ' '
 echo __________________________________________________________________________
 
-Visualize
+case "$OSTYPE" in
+		cygwin*)  Visualize ;;
+esac
 
 if [ -s error.err ] ; then
 	Early
