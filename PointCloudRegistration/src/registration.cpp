@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 	cout << "Registration started for the surfaces:" << endl;
+	sort(dataName.begin(), dataName.end());
 	for (int i = 0; i < dataName.size(); i++)
 		cout << "  " << i << ": " << dataName[i] << endl;
 	cout << endl;
