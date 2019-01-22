@@ -44,8 +44,6 @@ for i = 1:length(inputName)
     A(i) = axes();
 	
 	axis tight
-	set(A(i),'DataAspectRatio',[1,1,1]);
-    axis vis3d
     
     Corr_pre  = { dataName{ contains(dataName,'pre') }};
     if length(Corr_pre) < 2
