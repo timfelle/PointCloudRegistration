@@ -71,7 +71,7 @@ for input=1:length(inputName)
 	if isempty(A.Children)
 		error('Plots are empty, displayRegistration(%s)',inputName{input});
 	end
-    if nargin ~= 0
+	if nargin ~= 0
 		if ~isunix
         	ExportFigures(F,exportLocation,'asp',1)
 		else

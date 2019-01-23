@@ -1,21 +1,25 @@
 function animateRegistration(preName,postName,dataPath,exportLocation)
-%DISPLAYMODEL
-%  This function displays a .ply point cloud as a 3d scatter.
+%ANIMATEREGISTRATION
+%  This function creates a animation showing the initial and final
+%  poses for a set of surfaces algned with a registration. The 
+%  animation orbits around the two models over 15 seconds.
 %  __________________________________________________________________
-%  DISPLAYMODEL()
-%       Displays the bunnyPartial1.ply file located on the path
+%  ANIMATEREGISTRATION()
+%       Runs the animation for the partial bunny both as initial and 
+%		final pose.
 %       '../data/' and exports the result in the folder 
 %       '../logs/matlab'.
 %
-%  DISPLAYMODEL(name)
-%       Displays the model located in the file 'name.ply'.
+%  ANIMATEREGISTRATION(nameIni,nameEnd)
+%       Read the initial and final poses from the file names specified.
 %       Import and export path is as above.
 %
-%  DISPLAYMODEL(name, dataPath)
-%       Locates the model in the folder specified by 'dataPath'.
+%  ANIMATEREGISTRATION(name, dataPath)
+%       Locates the models in the folder specified by 'dataPath'.
 %
-%  DISPLAYMODEL(name, dataPath, exportLocation)
-%       Exports the model at location specified by 'exportLocation'.
+%  ANIMATEREGISTRATION(name, dataPath, exportLocation)
+%       Exports the animation at location specified by 
+%		'exportLocation'.
 %
 %  See also EXPORTFIGURES.
 

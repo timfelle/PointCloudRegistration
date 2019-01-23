@@ -95,6 +95,6 @@ void export_correspondences(bool export_corr,
 	}
 	string corr_name = 
 		string(output_path) + string(output_name) + string("_corr_pre_");
-	WritePointCloud(corr_name + string(".ply"), correspondence_0);
-	WritePointCloud(corr_name + string(".ply"), correspondence_1);
+	WritePointCloud(corr_name + string("0")+ string(".ply"), correspondence_0);
+	WritePointCloud(corr_name + string("1")+ string(".ply"), correspondence_1);
 }

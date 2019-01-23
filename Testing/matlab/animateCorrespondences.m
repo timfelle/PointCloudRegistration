@@ -1,21 +1,27 @@
 function animateCorrespondences(inputName,dataPath,exportLocation)
-%DISPLAYMODEL
-%  This function displays a .ply point cloud as a 3d scatter.
+%ANIMATECORRESPONDENCES
+%  This function creates a animation showing the initial and final
+%  poses for a set of surface correspondences algned with a 
+%  registration. The animation orbits around the two models over 
+%  15 seconds.
 %  __________________________________________________________________
-%  DISPLAYMODEL()
-%       Displays the bunnyPartial1.ply file located on the path
+%  ANIMATECORRESPONDENCES()
+%       Runs the animation for the partial bunny both as initial and 
+%		final pose.
 %       '../data/' and exports the result in the folder 
 %       '../logs/matlab'.
 %
-%  DISPLAYMODEL(name)
-%       Displays the model located in the file 'name.ply'.
-%       Import and export path is as above.
+%  ANIMATECORRESPONDENCES(name)
+%		Displays the correspondences located in the file 'name_corr*.ply'.
+%       Import and export path is as above. Figures will be exported with
+%       the filename "name" as well.
 %
-%  DISPLAYMODEL(name, dataPath)
-%       Locates the model in the folder specified by 'dataPath'.
+%  ANIMATECORRESPONDENCES(name, dataPath)
+%       Locates the models in the folder specified by 'dataPath'.
 %
-%  DISPLAYMODEL(name, dataPath, exportLocation)
-%       Exports the model at location specified by 'exportLocation'.
+%  ANIMATECORRESPONDENCES(name, dataPath, exportLocation)
+%       Exports the animation at location specified by 
+%		'exportLocation'.
 %
 %  See also EXPORTFIGURES.
 

@@ -8,7 +8,7 @@ function displayCorrespondences(inputName,dataPath,exportLocation)
 %       '../logs/matlab'.
 %
 %  DISPLAYCORRESPONDENCES(name)
-%       Displays the correspondences located in the file 'name_corr*.ply'.
+%       Display the correspondences located in the file 'name_corr*.ply'.
 %       Import and export path is as above. Figures will be exported with
 %       the filename "name" as well.
 %

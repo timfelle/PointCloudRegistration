@@ -12,7 +12,8 @@ function F = CreateFigure(Name)
 %
 %  CREATEFIGURE(Names)
 %       If Names is a cell array of strings the function will create N
-%       figures with the names specified in Names.
+%       figures with the names specified in Names. Output is then a 
+%		vector of figures.
 %
 %  F = CREATEFIGURE(...)
 %       F is a vector containing all figures created by the function.
@@ -26,10 +27,10 @@ end
 if ~iscell(Name)
     Name = {Name};
 end
-F = [];
+
 for i = 1:length(Name)
     fig = findobj('Name',Name{i});
-    if isempty(fig)
+	if isempty(fig)
         F(i) = figure(); %#ok<*AGROW>
         set(F(i),'Name',Name{i});
     else
@@ -38,4 +39,3 @@ for i = 1:length(Name)
         figure(F(i));
     end
 end
-F = get(groot,'Children');

@@ -33,18 +33,21 @@ function ExportFigures(FigureList,ExportLocation,varargin)
 %  See also GROOT, PRINT.
 
 %% Handeling inputs
-if (nargin == 0)
-    FigureList = get(groot,'Children');
-    ExportLocation = './Figures/';
+if (~exist('FigureList','var') || isempty(FigureList))
+    FigureList = get(groot,'Children');    
 end
-if (nargin > 0 && isempty(FigureList))
-    FigureList = get(groot,'Children');
+if (~exist('ExportLocation','var') || isempty(ExportLocation))
+	ExportLocation = './Figures/';
 end
-if (nargin > 1 && ~exist(ExportLocation,'dir'))
+
+if (~exist(ExportLocation,'dir'))
     fprintf('\nDirectory not found, created at: %s\n',ExportLocation)
 end
 if ~strcmp(ExportLocation(end),'/')
     ExportLocation = [ExportLocation,'/'];
+end
+if iscell(FigureList) == true
+	FigureList = [FigureList{:}];
 end
 
 if nargin > 2
