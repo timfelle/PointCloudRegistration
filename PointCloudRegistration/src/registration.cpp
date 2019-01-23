@@ -118,8 +118,9 @@ int main(int argc, char *argv[])
 	// ------------------------------------------------------------------------
 	// Compute correspondences
 	vector<vector<Vector2i>> K(nSurfaces-1);
-	
-	K = computeCorrespondences(model);
+	string fgr_version = string(getenv("FGR_VERSION"));
+	if ( fgr_version.compare("local")==0 )
+		K = computeCorrespondences(model);
 	fastGlobalRegistration(model, K);
 
 	// ------------------------------------------------------------------------

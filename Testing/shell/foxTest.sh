@@ -23,7 +23,7 @@ Prepare()
 
 	case "$OSTYPE" in
 		linux*)   DATA="*" ;;
-		cygwin*)  DATA="0[0-3]*" ;;
+		cygwin*)  DATA="0[0-1]*" ;;
 	esac
 
 	SETS="left right upright upsidedown"
@@ -106,7 +106,7 @@ Early()
 		cat error.err 
 		echo ' ===================== ERRORS SHOWN ABOVE ===================== '
 		echo ' '
-		exit
+		exit 2
 	fi
 }
 
