@@ -43,24 +43,25 @@ void fastGlobalRegistration(
 
 		models[1].Transform(T);
 		export_correspondences(export_corr, models[0], models[1], K[0]);
-		
+
 		cout << "Estimated transformation" << endl << T << endl;
-		return;
-	}
 
+	}
 	// Multi surface implementation (Serial Pairs at the moment)
-	cout << "Surface:" << endl;
-	for (int s = 0; s < nSurfaces - 1; s++)
+	else
 	{
-		cout << "   " << s << ", " << s + 1 << endl;
+		cout << "Surface:" << endl;
+		for (int s = 0; s < nSurfaces - 1; s++)
+		{
+			cout << "   " << s << ", " << s + 1 << endl;
 
-		// Compute surface registration
-		T = fastGlobalRegistrationPair(K[s], models[s], models[s + 1]);
+			// Compute surface registration
+			T = fastGlobalRegistrationPair(K[s], models[s], models[s + 1]);
 
-		models[s + 1].Transform(T);
-
+			models[s + 1].Transform(T);
+		}
 	}
-
+	return;
 }
 
 
@@ -76,7 +77,7 @@ Matrix4d fastGlobalRegistrationPair(
 		FastGlobalRegistrationOption opts;
 		opts.iteration_number_ = 1e3;
 		//opts.division_factor_ = 1.1;
-		//opts.decrease_mu_ = true;
+		opts.decrease_mu_ = true;
 		//opts.maximum_correspondence_distance_;
 		//opts.maximum_tuple_count_
 		//opts.use_absolute_scale_
