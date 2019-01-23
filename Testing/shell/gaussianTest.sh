@@ -90,7 +90,7 @@ Finalize()
 	mkdir -p fig $FIG $FIG/data 
 
 	mv -ft $FIG fig/* 2>/dev/null
-	mv -ft $FIG/data dat/* 2>/dev/nulls
+	mv -ft $FIG/data dat/* 2>/dev/null
 	rm -fr *.exe *.sh fig dat
 
 	echo "   Figures moved to $FIG."
