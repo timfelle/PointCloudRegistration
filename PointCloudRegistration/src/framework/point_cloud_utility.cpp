@@ -9,6 +9,7 @@
 
 #include <Open3D/Core/Core.h>
 #include <Eigen/Dense>
+#include <Open3D/IO/IO.h>
 
 #include "point_cloud_utility.h"
 #include "utility_functions.h"
@@ -75,4 +76,25 @@ void applyNoise(PointCloud &model)
 		cerr << "   Noise type invalid" << endl;
 	}
 	return;
+}
+
+
+void export_correspondences(bool export_corr, 
+	PointCloud model_0, PointCloud model_1, vector<Vector2i> K)
+{
+	if (!export_corr) return;
+
+	char *output_name = getenv("OUTPUT_NAME");
+	char *output_path = getenv("OUTPUT_PATH");
+
+	PointCloud correspondence_0, correspondence_1;
+	for (int i = 0; i < K.size(); i++)
+	{
+		correspondence_0.points_.push_back(model_0.points_[K[i](0)]);
+		correspondence_1.points_.push_back(model_1.points_[K[i](1)]);
+	}
+	string corr_name = 
+		string(output_path) + string(output_name) + string("_corr_pre_");
+	WritePointCloud(corr_name + string(".ply"), correspondence_0);
+	WritePointCloud(corr_name + string(".ply"), correspondence_1);
 }

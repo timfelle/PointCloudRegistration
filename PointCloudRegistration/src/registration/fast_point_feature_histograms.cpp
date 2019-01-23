@@ -17,7 +17,8 @@ using namespace open3d;
 
 // ============================================================================
 // CORRESPONDANCE PAIR
-vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, PointCloud &model_1)
+vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, 
+	PointCloud &model_1)
 {
 	// Compute FPFH for the two surfaces
 	vector<int> P_0, P_1;
@@ -188,7 +189,7 @@ void computePersistentPoints(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	double ini_R = atof(getenv("INI_R"));	// Maximal proportion of R to use.
 	double end_R = atof(getenv("END_R"));	// Minimal proportion of R to use.
 	double num_R = atof(getenv("NUM_R"));	// Multiplicative step size for R.
-	double alpha = atof(getenv("ALPHA"));	// Proportion of STD to mark persistent.
+	double alpha = atof(getenv("ALPHA"));	// Cutoff STD to mark persistent.
 
 	int n_scales = 0;
 	int N = model.points_.size();
@@ -335,7 +336,8 @@ vector<Vector2i> mutualNN(vector<Vector2i> K_0, vector<Vector2i> K_1)
 }
 // ============================================================================
 // RUN TUPLE TEST
-vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0, PointCloud model_1)
+vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0, 
+	PointCloud model_1)
 {
 	// Initialize values
 	vector<Vector2i> K_III;

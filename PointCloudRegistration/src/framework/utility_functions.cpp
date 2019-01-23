@@ -47,7 +47,9 @@ void charToVec(const char *input, Eigen::Vector3d &vec)
 	string Input = string(input);
 	while (true) {
 		ind_after = Input.find(",",ind_before+1);
-        v.push_back(atof(Input.substr(ind_before, ind_after-ind_before).c_str()));
+        v.push_back(
+			atof(Input.substr(ind_before, ind_after-ind_before).c_str())
+		);
 		ind_before = ind_after+1;
 		if (ind_after > Input.size())
 			break;
@@ -58,8 +60,8 @@ void charToVec(const char *input, Eigen::Vector3d &vec)
 }
 
 
-// Function used to convert vectors of rotation (pitch, roll, yaw) and transformation (x, y, z) 
-// to a 4 by 4 transformation matrix.
+// Function used to convert vectors of rotation (pitch, roll, yaw) and 
+// transformation (x, y, z) to a 4 by 4 transformation matrix.
 Matrix4d transformationMatrix(Eigen::Vector3d rot, Eigen::Vector3d trans)
 {
 	Matrix4d T;
@@ -154,7 +156,8 @@ vector<string> readInputFiles(int argc, char *argv[], const char *input_path)
 		while (input.compare("done") != 0 && input.compare("q") != 0)
 		{
 			cout << argc << endl;
-			if (checkFileName(input_path + input)) dataName.push_back(input_path + input);
+			if (checkFileName(input_path + input)) 
+				dataName.push_back(input_path + input);
 			cout << "Surface " << dataName.size() << ": ";
 			cin >> input;
 		}

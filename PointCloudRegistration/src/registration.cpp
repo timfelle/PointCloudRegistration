@@ -121,7 +121,8 @@ int main(int argc, char *argv[])
 	
 	for (int s = 0; s < nSurfaces - 1; s++)
 	{
-		if (nSurfaces > 2) cout << "Surface: " << s << ", " << s + 1 << endl << "   ";
+		if (nSurfaces > 2) 
+			cout << "Surface: " << s << ", " << s + 1 << endl << "   ";
 
 		vector<Vector2i> K;
 		Matrix4d T;
@@ -133,7 +134,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			// ------------------------------------------------------------------------
+			// ----------------------------------------------------------------
 			// Estimate Fast Point Feature Histograms and Correspondances.
 			K = computeCorrespondancePair(model[s], model[s + 1]);
 			if (K.size() == 0)
@@ -142,38 +143,15 @@ int main(int argc, char *argv[])
 				return EXIT_FAILURE;
 			}
 
+			
+			export_correspondences(export_corr, model[s], model[s + 1], K);
 
-			if (export_corr)
-			{
-				PointCloud correspondence_0, correspondence_1;
-				for (int i = 0; i < K.size(); i++)
-				{
-					correspondence_0.points_.push_back(model[s].points_[K[i](0)]);
-					correspondence_1.points_.push_back(model[s + 1].points_[K[i](1)]);
-				}
-				string corr_name = string(output_path) + string(output_name) + string("_corr_pre_");
-				WritePointCloud(corr_name + to_string(s) + string(".ply"), correspondence_0);
-				WritePointCloud(corr_name + to_string(s + 1) + string(".ply"), correspondence_1);
-			}
-
-			// ------------------------------------------------------------------------
+			// ----------------------------------------------------------------
 			// Compute surface registration
 			T = fastGlobalRegistrationPair(K, model[s], model[s + 1]);
-
 			model[s + 1].Transform(T);
 
-			if (export_corr)
-			{
-				PointCloud correspondence_0, correspondence_1;
-				for (int i = 0; i < K.size(); i++)
-				{
-					correspondence_0.points_.push_back(model[s].points_[K[i](0)]);
-					correspondence_1.points_.push_back(model[s + 1].points_[K[i](1)]);
-				}
-				string corr_name = string(output_path) + string(output_name) + string("_corr_post_");
-				WritePointCloud(corr_name + to_string(s) + string(".ply"), correspondence_0);
-				WritePointCloud(corr_name + to_string(s + 1) + string(".ply"), correspondence_1);
-			}
+			export_correspondences(export_corr, model[s], model[s + 1], K);
 		}
 		if (nSurfaces < 3)
 			cout << "Estimated transformation" << endl << T << endl;

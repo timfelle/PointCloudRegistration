@@ -38,7 +38,8 @@ Matrix4d fastGlobalRegistrationPair(
 
 		Feature feature_0 = *ComputeFPFHFeature(model_0);
 		Feature feature_1 = *ComputeFPFHFeature(model_1);
-		RegistrationResult result = FastGlobalRegistration(model_1, model_0, feature_1, feature_0,opts);
+		RegistrationResult result = FastGlobalRegistration(
+			model_1, model_0, feature_1, feature_0,opts);
 		K = result.correspondence_set_;
 		return result.transformation_;
 	}
