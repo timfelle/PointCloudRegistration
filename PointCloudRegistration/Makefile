@@ -17,7 +17,7 @@ CXX	= g++
 
 # - C Flags
 OPTIM   =-O3
-WARN    =
+WARN    =-w
 LIBS    =-std=c++17 -I$(OPEN3D)/include/ -I$(OPEN3D)/include/Open3D -I$(EIGEN3)
 CHIP    =
 PARA    =-fopenmp
@@ -66,7 +66,6 @@ $(EXEC) : $(OBJECTS) DEPS
 DEPS : 
 	@echo -e "make: dependencies."
 	@make -f Makefile.GenerateData
-	@echo -e "make: completed dependencies."
 
 # - C Files
 .SUFFIXES: .cpp
