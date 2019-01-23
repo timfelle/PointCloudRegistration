@@ -15,44 +15,50 @@ using namespace std;
 using namespace Eigen;
 using namespace open3d;
 
+
 // ============================================================================
-// CORRESPONDANCE PAIR
-vector<Vector2i> computeCorrespondancePair(PointCloud &model_0, 
-	PointCloud &model_1)
+// COMPUTE CORRESPONDENCES
+
+vector<vector<Vector2i>> computeCorrespondences(vector<PointCloud> models)
 {
-	// Compute FPFH for the two surfaces
-	vector<int> P_0, P_1;
-	MatrixXd FPFH_0, FPFH_1;
-	vector<Vector2i> K_I_0, K_I_1, K_II, K_III;
+	// Define the vectors holding information
+	size_t nSurfaces = models.size();
 
-	// Build the 2 search trees
-	KDTreeFlann KDTree_0;
-	KDTreeFlann KDTree_1;
+	vector<vector<Vector2i>>	K(nSurfaces - 1);
+	vector<vector<int>>			P(nSurfaces);
+	vector<MatrixXd>			FPFH(nSurfaces);
+	vector<KDTreeFlann>			KDTree(nSurfaces);
 
-	computePersistentPoints(model_0, P_0, FPFH_0);
-	computePersistentPoints(model_1, P_1, FPFH_1);
+	// Compute the first persistent points
+	computePersistentPoints(models[0], P[0], FPFH[0]);
+	KDTree[0].SetMatrixData(FPFH[0].transpose());
 
-	KDTree_0.SetMatrixData(FPFH_0.transpose());
-	KDTree_1.SetMatrixData(FPFH_1.transpose());
-
-	K_I_0 = nearestNeighbour(P_0, P_1, FPFH_0, KDTree_1);
-	K_I_1 = nearestNeighbour(P_1, P_0, FPFH_1, KDTree_0);
-
-	K_II = mutualNN(K_I_0, K_I_1);
-	K_III = tupleTest(K_II, model_0, model_1);
-
-	// Set up correspondances
-	if (K_III.size() == 0)
+	// Compute correspondences
+	for (size_t s = 0; s < models.size() - 1; s++)
 	{
-		cerr << "Error in " << __func__ << endl;
-		cerr << "  No correspondences found" << endl;
-		cerr << "  K_I: " << K_I_0.size() << " " << K_I_1.size() << endl;
-		cerr << "  K_II: " << K_II.size() << endl;
-		cerr << "  K_III: " << K_III.size() << endl;
-	}
+		computePersistentPoints(models[s + 1], P[s + 1], FPFH[s + 1]);
+		KDTree[s + 1].SetMatrixData(FPFH[s + 1].transpose());
 
-	return K_III;
+		vector<Vector2i> K_I_0, K_I_1, K_II, K_III;
+		K_I_0 = nearestNeighbour(P[s], P[s + 1], FPFH[s], KDTree[s + 1]);
+		K_I_1 = nearestNeighbour(P[s + 1], P[s], FPFH[s + 1], KDTree[s]);
+
+		K_II = mutualNN(K_I_0, K_I_1);
+		K_III = tupleTest(K_II, models[s], models[s + 1]);
+
+		// Set up correspondances
+		if (K_III.size() != 0)
+			K[s] = K_III;
+		else
+		{
+			cerr << "No Correspondences found for " << s << " " << s + 1 << endl;
+			s = models.size() + 1;
+			K = vector<vector<Vector2i>>(0);
+		}
+	}
+	return K;
 }
+
 
 // ============================================================================
 // COMPUTE FPFH
@@ -193,7 +199,7 @@ void computePersistentPoints(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 
 	int n_scales = 0;
 	int N = model.points_.size();
-	
+
 	// Initialize the persistent set as all points in the set.
 	P = vector<int>(model.points_.size());
 
@@ -204,7 +210,7 @@ void computePersistentPoints(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 	// Precompute the KDTree used for distance search.
 	KDTreeFlann distTree;
 	distTree.SetGeometry(model);
-	
+
 	// ********************************************************************* \\
 	// For each radius determine the FPFH and persistent features.
 
@@ -222,7 +228,7 @@ void computePersistentPoints(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			FPFH_new = feature_0.data_.transpose();
 			r = max_r + 1;
 		}
-		else 
+		else
 		{
 			FPFH_new = computeFPFH(model, r, distTree);
 		}
@@ -236,7 +242,7 @@ void computePersistentPoints(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 		{
 			int p_idx = idx;
 			VectorXd fpfh_new = FPFH_new.row(p_idx);
-			mu += fpfh_new / (double) N;
+			mu += fpfh_new / (double)N;
 		}
 
 		// Setup distance from mu.
@@ -253,7 +259,7 @@ void computePersistentPoints(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 		// Standard Deviation of distances
 		VectorXd ones = VectorXd::Ones(dist_vec.size());
 		dist_vec -= ones * dist_vec.mean();
-		double sigma = ( dist_vec ).norm() / sqrt( P.size() - 1 );
+		double sigma = (dist_vec).norm() / sqrt(P.size() - 1);
 
 		// ================================================================= \\
 		// Determine which points have persistent features.
@@ -261,7 +267,7 @@ void computePersistentPoints(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 		for (int idx = 0; idx < P.size(); idx++)
 		{
 			int p_idx = P[idx];
-			if ( abs(dist_vec(p_idx)) > alpha*sigma )
+			if (abs(dist_vec(p_idx)) > alpha*sigma)
 			{
 				P_new.push_back(p_idx);
 			}
@@ -278,8 +284,8 @@ void computePersistentPoints(PointCloud &model, vector<int> &P, MatrixXd &FPFH)
 			n_scales++;
 		}
 	}
-	
-	MatrixXd FPFH_temp = MatrixXd::Zero(P.size(),FPFH_new.cols());
+
+	MatrixXd FPFH_temp = MatrixXd::Zero(P.size(), FPFH_new.cols());
 	for (int idx = 0; idx < P.size(); idx++)
 	{
 		int p_idx = P[idx];
@@ -336,7 +342,7 @@ vector<Vector2i> mutualNN(vector<Vector2i> K_0, vector<Vector2i> K_1)
 }
 // ============================================================================
 // RUN TUPLE TEST
-vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0, 
+vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0,
 	PointCloud model_1)
 {
 	// Initialize values
@@ -354,7 +360,7 @@ vector<Vector2i> tupleTest(vector<Vector2i> K_II, PointCloud model_0,
 	int count = 0;
 
 	// Run through all possible correspondences
-	for (size_t i = I.size() - 3; i < I.size() && count < K_II.size()*1000; )
+	for (size_t i = I.size() - 3; i < I.size() && count < K_II.size() * 1000; )
 	{
 		shuffle(I.begin(), I.end(), g);
 		vector<int> idx = { I[i], I[i + 1], I[i + 2] };

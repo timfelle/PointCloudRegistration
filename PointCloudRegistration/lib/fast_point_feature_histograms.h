@@ -9,9 +9,8 @@
 // ============================================================================
 // Function prototypes
 
-// Main function for organising the correspondences.
-std::vector<Eigen::Vector2i> computeCorrespondancePair(
-	open3d::PointCloud &model_0, open3d::PointCloud &model_1
+std::vector<std::vector<Eigen::Vector2i>> computeCorrespondences(
+	std::vector<open3d::PointCloud> models
 );
 
 // Computation of Fast Point Feature Histograms

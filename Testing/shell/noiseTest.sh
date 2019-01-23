@@ -39,7 +39,6 @@ Prepare()
 
 Program()
 {
-
 	echo "Clean ---------------------------------------------------------------"
 	echo " "
 	OUTPUT_NAME=resultClean \

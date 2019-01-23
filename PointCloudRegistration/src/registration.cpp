@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	if ((output_name = getenv("OUTPUT_NAME")) == NULL)
 		output_name = "result";
 	if (getenv("EXPORT_CORRESPONDENCES") == NULL)
-		export_corr = false;
+		PUTENV("EXPORT_CORRESPONDENCES=false");
 	if (getenv("FPFH_VERSION") == NULL)
 		PUTENV("FPFH_VERSION=local");
 	if (getenv("FGR_VERSION") == NULL)
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	// Tolerences
 	if (getenv("TOL_NU") == NULL) PUTENV("TOL_NU=1e-6");
 	if (getenv("TOL_E") == NULL) PUTENV("TOL_E=1e-6");
-	
+
 	// Radius scaling
 	if (getenv("INI_R") == NULL) PUTENV("INI_R=0.005");
 	if (getenv("END_R") == NULL) PUTENV("END_R=0.010");
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 		cerr << "\n   No pointclouds found." << endl;
 		return EXIT_FAILURE;
 	}
-	cout << "Registration started for the surfaces:" << endl;
+	cout << "surfaces loaded:" << endl;
 	for (int i = 0; i < dataName.size(); i++)
 		cout << "  " << i << ": " << dataName[i] << endl;
 	cout << endl;
@@ -104,63 +104,27 @@ int main(int argc, char *argv[])
 	// Load the datafiles
 	size_t nSurfaces = dataName.size();
 	vector<PointCloud> model(nSurfaces);
-	for (int i = 0; i < nSurfaces; i++)
-		ReadPointCloud(dataName[i], model[i]);
+	for (int s = 0; s < nSurfaces; s++)
+		ReadPointCloud(dataName[s], model[s]);
+
+	for (int s = 0; s < nSurfaces; s++) {
+		if (!model[s].HasNormals())
+		{
+			EstimateNormals(model[s]);
+			model[s].NormalizeNormals();
+		}
+	}
+
 	// ------------------------------------------------------------------------
-	// Compute normals if needed
-	for (int i = 0; i < nSurfaces; i++)
-	{
-		if (!model[i].HasNormals())
-		{
-			EstimateNormals(model[i]);
-			model[i].NormalizeNormals();
-		}
-	}
+	// Compute correspondences
+	vector<vector<Vector2i>> K(nSurfaces-1);
 	
-	string FGR_ver = string(getenv("FGR_VERSION"));
-	
-	for (int s = 0; s < nSurfaces - 1; s++)
-	{
-		if (nSurfaces > 2) 
-			cout << "Surface: " << s << ", " << s + 1 << endl << "   ";
+	K = computeCorrespondences(model);
+	fastGlobalRegistration(model, K);
 
-		vector<Vector2i> K;
-		Matrix4d T;
-
-		if (FGR_ver.compare("open3d") == 0)
-		{
-			T = fastGlobalRegistrationPair(K, model[s], model[s + 1]);
-			model[s + 1].Transform(T);
-		}
-		else
-		{
-			// ----------------------------------------------------------------
-			// Estimate Fast Point Feature Histograms and Correspondances.
-			K = computeCorrespondancePair(model[s], model[s + 1]);
-			if (K.size() == 0)
-			{
-				cout << endl;
-				return EXIT_FAILURE;
-			}
-
-			
-			export_correspondences(export_corr, model[s], model[s + 1], K);
-
-			// ----------------------------------------------------------------
-			// Compute surface registration
-			T = fastGlobalRegistrationPair(K, model[s], model[s + 1]);
-			model[s + 1].Transform(T);
-
-			export_correspondences(export_corr, model[s], model[s + 1], K);
-		}
-		if (nSurfaces < 3)
-			cout << "Estimated transformation" << endl << T << endl;
-		
-
-	}
 	// ------------------------------------------------------------------------
 	// Save the results
-	cout << "\nResult complete, exporting surfaces:" << endl;
+	cout << endl << "Result complete, exporting surfaces:" << endl;
 	string resultName;
 	for (int i = 0; i < nSurfaces; i++) {
 		resultName = string(output_path) + string(output_name) + string("_")

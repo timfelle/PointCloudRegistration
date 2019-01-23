@@ -12,6 +12,7 @@
 
 
 #include "utility_functions.h"
+#include "point_cloud_utility.h"
 #include "fast_global_registration.h"
 
 
@@ -19,8 +20,52 @@ using namespace std;
 using namespace Eigen;
 using namespace open3d;
 
+
 // ============================================================================
 // COMPUTE REGISTRATION
+void fastGlobalRegistration(
+	vector<PointCloud> &models, vector<vector<Vector2i>> K)
+{
+	string corr_env = string(getenv("EXPORT_CORRESPONDENCES"));
+	bool export_corr = corr_env.compare("true");
+
+
+	Matrix4d T;
+	const size_t nSurfaces = models.size();
+
+	// Pairwise registration
+	if (nSurfaces == 2)
+	{
+		export_correspondences(export_corr, models[0], models[1], K[0]);
+
+		// Compute surface registration
+		T = fastGlobalRegistrationPair(K[0], models[0], models[1]);
+
+		models[1].Transform(T);
+		export_correspondences(export_corr, models[0], models[1], K[0]);
+		
+		cout << "Estimated transformation" << endl << T << endl;
+		return;
+	}
+
+	// Multi surface implementation (Serial Pairs at the moment)
+	cout << "Surface:" << endl;
+	for (int s = 0; s < nSurfaces - 1; s++)
+	{
+		cout << "   " << s << ", " << s + 1 << endl;
+
+		// Compute surface registration
+		T = fastGlobalRegistrationPair(K[s], models[s], models[s + 1]);
+
+		models[s + 1].Transform(T);
+
+	}
+
+}
+
+
+// ============================================================================
+// COMPUTE PAIRWISE REGISTRATION
 Matrix4d fastGlobalRegistrationPair(
 	vector<Vector2i> &K, PointCloud &model_0, PointCloud &model_1)
 {
@@ -29,7 +74,7 @@ Matrix4d fastGlobalRegistrationPair(
 	if (FGR_ver.compare("open3d") == 0)
 	{
 		FastGlobalRegistrationOption opts;
-		opts.iteration_number_ = 1e3; 
+		opts.iteration_number_ = 1e3;
 		//opts.division_factor_ = 1.1;
 		//opts.decrease_mu_ = true;
 		//opts.maximum_correspondence_distance_;
@@ -39,7 +84,7 @@ Matrix4d fastGlobalRegistrationPair(
 		Feature feature_0 = *ComputeFPFHFeature(model_0);
 		Feature feature_1 = *ComputeFPFHFeature(model_1);
 		RegistrationResult result = FastGlobalRegistration(
-			model_1, model_0, feature_1, feature_0,opts);
+			model_1, model_0, feature_1, feature_0, opts);
 		K = result.correspondence_set_;
 		return result.transformation_;
 	}
@@ -60,10 +105,10 @@ Matrix4d fastGlobalRegistrationPair(
 	double nu = max(pow(D, 2.0), 1.0);
 	int it_nu = 0;
 	double err = 0.0;
-	while ( nu > tol_nu * D )
+	while (nu > tol_nu * D)
 	{
-		VectorXd e = VectorXd::Zero( 4*nK );
-		MatrixXd Je = MatrixXd::Zero(4*nK, 6);
+		VectorXd e = VectorXd::Zero(4 * nK);
+		MatrixXd Je = MatrixXd::Zero(4 * nK, 6);
 
 		err = 0.0;
 		for (size_t i = 0; i < nK; i++)
@@ -77,7 +122,7 @@ Matrix4d fastGlobalRegistrationPair(
 
 			// Compute l_(p,q)
 			double l_pq_sqrt = nu / (nu + pow((p - T * q).norm(), 2.0));
-			
+
 			// Compute M and V
 			Vector4d M = T * q;
 
@@ -93,20 +138,20 @@ Matrix4d fastGlobalRegistrationPair(
 				, -M(1), M(0), 0, 0, 0, -M(3)
 				, 0, 0, 0, 0, 0, 0;
 
-			Je.row(4*i + 0) = l_pq_sqrt * J.row(0);
-			Je.row(4*i + 1) = l_pq_sqrt * J.row(1);
-			Je.row(4*i + 2) = l_pq_sqrt * J.row(2);
-			Je.row(4*i + 3) = l_pq_sqrt * J.row(3);
+			Je.row(4 * i + 0) = l_pq_sqrt * J.row(0);
+			Je.row(4 * i + 1) = l_pq_sqrt * J.row(1);
+			Je.row(4 * i + 2) = l_pq_sqrt * J.row(2);
+			Je.row(4 * i + 3) = l_pq_sqrt * J.row(3);
 
-			err += (p - M).norm()/nK;
+			err += (p - M).norm() / nK;
 		}
 		if (err < tol_e) break;
-		
+
 		// Update T and xi
 		xi = (Je.transpose()*Je).ldlt().solve(-Je.transpose()*e);
-		
+
 		T = Xi(xi)*T;
-		
+
 		// Update nu every forth time
 		it_nu++;
 		if (it_nu == 4) {
