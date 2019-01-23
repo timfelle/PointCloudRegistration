@@ -55,7 +55,7 @@ fi
 
 # Make sure the excecutables exists
 cd $EPATH;
-make -s;
+make
 if [ ! -f GenerateData.exe ] ; then
 	>&2 echo "================================================================="
 	>&2 echo "| ERROR in submit.sh: (Missing executable)                      |"
