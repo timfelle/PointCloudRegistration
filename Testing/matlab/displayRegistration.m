@@ -1,20 +1,24 @@
 function displayRegistration(inputName,dataPath,exportLocation,denoise)
-%DISPLAYMODEL
-%  This function displays a .ply point cloud as a 3d scatter.
+%DISPLAYREGISTRATION
+%  This function displays the registration of point clouds as a shaded 
+%  3d scatter. If less 3 or less pointclouds are found, shading will be
+%  done in different shades of gray.
 %  __________________________________________________________________
-%  DISPLAYMODEL()
-%       Displays the bunnyPartial1.ply file located on the path
+%  DISPLAYREGISTRATION()
+%       Displays the bunnyPartial files located on the path
 %       '../data/' and exports the result in the folder 
 %       '../logs/matlab'.
 %
-%  DISPLAYMODEL(name)
-%       Displays the model located in the file 'name.ply'.
-%       Import and export path is as above.
+%  DISPLAYREGISTRATION(name)
+%       Display the models located in the file 'name*.ply'.
+%       Import and export path is as above. Exported figures are using the
+%       "name" given in the input. 
+%       Can be a cell of several names.
 %
-%  DISPLAYMODEL(name, dataPath)
+%  DISPLAYREGISTRATION(name, dataPath)
 %       Locates the model in the folder specified by 'dataPath'.
 %
-%  DISPLAYMODEL(name, dataPath, exportLocation)
+%  DISPLAYREGISTRATION(name, dataPath, exportLocation)
 %       Exports the model at location specified by 'exportLocation'.
 %
 %  See also EXPORTFIGURES.
@@ -39,9 +43,10 @@ if ~strcmp(dataPath(end),'/')
 	dataPath = [dataPath,'/'];
 end
 
+
 for input=1:length(inputName)
 	dataName = findData(dataPath,inputName{input});
-
+	
 	F = CreateFigure(inputName{input});
 	A = axes();
 	axis tight

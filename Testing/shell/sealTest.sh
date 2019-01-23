@@ -23,7 +23,7 @@ Prepare()
 
 	case "$OSTYPE" in
 		linux*)   DATA="*" ;;
-		cygwin*)  DATA="0[2-3]*" ;;
+		cygwin*)  DATA="0[0-1]*" ;;
 	esac
 
 	SETS="left right upright"

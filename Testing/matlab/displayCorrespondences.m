@@ -1,27 +1,28 @@
 function displayCorrespondences(inputName,dataPath,exportLocation)
-%DISPLAYMODEL
-%  This function displays a .ply point cloud as a 3d scatter.
+%DISPLAYCORRESPONDENCES
+%  Visualise and exports a set of correspondences.
 %  __________________________________________________________________
-%  DISPLAYMODEL()
-%       Displays the bunnyPartial1.ply file located on the path
+%  DISPLAYCORRESPONDENCES()
+%       Display the bun10 correspondence sets located in 
 %       '../data/' and exports the result in the folder
 %       '../logs/matlab'.
 %
-%  DISPLAYMODEL(name)
-%       Displays the model located in the file 'name.ply'.
-%       Import and export path is as above.
+%  DISPLAYCORRESPONDENCES(name)
+%       Displays the correspondences located in the file 'name_corr*.ply'.
+%       Import and export path is as above. Figures will be exported with
+%       the filename "name" as well.
 %
-%  DISPLAYMODEL(name, dataPath)
+%  DISPLAYCORRESPONDENCES(name, dataPath)
 %       Locates the model in the folder specified by 'dataPath'.
 %
-%  DISPLAYMODEL(name, dataPath, exportLocation)
+%  DISPLAYCORRESPONDENCES(name, dataPath, exportLocation)
 %       Exports the model at location specified by 'exportLocation'.
 %
 %  See also EXPORTFIGURES.
 
 %% Handle input
 if ~exist('inputName','var') || isempty(inputName)
-    inputName = 'Corr';
+    inputName = {'bun10'};
 end
 if ~exist('dataPath','var') || isempty(dataPath)
     dataPath = '../logs/debugging/';
@@ -40,7 +41,7 @@ for i = 1:length(inputName)
     if isempty(dataName)
         error('File %s not found.',inputName{i});
     end
-    figure(F{i});
+    figure(F(i));
     A(i) = axes();
 	
 	axis tight
@@ -62,7 +63,7 @@ set(A,'Projection','perspective');
 set(A,'XLim',get(A(1),'XLim'),'YLim',get(A(1),'YLim'),'ZLim',get(A(1),'ZLim'));
 
 if ~isunix
-		ExportFigures([F{:}],exportLocation,'asp',1);
+		ExportFigures(F,exportLocation,'asp',1);
 	else
 		ExportFigures([F{:}],exportLocation,'asp',1,'ext','png','dpi',600);
 	end

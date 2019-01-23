@@ -15,7 +15,7 @@ function F = CreateFigure(Name)
 %       figures with the names specified in Names.
 %
 %  F = CREATEFIGURE(...)
-%       F is a cell array containing all figures created by the function.
+%       F is a vector containing all figures created by the function.
 %
 %  See also FIGURE.
 
@@ -26,18 +26,16 @@ end
 if ~iscell(Name)
     Name = {Name};
 end
-F = cell(length(Name),1);
+F = [];
 for i = 1:length(Name)
-    F{i} = findobj('Name',Name{i});
-    if isempty(F{i})
-        F{i} = figure();
-        F{i}.Name = Name{i};
+    fig = findobj('Name',Name{i});
+    if isempty(fig)
+        F(i) = figure(); %#ok<*AGROW>
+        set(F(i),'Name',Name{i});
     else
-        clf(F{i});
-        figure(F{i});
+        F(i) = fig;
+        clf(F(i));
+        figure(F(i));
     end
 end
-
-if length(F) == 1
-    F = F{:};
-end
+F = get(groot,'Children');

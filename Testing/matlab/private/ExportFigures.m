@@ -46,6 +46,7 @@ end
 if ~strcmp(ExportLocation(end),'/')
     ExportLocation = [ExportLocation,'/'];
 end
+
 if nargin > 2
     i=1;
     disp(' ')
