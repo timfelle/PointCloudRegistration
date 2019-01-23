@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	if ((input_path = getenv("INPUT_PATH")) == NULL)
 		input_path = "../Testing/data/";
 	if ((output_path = getenv("OUTPUT_PATH")) == NULL)
-		output_path = "../Testing/logs/debugging/";
+		output_path = "../Testing/logs/debugging/"; 
 
 	// Transformation variables
 	if ((rotation = getenv("ROTATION")) == NULL)

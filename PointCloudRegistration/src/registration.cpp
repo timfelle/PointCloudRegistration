@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 	}
 	
 	string FGR_ver = string(getenv("FGR_VERSION"));
-	PointCloud model_tmp = model[0];
+	
 	for (int s = 0; s < nSurfaces - 1; s++)
 	{
 		if (nSurfaces > 2) cout << "Surface: " << s << ", " << s + 1 << endl << "   ";
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 
 		if (FGR_ver.compare("open3d") == 0)
 		{
-			T = fastGlobalRegistrationPair(K, model_tmp, model[s + 1]);
+			T = fastGlobalRegistrationPair(K, model[s], model[s + 1]);
 			model[s + 1].Transform(T);
 		}
 		else
@@ -149,17 +149,17 @@ int main(int argc, char *argv[])
 				for (int i = 0; i < K.size(); i++)
 				{
 					correspondence_0.points_.push_back(model[s].points_[K[i](0)]);
-					correspondence_1.points_.push_back(model[s+1].points_[K[i](1)]);
+					correspondence_1.points_.push_back(model[s + 1].points_[K[i](1)]);
 				}
 				string corr_name = string(output_path) + string(output_name) + string("_corr_pre_");
 				WritePointCloud(corr_name + to_string(s) + string(".ply"), correspondence_0);
-				WritePointCloud(corr_name + to_string(s+1) + string(".ply"), correspondence_1);
+				WritePointCloud(corr_name + to_string(s + 1) + string(".ply"), correspondence_1);
 			}
 
 			// ------------------------------------------------------------------------
 			// Compute surface registration
 			T = fastGlobalRegistrationPair(K, model[s], model[s + 1]);
-			
+
 			model[s + 1].Transform(T);
 
 			if (export_corr)
@@ -175,15 +175,9 @@ int main(int argc, char *argv[])
 				WritePointCloud(corr_name + to_string(s + 1) + string(".ply"), correspondence_1);
 			}
 		}
-		cout << "Estimated transformation" << endl << T << endl;
-
-		/*
-		for (int i = 0; i < model[s + 1].points_.size(); i++)
-		{
-			model_tmp.points_.push_back(model[s + 1].points_[i]);
-			model_tmp.normals_.push_back(model[s + 1].normals_[i]);
-		}
-		*/
+		if (nSurfaces < 3)
+			cout << "Estimated transformation" << endl << T << endl;
+		
 
 	}
 	// ------------------------------------------------------------------------

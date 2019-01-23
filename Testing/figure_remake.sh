@@ -35,6 +35,13 @@ do
 				displayRegistration({$FIGS},'$DAT','$FIG');
 				exit;" 
 		;;
+		gaussianTest)
+			FIGS="'bun10','gauss10','bun15','gauss15'"
+			matlab -wait -nodesktop -nosplash -r "
+				addpath('matlab');
+				displayCorrespondences({$FIGS},'$DAT','$FIG');
+				exit;"
+		;;	
 		versionCompare)
 			FIGS="'fgr_open3d','fpfh_open3d','local'"
 			matlab -wait -nodesktop -nosplash -r "

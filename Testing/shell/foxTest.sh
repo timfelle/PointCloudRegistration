@@ -23,7 +23,7 @@ Prepare()
 
 	case "$OSTYPE" in
 		linux*)   DATA="*" ;;
-		cygwin*)  DATA="0[0-1]*" ;;
+		cygwin*)  DATA="0[0-2]*" ;;
 	esac
 
 	SETS="left right upright upsidedown"
@@ -85,8 +85,8 @@ Finalize()
 	rm -fr $FIG
 	mkdir -p fig $FIG $FIG/data 
 
-	mv -ft $FIG fig/*
-	mv -ft $FIG/data dat/*
+	mv -ft $FIG fig/* 2>/dev/null
+	mv -ft $FIG/data dat/* 2>/dev/null
 	rm -fr *.exe *.sh fig dat
 
 	echo "   Figures moved to $FIG."
@@ -99,12 +99,15 @@ Finalize()
 
 Early()
 {
-	rm -fr *.ply *.exe *.sh fig dat
-	echo ' '
-	echo ' ================= WARNING: EARLY TERMINATION ================= '
-	cat error.err 
-	echo ' ===================== ERRORS SHOWN ABOVE ===================== '
-	echo ' '
+	if [ -s error.err ] ; then
+		rm -fr *.ply *.exe *.sh fig dat
+		echo ' '
+		echo ' ================= WARNING: EARLY TERMINATION ================= '
+		cat error.err 
+		echo ' ===================== ERRORS SHOWN ABOVE ===================== '
+		echo ' '
+		exit
+	fi
 }
 
 # End of Early Termination
@@ -114,52 +117,35 @@ echo __________________________________________________________________________
 echo 'Preparing data and folders'
 echo ' '
 full_start=`date +%s.%N`
-Prepare
 
-if [ -s error.err ] ; then
-	Early
-	exit
-fi
+Early && Prepare
 
 echo ' '
 echo __________________________________________________________________________
 echo 'Commencing tests:'
 echo ' '
 test_start=`date +%s.%N`
-
-Program
+Early && Program
 
 test_end=`date +%s.%N`
 runtime=$(echo $test_end $test_start | awk '{ printf "%f", $1 - $2 }')
 echo "Computation time for test: $runtime seconds."
-if [ -s error.err ] ; then
-	Early
-	exit
-fi
+
+
 
 echo ' '
 echo __________________________________________________________________________
 
-case "$OSTYPE" in
-		cygwin*)  Visualize ;;
-esac
-
-if [ -s error.err ] ; then
-	Early
-	exit
-fi
+Early && Visualize
 
 echo ' '
 echo __________________________________________________________________________
 echo ' '
 echo Finalizing
 
-Finalize
+Early && Finalize
 
-if [ -s error.err ] ; then
-	Early
-	exit
-fi
+Early
 full_end=`date +%s.%N`
 runtime=$(echo $full_end $full_start | awk '{ printf "%f", $1 - $2 }')
 echo "Computation time for full test: $runtime seconds."

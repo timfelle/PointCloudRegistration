@@ -29,10 +29,12 @@ Matrix4d fastGlobalRegistrationPair(
 	if (FGR_ver.compare("open3d") == 0)
 	{
 		FastGlobalRegistrationOption opts;
-		opts.iteration_number_ = 100; 
-		opts.division_factor_ = 1.1;
-		opts.decrease_mu_ = true;
-
+		opts.iteration_number_ = 1e3; 
+		//opts.division_factor_ = 1.1;
+		//opts.decrease_mu_ = true;
+		//opts.maximum_correspondence_distance_;
+		//opts.maximum_tuple_count_
+		//opts.use_absolute_scale_
 
 		Feature feature_0 = *ComputeFPFHFeature(model_0);
 		Feature feature_1 = *ComputeFPFHFeature(model_1);
