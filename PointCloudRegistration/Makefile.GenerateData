@@ -17,8 +17,8 @@ WARN    =-w
 LIBS    =-std=c++17 -I$(OPEN3D)/include/ -I$(OPEN3D)/include/Open3D -I$(EIGEN3)
 CHIP    =
 PARA    =-fopenmp
-LFLAGS  =-L$(OPEN3D)/lib -lOpen3D -fopenmp -lstdc++fs -Wl,-rpath,$(OPEN3D)/lib
 
+LFLAGS  =-L$(OPEN3D)/lib -lOpen3D -fopenmp -lstdc++fs -Wl,-rpath,$(OPEN3D)/lib
 CFLAGS  = $(OPTIM) $(WARN) $(LIBS) $(CHIP) $(PARA)
 
 # -- End of Definitions
@@ -45,6 +45,7 @@ SOURCES	 = $(addprefix $(FDIR)/, $(addsuffix .cpp, $(FRAME)))
 SOURCES	+= $(addprefix $(SRCDIR)/, $(addsuffix .cpp, $(MAIN)))
 SOURCES += $(addprefix $(RDIR)/, $(addsuffix .cpp, $(REGIS)))
 
+# - Create the list of object files
 OBJECTS	 = $(addprefix $(OBJDIR)/, $(addsuffix .o, $(FRAME)))
 OBJECTS += $(addprefix $(OBJDIR)/, $(addsuffix .o, $(MAIN))) 
 OBJECTS += $(addprefix $(OBJDIR)/, $(addsuffix .o, $(REGIS)))
@@ -56,7 +57,7 @@ OBJECTS += $(addprefix $(OBJDIR)/, $(addsuffix .o, $(REGIS)))
 # - Main
 $(EXEC) : $(OBJECTS)
 	$(CXX) -o $(EXEC) $(OBJECTS) -I$(LIBDIR) $(LFLAGS)
-	@echo -e "\nmake: '$(EXEC)' was build sucessfully."
+	@echo -e "make: '$(EXEC)' was build sucessfully."
 
 # - C Files
 .SUFFIXES: .cpp

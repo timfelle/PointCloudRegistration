@@ -57,15 +57,16 @@ OBJECTS += $(addprefix $(OBJDIR)/, $(addsuffix .o, $(REGIS)))
 #==============================================================================
 # -- Compilations                             (Avoid changes beyond this point)
 
-# - Main
-$(EXEC) : $(OBJECTS) DEPS
-	$(CXX) -o $(EXEC) $(OBJECTS) -I$(LIBDIR) $(LFLAGS)
-	@echo -e "\nmake: '$(EXEC)' was build sucessfully."
-
-# - Dependencies
-DEPS : 
+# - Define the Dependencies
+DEPENDENCIES : 
 	@echo -e "make: dependencies."
 	@make -f Makefile.GenerateData
+
+
+# - Main
+$(EXEC) : DEPENDENCIES $(OBJECTS) 
+	$(CXX) -o $(EXEC) $(OBJECTS) -I$(LIBDIR) $(LFLAGS)
+	@echo -e "make: '$(EXEC)' was build sucessfully."
 
 # - C Files
 .SUFFIXES: .cpp
