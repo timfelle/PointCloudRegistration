@@ -10,7 +10,7 @@ if [ "$1" = "all" ] ; then
 	./figure_remake.sh $tests
 	exit
 fi
-
+MFLAGS="-wait -nodesktop -nosplash"
 for test in $@ ;
 do
 	DAT="figures/$test/data"
@@ -22,7 +22,7 @@ do
 		generateData)
 			FIGS="'bunnyClean','bunnyGaussian','bunnyNoise','bunnyOutliers',"
 			FIGS+="'bunnyTransform'"
-			matlab -wait -nodesktop -nosplash -r "
+			matlab $MFLAGS -r "
 				addpath('matlab');
 				displayRegistration({$FIGS},'$DAT','$FIG');
 				exit;" 
@@ -30,21 +30,21 @@ do
 		noiseTest)
 			FIGS="'bunny','resultClean','resultGauss1','resultGauss2',"
 			FIGS+="'resultOut1','resultOut2','resultOut3'"
-			matlab -wait -nodesktop -nosplash -r "
+			matlab $MFLAGS -r "
 				addpath('matlab');
 				displayRegistration({$FIGS},'$DAT','$FIG');
 				exit;" 
 		;;
 		gaussianTest)
 			FIGS="'bun10','gauss10','bun15','gauss15'"
-			matlab -wait -nodesktop -nosplash -r "
+			matlab $MFLAGS -r "
 				addpath('matlab');
 				displayCorrespondences({$FIGS},'$DAT','$FIG');
 				exit;"
 		;;	
 		versionCompare)
 			FIGS="'fgr_open3d','fpfh_open3d','local'"
-			matlab -wait -nodesktop -nosplash -r "
+			matlab $MFLAGS -r "
 				addpath('matlab');
 				displayRegistration({$FIGS},'$DAT','$FIG');
 				exit;" 
@@ -54,20 +54,20 @@ do
 			VER="left right upright upsidedown"
 			for v in $VER ;
 			do
-				matlab -wait -nodesktop -nosplash -r "
+				matlab $MFLAGS -r "
 					addpath('matlab');
-					displayRegistration({$FIGS},'$DAT/$v','$FIG/$v');
+					displayRegistration({$FIGS},'$DAT/$v','$FIG/$v',true);
 					exit;" 
 			done
 		;;
 		sealTest)
-			FIGS="local','open3d'"
+			FIGS="'local','open3d'"
 			VER="left right upright"
 			for v in $VER ;
 			do
-				matlab -wait -nodesktop -nosplash -r "
+				matlab $MFLAGS -r "
 					addpath('matlab');
-					displayRegistration({$FIGS},'$DAT/$v','$FIG/$v');
+					displayRegistration({$FIGS},'$DAT/$v','$FIG/$v',true);
 					exit;" 
 			done
 		;;
