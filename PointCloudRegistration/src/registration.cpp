@@ -67,21 +67,21 @@ int main(int argc, char *argv[])
 	if (getenv("EXPORT_CORRESPONDENCES") == NULL)
 		PUTENV("EXPORT_CORRESPONDENCES=false");
 	if (getenv("FPFH_VERSION") == NULL)
-		PUTENV("FPFH_VERSION=local");
+		PUTENV("FPFH_VERSION=project");
 	if (getenv("FGR_VERSION") == NULL)
-		PUTENV("FGR_VERSION=local");
+		PUTENV("FGR_VERSION=project");
 
 	// Tolerences
 	if (getenv("TOL_NU") == NULL) PUTENV("TOL_NU=1e-6");
 	if (getenv("TOL_E") == NULL) PUTENV("TOL_E=1e-6");
 
 	// Radius scaling
-	if (getenv("INI_R") == NULL) PUTENV("INI_R=0.005");
-	if (getenv("END_R") == NULL) PUTENV("END_R=0.010");
+	if (getenv("INI_R") == NULL) PUTENV("INI_R=0.0001");
+	if (getenv("END_R") == NULL) PUTENV("END_R=0.0100");
 	if (getenv("NUM_R") == NULL) PUTENV("NUM_R=100");
 
 	// STD fraction
-	if (getenv("ALPHA") == NULL) PUTENV("ALPHA=1.96");
+	if (getenv("ALPHA") == NULL) PUTENV("ALPHA=1.5");
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 	// Compute correspondences
 	vector<vector<Vector2i>> K(nSurfaces-1);
 	string fgr_version = string(getenv("FGR_VERSION"));
-	if ( fgr_version.compare("local")==0 )
+	if ( fgr_version.compare("project")==0 )
 		K = computeCorrespondences(model);
 	fastGlobalRegistration(model, K);
 

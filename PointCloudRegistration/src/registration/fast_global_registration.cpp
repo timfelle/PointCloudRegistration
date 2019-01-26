@@ -27,7 +27,7 @@ void fastGlobalRegistration(
 	vector<PointCloud> &models, vector<vector<Vector2i>> K)
 {
 	string corr_env = string(getenv("EXPORT_CORRESPONDENCES"));
-	bool export_corr = corr_env.compare("true");
+	bool export_corr = corr_env.compare("true") == 0;
 
 
 	Matrix4d T;
@@ -47,8 +47,7 @@ void fastGlobalRegistration(
 		cout << "Estimated transformation" << endl << T << endl;
 
 	}
-	// Multi surface implementation (Serial Pairs at the moment)
-	else
+	else // Multi surface implementation (Serial Pairs at the moment)
 	{
 		cout << "Surface:" << endl;
 		for (int s = 0; s < nSurfaces - 1; s++)

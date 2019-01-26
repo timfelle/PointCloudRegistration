@@ -11,20 +11,43 @@ if [ "$1" = "all" ] ; then
 	exit
 fi
 MFLAGS="-wait -nodesktop -nosplash"
+echo $@
 for test in $@ ;
 do
+	echo -n "$test "
 	DAT="figures/$test/data"
 	FIG="figures/$test"
 
 	rm -f 	$FIG/*.png   $FIG/*.eps   $FIG/*.pdf \
 			$FIG/*/*.png $FIG/*/*.pdf $FIG/*/*.eps
 	case "$test" in
+		armadilloTest)
+			FIGS="'armadillo','result'"
+			matlab $MFLAGS -r "
+				addpath('matlab');
+				displayRegistration({$FIGS},'$DAT','$FIG');
+				exit;" 
+		;;
+		giraffeTest)
+			FIGS="'giraffe','result'"
+			matlab $MFLAGS -r "
+				addpath('matlab');
+				displayRegistration({$FIGS},'$DAT','$FIG',[],50);
+				exit;" 
+		;;
+		bikeTest)
+			FIGS="'bike','result'"
+			matlab $MFLAGS -r "
+				addpath('matlab');
+				displayRegistration({$FIGS},'$DAT','$FIG');
+				exit;" 
+		;;
 		generateData)
 			FIGS="'bunnyClean','bunnyGaussian','bunnyNoise','bunnyOutliers',"
 			FIGS+="'bunnyTransform'"
 			matlab $MFLAGS -r "
 				addpath('matlab');
-				displayRegistration({$FIGS},'$DAT','$FIG');
+				displayRegistration({$FIGS},'$DAT','$FIG',[],20);
 				exit;" 
 		;;
 		noiseTest)
@@ -32,7 +55,7 @@ do
 			FIGS+="'resultOut1','resultOut2','resultOut3'"
 			matlab $MFLAGS -r "
 				addpath('matlab');
-				displayRegistration({$FIGS},'$DAT','$FIG');
+				displayRegistration({$FIGS},'$DAT','$FIG',[],20);
 				exit;" 
 		;;
 		gaussianTest)
@@ -46,7 +69,7 @@ do
 			FIGS="'fgr_open3d','fpfh_open3d','local'"
 			matlab $MFLAGS -r "
 				addpath('matlab');
-				displayRegistration({$FIGS},'$DAT','$FIG');
+				displayRegistration({$FIGS},'$DAT','$FIG',[],20);
 				exit;" 
 		;;
 		foxTest)
@@ -56,7 +79,7 @@ do
 			do
 				matlab $MFLAGS -r "
 					addpath('matlab');
-					displayRegistration({$FIGS},'$DAT/$v','$FIG/$v',true);
+					displayRegistration({$FIGS},'$DAT/$v','$FIG/$v',true,10);
 					exit;" 
 			done
 		;;
@@ -67,9 +90,10 @@ do
 			do
 				matlab $MFLAGS -r "
 					addpath('matlab');
-					displayRegistration({$FIGS},'$DAT/$v','$FIG/$v',true);
+					displayRegistration({$FIGS},'$DAT/$v','$FIG/$v',true,10);
 					exit;" 
 			done
 		;;
 	esac
 done
+echo " "

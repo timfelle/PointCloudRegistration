@@ -46,18 +46,18 @@ Program()
 	# Tests using the bunny data ----------------------------------------------
 	export ALPHA="1.5"
 
-	echo 'Testing local implementation'
+	echo 'Testing project implementation'
 	start=`date +%s.%N`
 
-	FPFH_VERSION=local \
-	FGR_VERSION=local \
-	OUTPUT_NAME=local \
+	FPFH_VERSION=project \
+	FGR_VERSION=project \
+	OUTPUT_NAME=project \
 		./Registration.exe bunny
 
 	end=`date +%s.%N`
 	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
 	echo ' '
-	echo "Local: $runtime"
+	echo "project: $runtime"
 	echo ' '
 	echo ---------------------------------------------------------------
 
@@ -65,7 +65,7 @@ Program()
 	start=`date +%s.%N`
 	
 	FPFH_VERSION=open3d \
-	FGR_VERSION=local \
+	FGR_VERSION=project \
 	OUTPUT_NAME=fpfh_open3d \
 		./Registration.exe bunny
 
@@ -94,23 +94,23 @@ Program()
 	seal="2 4 6"
 	start=`date +%s.%N`
 
-	FPFH_VERSION=local \
-	FGR_VERSION=local \
+	FPFH_VERSION=project \
+	FGR_VERSION=project \
 	INPUT_PATH=dat/seal2/ \
 		./Registration.exe pointcloud >> tmp.txt
 
 	end=`date +%s.%N`
 	runtime=$(echo $end $start | awk '{ printf "%f", $1 - $2 }')
-	echo "Local seal 2: $runtime"
-	echo "Local seal 4: NA"
-	echo "Local seal 6: NA"
+	echo "Project seal 2: $runtime"
+	echo "Project seal 4: NA"
+	echo "Project seal 6: NA"
 
 
 	for s in $seal; do
 		start=`date +%s.%N`
 
 		FPFH_VERSION=open3d \
-		FGR_VERSION=local \
+		FGR_VERSION=project \
 		INPUT_PATH=dat/seal$s/ \
 			./Registration.exe pointcloud >> tmp.txt
 
@@ -141,9 +141,9 @@ Visualize()
 	echo ' '
 	echo Visualizing
 	MATOPT="-wait -nodesktop -nosplash"
-	MATTESTS="'local','fpfh_open3d','fgr_open3d'"
+	MATTESTS="'project','fpfh_open3d','fgr_open3d'"
 	matlab $MATOPT \
-	-r "addpath('$MAT');displayRegistration({$MATTESTS},'dat/','fig/');exit"
+	-r "addpath('$MAT');displayRegistration({$MATTESTS},'dat/','fig/',[],20);exit"
 }
 
 # End of Visualize

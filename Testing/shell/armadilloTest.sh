@@ -10,7 +10,7 @@ Prepare()
 	DAT=../../data
 	MAT=../../matlab
 
-	mkdir -p fig $FIG $FIG/data dat
+	mkdir -p fig 
 
 	# Define input and output paths
 	export INPUT_PATH="dat/"
@@ -21,8 +21,11 @@ Prepare()
 	echo "   Output: $OUTPUT_PATH"
 	echo ' '
 
-	# Fetch the data needed from the data folder
-	cp $DAT/bunny.ply dat/bunnyClean.ply
+	mkdir -p dat
+	cp -ft dat/ $DAT/armadillo*
+	
+	ROTATION=1.6,1.6,0.0 \
+	./GenerateData.exe armadilloPartial1.ply armadilloPartial1.ply
 }
 
 # End of Preparation
@@ -31,42 +34,8 @@ Prepare()
 
 Program()
 {
-	MODEL="'bunnyClean', "
-
-	# Test the Gaussian noise
-	echo "   Gaussian noise."
-	export NOISE_TYPE=gaussian
-	export NOISE_STRENGTH=1.5
-	./GenerateData.exe bunnyClean.ply bunnyGaussian.ply
-
-	MODEL+="'bunnyGaussian', "
-
-	# Test the Outlier noise
-	echo "   Outlier addition."
-	export NOISE_TYPE=outliers
-	export OUTLIER_AMOUNT=5.0
-	./GenerateData.exe bunnyClean.ply bunnyOutliers.ply
-
-	MODEL+="'bunnyOutliers', "
-
-	# Test combination noise
-	echo "   Combined noise and outlier."
-	export NOISE_TYPE=both
-	export NOISE_STRENGTH=2.0
-	export OUTLIER_AMOUNT=5.0
-	./GenerateData.exe bunnyClean.ply bunnyNoise.ply
-
-	MODEL+="'bunnyNoise', "
-
-	# Test transformation
-	echo "   Transformation."
-	export NOISE_TYPE=none
-	export ROTATION="0.52,0.52,0.79" # degrees: 30, 30, 45
-	export TRANSLATION="0.0,0.0,0.0"
-	./GenerateData.exe bunnyClean.ply bunnyTransform.ply
-
-	MODEL+="'bunnyTransform' "
-
+	export ALPHA=0.0
+	./Registration.exe armadillo
 }
 
 # End of Program
@@ -78,8 +47,9 @@ Visualize()
 	echo ' '
 	echo Visualizing
 	MATOPT="-wait -nodesktop -nosplash"
+
 	matlab $MATOPT \
-		-r "addpath('$MAT');displayRegistration({$MODEL},'dat/','fig/',[],20);exit;"
+	-r "addpath('$MAT');displayRegistration({'armadillo','result'},'dat','fig');exit;"
 }
 
 # End of Visualize
@@ -112,7 +82,7 @@ Early()
 		cat error.err 
 		echo ' ===================== ERRORS SHOWN ABOVE ===================== '
 		echo ' '
-		exit
+		exit 2
 	fi
 }
 
@@ -123,7 +93,6 @@ echo __________________________________________________________________________
 echo 'Preparing data and folders'
 echo ' '
 full_start=`date +%s.%N`
-set -e
 
 Early && Prepare
 

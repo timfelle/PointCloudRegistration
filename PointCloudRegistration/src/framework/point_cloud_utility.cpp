@@ -82,7 +82,7 @@ void applyNoise(PointCloud &model)
 void export_correspondences(bool export_corr, 
 	PointCloud model_0, PointCloud model_1, vector<Vector2i> K)
 {
-	if (!export_corr) return;
+	if (export_corr == false) return;
 
 	char *output_name = getenv("OUTPUT_NAME");
 	char *output_path = getenv("OUTPUT_PATH");

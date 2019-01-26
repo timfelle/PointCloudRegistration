@@ -79,7 +79,6 @@ Program()
 	echo " "
 
 	OUTPUT_NAME=resultOut1 \
-		ALPHA=1.5 INI_R=0.0001 END_R=0.01 \
 		./Registration.exe outlierBunny1.ply outlierBunny2.ply 
 
 	echo "---------------------------------------------------------------------"
@@ -91,7 +90,6 @@ Program()
 	echo " "
 
 	OUTPUT_NAME=resultOut2 \
-		ALPHA=1.6 INI_R=0.0005 END_R=0.01 \
 		./Registration.exe outlierBunny3.ply outlierBunny4.ply 
 
 	echo "---------------------------------------------------------------------"
@@ -103,7 +101,6 @@ Program()
 	echo " "
 
 	OUTPUT_NAME=resultOut3 \
-		ALPHA=1.6 INI_R=0.0001 END_R=0.01 \
 		./Registration.exe outlierBunny5.ply outlierBunny6.ply 
 	echo "---------------------------------------------------------------------"
 
@@ -124,7 +121,7 @@ Visualize()
 
 	MATOPT="-wait -nodesktop -nosplash"
 	matlab $MATOPT \
-	-r "addpath('$MAT');displayRegistration({$MATTESTS},'dat/','fig/');exit"
+	-r "addpath('$MAT');displayRegistration({$MATTESTS},'dat/','fig/',[],20);exit"
 }
 
 # End of Visualize

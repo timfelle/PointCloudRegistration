@@ -1,4 +1,4 @@
-function displayRegistration(inputName,dataPath,exportLocation,denoise)
+function displayRegistration(inputName,dataPath,exportLocation,denoise,S)
 %DISPLAYREGISTRATION
 %  This function displays the registration of point clouds as a shaded 
 %  3d scatter. If less 3 or less pointclouds are found, shading will be
@@ -21,6 +21,9 @@ function displayRegistration(inputName,dataPath,exportLocation,denoise)
 %  DISPLAYREGISTRATION(name, dataPath, exportLocation)
 %       Exports the model at location specified by 'exportLocation'.
 %
+%  DISPLAYREGISTRATION(name, dataPath, exportLocation,denoise)
+%       Set a flag if the pointcloud should be run through a denoising.
+%
 %  See also EXPORTFIGURES.
 
 %% Handle input
@@ -31,16 +34,24 @@ if ~exist('dataPath','var') || isempty(dataPath)
     dataPath = '../data/';
 end
 if ~exist('exportLocation','var') || isempty(exportLocation)
-    exportLocation = '../logs/matlab';
+    exportLocation = [];
 end
-if ~exist('denoise','var') || isempty('denoise')
+if ~exist('denoise','var') || isempty(denoise)
     denoise = false;
 end
+if ~exist('S','var') || isempty(S)
+    S = 40;
+end
+
+
 if ischar(inputName)
     inputName = {inputName};
 end
 if ~strcmp(dataPath(end),'/')
 	dataPath = [dataPath,'/'];
+end
+if ~exist(dataPath,'dir')
+    error('Directory not found')
 end
 
 
@@ -51,17 +62,16 @@ for input=1:length(inputName)
 	A = axes();
 	axis tight
 	set(A,'DataAspectRatio',[1,1,1]);
-    axis vis3d
-
-	if (size(dataName,2) <= 3)
+    
+	if (length(dataName) < 3)
 		Color = flipud(colormap(gray(3)));
 	else
-		Color = flipud(colormap(white(size(dataName,2))));
+		Color = flipud(colormap(white(length(dataName))));
 	end
 
 	hold on
 	for i=1:length(dataName)
-	    dispReg(dataName{i},dataPath,Color(i,:),denoise)
+	    dispReg(dataName{i},dataPath,Color(i,:),denoise,S)
 	end
 
 	hold off
@@ -71,18 +81,18 @@ for input=1:length(inputName)
 	if isempty(A.Children)
 		error('Plots are empty, displayRegistration(%s)',inputName{input});
 	end
-	if nargin ~= 0
+	if ~isempty(exportLocation)
 		if ~isunix
         	ExportFigures(F,exportLocation,'asp',1)
 		else
 			ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',600)
 		end
         close(F)
-    end
+	end
 end
 end
 
-function dispReg(name,dataPath,Color,denoise)
+function dispReg(name,dataPath,Color,denoise,S)
 data = name ;
 if ~exist([dataPath,data],'file')
 	error('File %s not found.',data); 
@@ -90,10 +100,15 @@ end
 
 %% Load the data
 model = pcread([dataPath,data]);
-if denoise == true
-    model = pcdenoise(model);
+if model.Count > 50000
+	f = min(10000/model.Count,1);
+	pcdownsample(model,'random',f);
 end
-normal = pcnormals(model,40);
+if denoise == true
+    model = pcdenoise(model,'NumNeighbors',10);
+end
+normal = pcnormals(model, min(floor(0.005*model.Count),40));
+
 
 L1 = [0,1,1];
 L2 = [1,0,0];
@@ -108,7 +123,7 @@ I = abs((I1 + I2)./2).*(1.0-ambient-highlight) + ambient;
 
 scatter3(...
     model.Location(:,1), model.Location(:,2), model.Location(:,3),...
-    [],I*Color,'filled','O');
+    S,I*Color,'filled','O');
 
 set(gca,'Projection', 'perspective');
 end

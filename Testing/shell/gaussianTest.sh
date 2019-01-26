@@ -77,7 +77,7 @@ Visualize()
 
 	MATOPT="-wait -nodesktop -nosplash"
 	matlab $MATOPT \
-	-r "addpath('$MAT');displayCorrespondences({$MATTESTS},'dat/','fig/');exit"
+	-r "addpath('$MAT');displayCorrespondences({$MATTESTS},'dat/','fig/',[],20);exit"
 }
 
 # End of Visualize

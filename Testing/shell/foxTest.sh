@@ -72,7 +72,7 @@ Visualize()
 	for s in $SETS;
 	do
 		matlab $MATOPT \
-		-r "addpath('$MAT');displayRegistration({$DISREG},'dat/$s','fig/$s');exit;"
+		-r "addpath('$MAT');displayRegistration({$DISREG},'dat/$s','fig/$s',true,10);exit;"
 	done
 }
 
