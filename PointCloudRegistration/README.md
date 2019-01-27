@@ -43,13 +43,13 @@ Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)
         Define if correspondences should be exported as point clouds for  
         visualisation.  
 
-    FPFH_VERSION:            [default: local]  
-        Defines if the locally implemented version of the algorithm should be
-        used or the version included in open3d. [local,open3d]  
+    FPFH_VERSION:            [default: project]  
+        Defines if the project implemented version of the algorithm should be
+        used or the version included in open3d. [project,open3d]  
 
-    FGR_VERSION:            [default: local]  
-        Defines if the locally implemented version of the algorithm should be
-        used or the version included in open3d. [local,open3d]  
+    FGR_VERSION:            [default: project]  
+        Defines if the project implemented version of the algorithm should be
+        used or the version included in open3d. [project,open3d]  
 
     TOL_NU:                 [default: 1e-6]  
         Tolerence for penalty variable nu.  
@@ -57,7 +57,7 @@ Extra environment variables: ( > ENV_NAME=value ./Registration.exe ...)
     TOL_E:                  [default: 1e-6]  
         Tolerence for average correspondece distance.  
 
-    INI_R:                  [default: 0.005]  
+    INI_R:                  [default: 0.0001]  
         Maximal radius for neighbourhoods used in feature estimation.  
 
     END_R:                  [default: 0.010]  
