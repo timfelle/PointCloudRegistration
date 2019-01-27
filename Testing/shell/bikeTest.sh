@@ -28,6 +28,7 @@ Prepare()
 	./GenerateData.exe bikePartial1.ply bikePartial1.ply
 
 	ROTATION=5.6,5,4 \
+	TRANSLATION=30,1,1 \
 	./GenerateData.exe bikePartial3.ply bikePartial3.ply
 }
 

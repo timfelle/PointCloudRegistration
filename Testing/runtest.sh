@@ -90,7 +90,6 @@ echo "------------------------------------------------------------------"
 echo "Queueing tests: "; echo " "
 for test in $TEST
 do
-	echo "  $test."
 	if [ -f "$SPATH/$test.sh" ] ; then
 		# Create the folder needed
 		rm -fr $LPATH/$test
@@ -103,14 +102,30 @@ do
 		cd $LPATH/$test
 		./$test.sh >output.out 2>error.err &
 		cd ../../
+		printf 'S %-20s Running.\n' "$test:"
 	else
-		>&2 echo "File $SPATH/$test.sh was not found"
+		>&2 printf 'E %-20s File not found, %s \n'  \
+			"$test:" "$SPATH/$test.sh"
 	fi
 done
 echo " "
 echo "------------------------------------------------------------------"
 wait
 echo "Tests finished:"; echo " "
+for test in $TEST
+do
+	if [ -f "$SPATH/$test.sh" ] ; then
+		cd $LPATH/$test
+		if [ ! -s error.err ] ; then
+			echo "S $test"
+		else
+			echo "E $test"
+		fi
+		cd ../../
+	fi
+done
+
+# Print errors for all unfinished tests
 for test in $TEST
 do
 	# If the test did exists and was running
@@ -125,11 +140,10 @@ do
 			cat error.err
 			echo "============================================================="
 			echo " "
-		else
-			echo "  $test."
 		fi
 		cd ../../
 	fi
 done
-
+echo " "
+echo "------------------------------------------------------------------"
 # # EOF # #
