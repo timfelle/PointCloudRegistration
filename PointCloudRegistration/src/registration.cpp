@@ -62,10 +62,14 @@ int main(int argc, char *argv[])
 		output_path = "../Testing/logs/debugging/";
 
 	// Export functions
-	if ((output_name = getenv("OUTPUT_NAME")) == NULL)
+	if ((output_name = getenv("OUTPUT_NAME")) == NULL) {
 		output_name = "result";
+		PUTENV("OUTPUT_NAME=result");
+	}
 	if (getenv("EXPORT_CORRESPONDENCES") == NULL)
 		PUTENV("EXPORT_CORRESPONDENCES=false");
+
+	// Implementation versions
 	if (getenv("FPFH_VERSION") == NULL)
 		PUTENV("FPFH_VERSION=project");
 	if (getenv("FGR_VERSION") == NULL)
@@ -82,6 +86,10 @@ int main(int argc, char *argv[])
 
 	// STD fraction
 	if (getenv("ALPHA") == NULL) PUTENV("ALPHA=1.5");
+
+	// FGR Settings
+	if (getenv("FGR_MAXITER") == NULL)
+		PUTENV("FGR_MAXITER=1e3");
 
 	// ------------------------------------------------------------------------
 	// Read inputs and organize data names
@@ -121,6 +129,7 @@ int main(int argc, char *argv[])
 	string fgr_version = string(getenv("FGR_VERSION"));
 	if ( fgr_version.compare("project")==0 )
 		K = computeCorrespondences(model);
+	if (K.size() == 0) return EXIT_FAILURE;
 	fastGlobalRegistration(model, K);
 
 	// ------------------------------------------------------------------------

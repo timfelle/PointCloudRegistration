@@ -29,7 +29,6 @@ void fastGlobalRegistration(
 	string corr_env = string(getenv("EXPORT_CORRESPONDENCES"));
 	bool export_corr = corr_env.compare("true") == 0;
 
-
 	Matrix4d T;
 	const size_t nSurfaces = models.size();
 
@@ -42,7 +41,7 @@ void fastGlobalRegistration(
 		T = fastGlobalRegistrationPair(K[0], models[0], models[1]);
 
 		models[1].Transform(T);
-		export_correspondences(export_corr, models[0], models[1], K[0]);
+		//export_correspondences(export_corr, models[0], models[1], K[0]);
 
 		cout << "Estimated transformation" << endl << T << endl;
 
@@ -71,10 +70,12 @@ Matrix4d fastGlobalRegistrationPair(
 {
 	// If the FGR version is set to use the open3d implementation
 	string FGR_ver = string(getenv("FGR_VERSION"));
+	int max_iter = atoi(getenv("FGR_MAXITER"));		// Maximal iterations
+
 	if (FGR_ver.compare("open3d") == 0)
 	{
 		FastGlobalRegistrationOption opts;
-		opts.iteration_number_ = 1e3;
+		opts.iteration_number_ = max_iter;
 		//opts.division_factor_ = 1.1;
 		opts.decrease_mu_ = true;
 		//opts.maximum_correspondence_distance_;
@@ -105,7 +106,9 @@ Matrix4d fastGlobalRegistrationPair(
 	double nu = max(pow(D, 2.0), 1.0);
 	int it_nu = 0;
 	double err = 0.0;
-	while (nu > tol_nu * D)
+	int iter = 0;
+
+	while (nu > tol_nu * D && iter < max_iter)
 	{
 		VectorXd e = VectorXd::Zero(4 * nK);
 		MatrixXd Je = MatrixXd::Zero(4 * nK, 6);

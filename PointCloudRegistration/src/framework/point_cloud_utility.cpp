@@ -93,8 +93,7 @@ void export_correspondences(bool export_corr,
 		correspondence_0.points_.push_back(model_0.points_[K[i](0)]);
 		correspondence_1.points_.push_back(model_1.points_[K[i](1)]);
 	}
-	string corr_name = 
-		string(output_path) + string(output_name) + string("_corr_pre_");
-	WritePointCloud(corr_name + string("0")+ string(".ply"), correspondence_0);
-	WritePointCloud(corr_name + string("1")+ string(".ply"), correspondence_1);
+	string corr_name = string(output_path) + string("corr_") + string(output_name);
+	WritePointCloud(corr_name + string("_0")+ string(".ply"), correspondence_0);
+	WritePointCloud(corr_name + string("_1")+ string(".ply"), correspondence_1);
 }
