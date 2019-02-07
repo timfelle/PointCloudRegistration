@@ -40,6 +40,9 @@ if isempty(dataName)
     error('File %s not found.',inputName); 
 end
 
+if ~strcmp(dataPath(end),'/')
+	dataPath = [dataPath,'/'];
+end
 %% Generate the correspondence plots
 F = displayCorrespondences(inputName,dataPath,exportLocation,nargin~=0);
 

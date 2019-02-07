@@ -73,7 +73,7 @@ do
 				exit;" 
 		;;
 		foxTest)
-			FIGS="'local','open3d'"
+			FIGS="'pointcloud','local','open3d'"
 			VER="left right upright upsidedown"
 			for v in $VER ;
 			do

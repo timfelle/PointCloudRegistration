@@ -102,7 +102,7 @@ end
 model = pcread([dataPath,data]);
 if model.Count > 50000
 	f = min(10000/model.Count,1);
-	pcdownsample(model,'random',f);
+	model = pcdownsample(model,'random',f);
 end
 if denoise == true
     model = pcdenoise(model,'NumNeighbors',10);

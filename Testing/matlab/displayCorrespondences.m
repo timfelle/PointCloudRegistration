@@ -1,4 +1,4 @@
-function displayCorrespondences(inputName,dataPath,exportLocation)
+function displayCorrespondences(inputName,dataPath,exportLocation,drawLines)
 %DISPLAYCORRESPONDENCES
 %  Visualise and exports a set of correspondences.
 %  __________________________________________________________________
@@ -18,6 +18,9 @@ function displayCorrespondences(inputName,dataPath,exportLocation)
 %  DISPLAYCORRESPONDENCES(name, dataPath, exportLocation)
 %       Exports the model at location specified by 'exportLocation'.
 %
+%  DISPLAYCORRESPONDENCES(name, dataPath, exportLocation, drawLines)
+%       Sets flag if connecting lines should be drawn or not.
+%
 %  See also EXPORTFIGURES.
 
 %% Handle input
@@ -25,16 +28,28 @@ if ~exist('inputName','var') || isempty(inputName)
     inputName = {'bun10'};
 end
 if ~exist('dataPath','var') || isempty(dataPath)
-    dataPath = '../logs/debugging/';
+    dataPath = '../data/';
 end
 if ~exist('exportLocation','var') || isempty(exportLocation)
     exportLocation = '../logs/matlab';
 end
+if ~exist('drawLines','var') || isempty(drawLines)
+    drawLines = false;
+end
+
+if ~iscell(inputName)
+    inputName = {inputName};
+end
 if dataPath(end) ~= '/'
     dataPath = [dataPath,'/'];
 end
+ 
+if drawLines == true
+	F = CreateFigure([ inputName{1},'Lines']);
+else
+	F = CreateFigure(inputName);
+end
 
-F = CreateFigure(inputName);
 A = zeros(length(inputName),1);
 for i = 1:length(inputName)
     dataName = findData(dataPath,inputName{i});
@@ -46,15 +61,17 @@ for i = 1:length(inputName)
 	
 	axis tight
     
-    Corr_pre  = { dataName{ contains(dataName,'pre') }};
-    if length(Corr_pre) < 2
+    if length(dataName) < 2
         error('Not enough datasets found');
     end
     
-    Color = colormap(gray(length(Corr_pre)+1));
+    Color = colormap(gray(length(dataName)+1));
     hold on
-    dispPC(Corr_pre{1},dataPath,Color(2,:))
-    dispPC(Corr_pre{2},dataPath,Color(1,:))
+    dispPC(dataName{1},dataPath,Color(2,:))
+    dispPC(dataName{2},dataPath,Color(1,:))
+    if drawLines
+        drawLine(dataName{1},dataName{2},dataPath)
+    end
     hold off
 	grid on
     view([120,20])
@@ -73,22 +90,24 @@ function dispPC(name,dataPath,Color)
 data = name ;
 %% Load the data
 model = pcread([dataPath,data]);
-normal = pcnormals(model,40);
-
-L1 = [0,1,1];
-L2 = [1,0,0];
-ambient = 0.1;
-highlight = 0.0;
-L1 = L1./norm(L1);
-L2 = L2./norm(L2);
-I1 = normal(:,1).*L1(1) + normal(:,2).*L1(2) + normal(:,3).*L1(3);
-I2 = normal(:,1).*L2(1) + normal(:,2).*L2(2) + normal(:,3).*L2(3);
-
-I = 1;%abs((I1 + I2)./2).*(1.0-ambient-highlight) + ambient;
 
 scatter3(...
     model.Location(:,1), model.Location(:,2), model.Location(:,3),...
-    100,I*Color,'filled','O');
+    100,Color,'filled','O');
 
 set(gca,'Projection', 'perspective');
+end
+
+function drawLine(name1,name2,dataPath)
+model1 = pcread([dataPath,name1]);
+model2 = pcread([dataPath,name2]);
+
+for i = 1:size(model1.Location,1)
+    x1 = model1.Location(i,:);
+    x2 = model2.Location(i,:);
+    plot3( [x1(1),x2(1)] , ...
+        [x1(2),x2(2)] , ...
+        [x1(3),x2(3)] , 'r-')
+end
+
 end

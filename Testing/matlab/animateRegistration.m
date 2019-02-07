@@ -1,4 +1,4 @@
-function animateRegistration(preName,postName,dataPath,exportLocation)
+function animateRegistration(Name,dataPath,exportLocation)
 %ANIMATEREGISTRATION
 %  This function creates a animation showing the initial and final
 %  poses for a set of surfaces algned with a registration. The 
@@ -24,11 +24,8 @@ function animateRegistration(preName,postName,dataPath,exportLocation)
 %  See also EXPORTFIGURES.
 
 %% Handle input
-if ~exist('preName','var') || isempty(preName)
-    preName = 'bunnyPartial';
-end
-if ~exist('postName','var') || isempty(postName)
-    postName = 'bunnyPartial';
+if ~exist('Name','var') || isempty(Name)
+    Name = 'bunnyPartial';
 end
 if ~exist('dataPath','var') || isempty(dataPath)
     dataPath = '../data/';
@@ -36,72 +33,62 @@ end
 if ~exist('exportLocation','var') || isempty(dataPath)
     exportLocation = '../logs/matlab';
 end
-dataNamePre = findData(dataPath,preName);
-dataNamePos = findData(dataPath,postName);
-if isempty(dataNamePre)
-    error('File %s not found.',dataNamePre);
+
+if ~strcmp(dataPath(end),'/')
+	dataPath = [dataPath,'/'];
 end
-if isempty(dataNamePos)
-    error('File %s not found.',dataNamePos);
+dataName = findData(dataPath,Name);
+if isempty(dataName)
+    error('File %s not found.',dataName);
 end
 
 %% Generate the correspondence plots
 F = CreateFigure('aniReg');
 
-if (size(dataNamePos,2) == 2)
+if (size(dataName,2) == 2)
 	Color = flipud(colormap(gray(3)));
 else
-	Color = flipud(colormap(white(max(size(dataNamePos,2),size(dataNamePre,2)))));
+	Color = colormap(white(max(size(dataName,2),size(dataName,2))));
 end
 
-A1 = subplot(121);
-hold on
-for i=1:length(dataNamePre)
-    dispReg(dataNamePre{i},dataPath,Color(i,:))
+for i=1:length(dataName)
+    if i ~= 1
+        hold on
+    end
+    dispReg(dataName{i},dataPath,Color(i,:))
 end
 view([30,10])
 hold off
-
-A2 = subplot(122);
-hold on
-for i=1:length(dataNamePos)
-    dispReg(dataNamePos{i},dataPath,Color(i,:))
-end
-view([30,10])
-hold off
+A = gca;
 
 % Find the axes in question
-axis(A1,'vis3d','off');
-axis(A2,'vis3d','off');
-cam1 = campos(A1);
-cam2 = campos(A2);
-campos(A1,cam1 + [0.0,0.6,0.1]);
-campos(A2,cam2 + [0.0,0.6,0.1]);
-set([A1,A2],'Projection','perspective')
+axis(A,'vis3d','off');
+cam1 = campos(A);
+campos(A,cam1 + [0.0,0.6,0.1]);
+set(A,'Projection','perspective')
 
 F.WindowStyle = 'normal';
-drawnow;
-F.Position = [50,50,1500,1000];
-v = VideoWriter([exportLocation,'/',F.Name],'Motion JPEG AVI');
+F.Color = [1,1,1];
+F.Position = [150,150,1000,1000];
+v = VideoWriter([exportLocation,'/',F.Name],'Uncompressed AVI');
 
 % Settings for the video
-v.Quality = 99;
-v.FrameRate = 60;
-Time = 12;
+v.FrameRate = 30;
+Time = 15;
 
 
 Frames = Time*v.FrameRate;
 angle = 360/Frames;
 open(v);
 for i = 1 : Frames
-    camorbit(A1,angle,0);
-    camorbit(A2,angle,0);
+    camorbit(A,angle,0);
     
+    drawnow;
     frame = getframe(F);
     writeVideo(v,frame);
 end
-close(v);
-F.WindowStyle = 'docked';
+close(v)
+close(F)
 end
 
 function dispReg(name,dataPath,Color)
@@ -112,15 +99,25 @@ end
 
 %% Load the data
 model = pcread([dataPath,data]);
-normal = pcnormals(model);
+if model.Count > 50000
+	f = min(50000/model.Count,1);
+	model = pcdownsample(model,'random',f);
+end
+model = pcdenoise(model,'NumNeighbors',8,'Threshold',0.05);
+normal = pcnormals(model, min(floor(0.005*model.Count),20));
 
-L = [0,1,1];
+L1 = [0,1,1];
+L2 = [1,0,0];
 ambient = 0.1;
-L = L./norm(L);
-I = normal(:,1).*L(1) + normal(:,2).*L(2) + normal(:,3).*L(3);
-I = abs(I)*(1.0-ambient) + ambient;
+highlight = 0.1;
+L1 = L1./norm(L1);
+L2 = L2./norm(L2);
+I1 = normal(:,1).*L1(1) + normal(:,2).*L1(2) + normal(:,3).*L1(3);
+I2 = normal(:,1).*L2(1) + normal(:,2).*L2(2) + normal(:,3).*L2(3);
 
-A = scatter3(model.Location(:,1),model.Location(:,2),model.Location(:,3));
+I = abs((I1 + I2)./2).*(1.0-ambient-highlight) + ambient;
+
+A = scatter3(model.Location(:,1),model.Location(:,2),model.Location(:,3),5);
 A.CData = I*Color;
 A.Marker = 'O';
 A.MarkerEdgeColor = 'flat';

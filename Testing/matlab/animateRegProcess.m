@@ -1,4 +1,4 @@
-function animateScanning(Name,dataPath,exportLocation)
+function animateRegProcess(Name,dataPath,exportLocation)
 %ANIMATEREGISTRATION
 %  This function creates a animation showing the initial and final
 %  poses for a set of surfaces algned with a registration. The
@@ -25,7 +25,7 @@ function animateScanning(Name,dataPath,exportLocation)
 
 %% Handle input
 if ~exist('Name','var') || isempty(Name)
-    Name = 'bunnyPartial';
+    Name = {'bunny.ply','bunnyPartial'};
 end
 if ~exist('dataPath','var') || isempty(dataPath)
     dataPath = '../data/';
@@ -33,43 +33,32 @@ end
 if ~exist('exportLocation','var') || isempty(dataPath)
     exportLocation = '../logs/matlab';
 end
-dataName = findData(dataPath,Name);
-if isempty(dataName)
-    error('File %s not found.',Name);
-end
+
 
 if ~strcmp(dataPath(end),'/')
-	dataPath = [dataPath,'/'];
+    dataPath = [dataPath,'/'];
 end
 %% Generate the correspondence plots
-if (size(dataName,2) == 2)
-    Color = flipud(colormap(gray(3)));
-else
-    Color = flipud(colormap(white(max(size(dataName,2),size(dataName,2)))));
-end
 
-F = CreateFigure('AnimationScanning');
+F = CreateFigure('AnimationRegistrationProcess');
 F.WindowStyle = 'normal';
 F.Position = [50,50,1000,1000];
 F.Color = [1,1,1];
-A = axes();
+A = gca;
 axis tight
 set(A,'DataAspectRatio',[1,1,1]);
 axis vis3d
-
 set(A,'Projection','perspective')
-set(A,'CameraPosition',get(A(1),'CameraPosition'));
-
 % Find the axes in question
-v = VideoWriter([exportLocation,'/','aniScan'],'Uncompressed AVI');
+v = VideoWriter([exportLocation,'/','aniRegProc'],'Uncompressed AVI');
 
 % Settings for the video
 v.FrameRate = 20;
-Time = 15;
+Time = 1.5*size(Name,2);
 
 
 Frames = Time*v.FrameRate;
-framePerModel = Frames/length(dataName);
+framePerModel = Frames/length(Name);
 open(v);
 count = -1;
 id_old = 0;
@@ -80,7 +69,7 @@ for i = 0 : Frames-1
     if id ~= id_old
         id_old = id;
         count = 1;
-    else 
+    else
         count = count + 1;
     end
     
@@ -88,61 +77,72 @@ for i = 0 : Frames-1
     per2 = 1 - (count)/(v.FrameRate*0.25);
     
     if per1 <= 1.0
-        dispReg(dataName{id},dataPath,Color(id,:),per1);
+        dispReg(Name{id},dataPath,[1,1,1],per1);
     end
     if per2 > 0.0 && id > 1
-        hold on
-        dispReg(dataName{id-1},dataPath,Color(id_old,:),per2);
-        hold off
+        dispReg(Name{id-1},dataPath,[1,1,1],per2);
     end
+    hold off
     
-    view([90,20])
     if i == 0
+        view([130,20])
+        Lim(1,:) = A.XLim;
+        Lim(2,:) = A.YLim;
+        Lim(3,:) = A.ZLim;
         Cam = A.CameraPosition;
-        Lim = [A.XLim;A.YLim;A.ZLim];
     end
-    
     A.XLim = Lim(1,:);
     A.YLim = Lim(2,:);
     A.ZLim = Lim(3,:);
-    A.CameraPosition = Cam;
-    drawnow;
     
+    A.CameraPosition = Cam;
+    
+    drawnow;
     frame = getframe(F);
     writeVideo(v,frame);
     if i == 0
         ExportFigures(F,exportLocation);
     end
 end
+
 close(v);
 close(F);
 end
 
 function dispReg(name,dataPath,Color,per)
-data = name ;
-if ~exist([dataPath,data],'file')
-    return;
+data = findData(dataPath,name);
+
+for i = 1:size(data,2)
+    if i == 2
+        hold on
+        Color = Color*0.5;
+    end
+    %% Load the data
+	model = pcread([dataPath,data{i}]);
+	if model.Count > 50000
+		f = min(50000/model.Count,1);
+		model = pcdownsample(model,'random',f);
+	end
+	
+    if per < 1
+        model = pcdownsample(model,'random',per);
+    end
+    normal = pcnormals(model, min(floor(0.005*model.Count),40));
+    
+    
+    L = [0,1,1];
+    ambient = 0.1;
+    L = L./norm(L);
+    I = normal(:,1).*L(1) + normal(:,2).*L(2) + normal(:,3).*L(3);
+    I = abs(I)*(1.0-ambient) + ambient;
+    
+    S = scatter3(model.Location(:,1),model.Location(:,2),model.Location(:,3),5);
+    S.CData = I*Color;
+    S.Marker = 'O';
+    S.MarkerEdgeColor = 'flat';
+    S.MarkerFaceColor = 'flat';
+    
+    axis off
+    
 end
-
-%% Load the data
-model = pcread([dataPath,data]);
-model = pcdownsample(model,'random',per);
-normal = pcnormals(model);
-
-
-L = [0,1,1];
-ambient = 0.1;
-L = L./norm(L);
-I = normal(:,1).*L(1) + normal(:,2).*L(2) + normal(:,3).*L(3);
-I = abs(I)*(1.0-ambient) + ambient;
-
-S = scatter3(model.Location(:,1),model.Location(:,2),model.Location(:,3),3);
-S.CData = I*Color;
-S.Marker = 'O';
-S.MarkerEdgeColor = 'flat';
-S.MarkerFaceColor = 'flat';
-
-hold off
-axis off
-
 end
