@@ -10,6 +10,7 @@ fetch_figures.sh
 [Oo]bj
 [Ll]ogs
 [Ff]igures
+__pycache__
 
 # Data files
 *.dat
