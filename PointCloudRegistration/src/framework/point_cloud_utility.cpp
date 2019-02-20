@@ -73,7 +73,7 @@ void applyNoise(PointCloud &model)
 		type.compare("both") == 0))
 	{
 		cerr << __func__ << ":" << __func__ << ":" << __LINE__ << endl;
-		cerr << "   Noise type invalid" << endl;
+		cerr << "   Noise type invalid: " << type << endl;
 	}
 	return;
 }
