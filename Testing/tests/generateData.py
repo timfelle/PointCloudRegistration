@@ -1,12 +1,11 @@
 '''
 runtest.sh TESTNAME [TESTNAME ...]
-
-This script works as a function which run tests for the executables
-implementated in the PointCloudRegistration folder of the project.
+	This script works as a function which run tests for the executables
+	implementated in the PointCloudRegistration folder of the project.
  
-The <TESTNAME> variable refers to the filename of the TESTNAME.sh files
-located in the folder tests. These TESTNAME.sh files contain the 
-definition of the test which should be run.
+	The <TESTNAME> variable refers to the filename of the TESTNAME.sh files
+	located in the folder tests. These TESTNAME.sh files contain the 
+	definition of the test which should be run.
 '''
 
 # =============================================================================
@@ -23,12 +22,15 @@ seperator = '________________________________________________________________\n'
 
 TNAME=os.path.splitext(sys.argv[0])[0]
 
-T = Testing(TNAME); T.Prepare()
-
+T = Testing(TNAME)
 print(seperator)
 # =========================================================================
-# Define the actual test part of the script 
+# Specify the data needed
+T.Prepare('bunny.ply')
 
+# Define the actual test part of the script 
+Gen = GenerateData()
+Gen.compute('bunny.ply', 'bunnyClean.ply')
 models="'bunnyClean', "
 
 # Test the Gaussian noise
