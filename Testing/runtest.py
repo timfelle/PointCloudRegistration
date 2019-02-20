@@ -1,12 +1,11 @@
 '''
 runtest.sh TESTNAME [TESTNAME ...]
-
-This script works as a function which run tests for the executables
-implementated in the PointCloudRegistration folder of the project.
+	This script works as a function which run tests for the executables
+	implementated in the PointCloudRegistration folder of the project.
  
-The <TESTNAME> variable refers to the filename of the TESTNAME.sh files
-located in the folder tests. These TESTNAME.sh files contain the 
-definition of the test which should be run.
+	The <TESTNAME> variable refers to the filename of the TESTNAME.py files
+	located in the folder tests. These TESTNAME.py files contain the 
+	definition of the test which should be run.
 '''
 
 # =============================================================================
@@ -37,7 +36,7 @@ if 'all' in sys.argv:
 		tests.append(os.path.splitext(test)[0])
 else : 
 	for test in sys.argv[1:]:
-		if (test+'.sh') in os.listdir(TPATH): tests.append(test)
+		if (test+'.py') in os.listdir(TPATH): tests.append(test)
 
 if len(tests) == 0 :
 	# Check for test specifications
@@ -126,7 +125,7 @@ for test in tests:
 	# If the test did exists and was running
 	if os.stat(path + 'error.err').st_size >= 6:
 		f = open(path + 'error.err','r')
-		print(test + ' NOT COMPLETED:\n\n')
+		print(test + ' NOT COMPLETED:')
 		print(f.read())
 		print(seperator)
 	
