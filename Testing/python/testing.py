@@ -29,7 +29,7 @@ class Testing:
 	#==========================================================================
 	# Define Preparation of data ect.
 
-	def Prepare(self):
+	def Prepare(self,data):
 		# Setup folders needed
 
 		os.makedirs( 'fig' 				, exist_ok=True)
@@ -45,10 +45,11 @@ class Testing:
 		print(' ')
 
 		# Fetch the data needed from the data folder
-		shutil.copy2(
-			self.DAT + 'bunny.ply', 
-			self.INPUT_PATH + 'bunnyClean.ply'
-		)
+
+		if not isinstance(data,(list,)):
+			data = [data]
+		for d in data:
+			shutil.copy( self.DAT + d, self.INPUT_PATH )
 
 #==============================================================================
 # Define Visualise

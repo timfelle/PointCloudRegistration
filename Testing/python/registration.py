@@ -16,7 +16,7 @@ class Registration:
 	# Initialisation 
 	def __init__(self,
 			# Path to the executable
-			exec_path 	= '',
+			exec_path 	= './',
 			# IO definitions
 			input_path 	= 'dat/',
 			output_path = 'dat/',
@@ -70,11 +70,17 @@ class Registration:
 	# -------------------------------------------------------------------------
 	# Compute registration of data
 	def compute(self, data):
-		self.environment['INPUT_NAME'] = data
+		if not isinstance(data,(list,)):
+			data = [data]
+		self.environment['INPUT_NAME'] = data[0]
 		self.__check_self__()
+		cmd = [ self.__exec__() ]
+
+		for d in data:
+			cmd.append(d)
 
 		Sub = subprocess.Popen( 
-			[ self.__exec__(), data ],
+			cmd,
 			stdout				= subprocess.PIPE,
 			universal_newlines	= True,
 			env					= self.environment
