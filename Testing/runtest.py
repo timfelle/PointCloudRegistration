@@ -99,14 +99,14 @@ for test in tests:
 	# Copy all files needed
 	shutil.copy2(EXEC[0],path + '/Registration.exe')
 	shutil.copy2(EXEC[1],path + '/GenerateData.exe')
-	shutil.copy2(TPATH + '/' + test + '.sh'
-		,path + test + '.sh')
+	shutil.copy2(TPATH + '/' + test + '.py'
+		,path + test + '.py')
 
 	# Move to the directory submit the code and return
 	with open(path + 'output.out',"wb") as out, \
 		open(path + 'error.err',"wb") as err:
 		S.append(subprocess.Popen(
-			['sh', test+ '.sh'],
+			['python', test+ '.py'],
 			stdout=out, stderr=err,
 			cwd=path,
 			universal_newlines=True,
