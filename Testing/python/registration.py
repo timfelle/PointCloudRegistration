@@ -20,7 +20,7 @@ class Registration:
 			# IO definitions
 			input_path 	= 'dat/',
 			output_path = 'dat/',
-			output_name = '',
+			output_name = 'result',
 			# Feature settings
 			fpfh_version= '',
 			min_r 		= '', 
@@ -36,6 +36,7 @@ class Registration:
 		# Initialise self
 		self._out = ''
 		self._err = ''
+		self.output_name = output_name
 		self.exec_path = exec_path
 
 		# Setup the environment in a dictionary
@@ -72,7 +73,7 @@ class Registration:
 	def compute(self, data):
 		if not isinstance(data,(list,)):
 			data = [data]
-		self.environment['INPUT_NAME'] = data[0]
+			self.environment['INPUT_NAME'] = data[0]
 		self.__check_self__()
 		cmd = [ self.__exec__() ]
 

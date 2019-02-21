@@ -30,6 +30,8 @@ class Testing:
 	# Define Preparation of data ect.
 
 	def Prepare(self,data):
+		if os.stat('error.err').st_size >= 6: exit()
+
 		# Setup folders needed
 
 		os.makedirs( 'fig' 				, exist_ok=True)
@@ -50,22 +52,33 @@ class Testing:
 			data = [data]
 		for d in data:
 			shutil.copy( self.DAT + d, self.INPUT_PATH )
+		
+		if os.stat('error.err').st_size >= 6: exit()
 
 #==============================================================================
 # Define Visualise
 
 	def Visualise(self,models):
+		if os.stat('error.err').st_size >= 6: exit()
+
 		print('Visualising')
-		S = subprocess.Popen(
-			['matlab','-wait','-nodesktop','-nosplash','-r',"addpath('"+self.MAT+"');displayRegistration({"+models+"},'dat/','fig/',[],20);exit;"],
-			universal_newlines=True,
-			shell=True)
-		S.communicate()
+
+		if isinstance(models,str):
+			S = subprocess.Popen(
+				['matlab','-wait','-nodesktop','-nosplash','-r',
+				"addpath('"+self.MAT+"');"+
+				"displayRegistration({"+models+"},'dat/','fig/',[],20);exit;"],
+				universal_newlines=True)
+			S.communicate()
+
+		if os.stat('error.err').st_size >= 6: exit()
 
 #==============================================================================
 # Define Finalize
 
 	def Finalize(self):
+		if os.stat('error.err').st_size >= 6: exit()
+			
 		# Prepare the folders
 		shutil.rmtree(self.FIG			, ignore_errors=True)
 		os.makedirs( self.FIG 			, exist_ok=True)
@@ -85,7 +98,8 @@ class Testing:
 		os.remove('Registration.exe')
 		os.remove('GenerateData.exe')
 		os.remove(sys.argv[0])
-		#rm -fr *.exe *.sh fig dat
 
 		print("   Figures moved to " + self.FIG )
 		print("   Data used located in " + self.FIG + "data")
+
+		if os.stat('error.err').st_size >= 6: exit()

@@ -125,7 +125,7 @@ for test in tests:
 	# If the test did exists and was running
 	if os.stat(path + 'error.err').st_size >= 6:
 		f = open(path + 'error.err','r')
-		print(test + ' NOT COMPLETED:')
+		print(seperator + test + ' NOT COMPLETED:')
 		print(f.read())
 		print(seperator)
 	
