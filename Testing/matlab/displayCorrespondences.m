@@ -44,18 +44,17 @@ if dataPath(end) ~= '/'
     dataPath = [dataPath,'/'];
 end
  
-if drawLines == true
-	F = CreateFigure([ inputName{1},'Lines']);
-else
-	F = CreateFigure(inputName);
-end
+F = CreateFigure(inputName);
 
 A = zeros(length(inputName),1);
 for i = 1:length(inputName)
     dataName = findData(dataPath,inputName{i});
     if isempty(dataName)
         error('File %s not found.',inputName{i});
-    end
+	end
+	for d = 1:length(dataName)
+		dataName{d} = ['corr_', dataName{d}];
+	end
     figure(F(i));
     A(i) = axes();
 	
@@ -69,7 +68,8 @@ for i = 1:length(inputName)
     hold on
     dispPC(dataName{1},dataPath,Color(2,:))
     dispPC(dataName{2},dataPath,Color(1,:))
-    if drawLines
+	if drawLines
+		F(i).Name = [F(i).Name, 'Lines'];
         drawLine(dataName{1},dataName{2},dataPath)
     end
     hold off
