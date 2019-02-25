@@ -75,6 +75,6 @@ models+='bunnyTransform'
 # =============================================================================
 
 print(seperator)
-T.Visualise(models); T.Finalize()
+T.Visualise(models,type='python'); T.Finalize()
 
 # =============================================================================
