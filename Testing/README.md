@@ -9,12 +9,14 @@ locate and run all defined tests.
 ## Run Test
 
 	> runtest.sh TESTNAME1 [TESTNAME2 ...]
+	> runtest.py TESTNAME1 [TESTNAME2 ...]
 
-The script runtest.sh can be used to run the tests locally. The test scripts are
-located in the shell folder. Running the tests with this function will create 
-temporary folders and export the figures and such to a figure folder when 
-complete. All tests are performed in parallel processes and the output and 
-errors will be located in the log folder for the test.
+The scripts runtest.sh and runtest.py can be used to run the tests locally. The
+test scripts are located in the shell (.sh) or test (.py) folders. Running the
+tests with this function will create temporary folders and export the figures
+and such to a figure folder when complete. All tests are performed in parallel
+processes and the output and errors will be located in the log folder for the
+test.
 
 ## Submit Test
 
