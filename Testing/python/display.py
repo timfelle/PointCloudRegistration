@@ -6,6 +6,7 @@
 
 import sys
 import registration
+import time
 
 import pptk
 from plyfile import PlyData
@@ -17,10 +18,15 @@ import numpy as np
 
 class display:
 	'''Display of various types'''
-	def __init__(self): pass
+	def __init__(self,FileName=''): 
 
-	def pointcloud(self,FileName):
+		self.XYZ 	= ''
+		self.N  	= ''
 
+		if FileName != '': self.read_data(FileName)
+
+
+	def read_data(self,FileName):
 		if FileName[-4:] == '.ply':
 			model = PlyData.read(FileName)
 		else : 
@@ -42,9 +48,19 @@ class display:
 
 		XYZ = XYZ[Idx]
 		XYZ = XYZ.reshape((int(len(XYZ)/3),3))
+
 		N = N[Idx]
 		N = N.reshape((int(len(N)/3),3))
 
+		if isinstance(self.XYZ,str)	: self.XYZ = XYZ
+		else						: self.XYZ =np.append(self.XYZ, XYZ, axis=0)
+		if isinstance(self.N,str)	: self.N = N
+		else 						: self.N = np.append(self.N, N, axis=0)
+
+
+	def pointcloud(self):
+		XYZ = self.XYZ
+		N 	= self.N
 		# Compute the shading
 		L1 = [1,1,0]
 		L3 = [0,0,1]
@@ -57,31 +73,36 @@ class display:
 			[ min(XYZ[0,:]) , max(XYZ[0,:])],
 			[ min(XYZ[1,:]) , max(XYZ[1,:])],
 			[ min(XYZ[2,:]) , max(XYZ[2,:])]]).transpose()
-		bbox_r =  np.linalg.norm(
-			bbox[1,:] - bbox[0,:]
-			)
+		bbox_r =  np.linalg.norm( bbox[1,:] - bbox[0,:] )
 
 		plt = pptk.viewer(XYZ,C)
 		plt.set( 
-			lookat 			= [np.mean(XYZ[:,0]), np.mean(XYZ[:,1]),np.mean(XYZ[:,2])],
 			point_size		= bbox_r*0.0025,
-			bg_color		= [1,1,1,1],
-			bg_color_top 	= [0,0,0,1],
+			bg_color_top 	= [0.1,0.2,0.2,1],
 			bg_color_bottom = [0,0,0,1],
+			# Floor settings
+			show_grid		= False,
+			floor_level		= bbox[0,2],
+			floor_color		= [0,0,0,1],
+			# View settings
+			lookat 			= np.mean(XYZ,axis=0),
+			r				= bbox_r,
+			phi				= 0.1,
+			theta			= 0.5,
+			# Interface settings
 			show_axis 		= False,
 			show_info		= False,
-			show_grid		= False,
-			r				= bbox_r,
-			phi				= 0.2,
-			theta			= 0.8,
 			)
-
-		plt.capture('hell.png')
-		plt.wait()
-		plt.close()
+		self.plt = plt
 
 
-
+	def export(self,FileName='Figure'):
+		self.plt.capture('fig/' + FileName + '.png')
+		time.sleep(1)
+		print(self.plt.get('r'))
+		self.plt.close()
+		
+		
 
 	# -------------------------------------------------------------------------
 
@@ -91,8 +112,7 @@ class display:
 			model.elements[0].data['y'],
 			model.elements[0].data['z']]
 		).transpose()
-		N = pptk.estimate_normals(XYZ.astype('float64'),k=30,r=0.005)
-		print( N.shape )
+		N = pptk.estimate_normals(XYZ.astype('float64'),k=30,r=np.inf)
 		return N
 
 	def _compute_shading(self,
