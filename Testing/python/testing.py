@@ -14,8 +14,9 @@ definition of the test which should be run.
 import sys, os, subprocess, shutil
 sys.path.append(os.path.realpath('../../python'))
 sys.path.append(os.path.realpath('../python'))
-from registration import Registration
-from generatedata import GenerateData
+from registration 	import Registration
+from generatedata 	import GenerateData
+from display 		import display
 
 # Define common symbols
 seperator = '________________________________________________________________\n'
@@ -58,20 +59,59 @@ class Testing:
 #==============================================================================
 # Define Visualise
 
-	def Visualise(self,models):
+	def Visualise(self,models,type='matlab'):
 		if os.stat('error.err').st_size >= 6: exit()
 
 		print('Visualising')
-
-		if isinstance(models,str):
-			S = subprocess.Popen(
-				['matlab','-wait','-nodesktop','-nosplash','-r',
-				"addpath('"+self.MAT+"');"+
-				"displayRegistration({"+models+"},'dat/','fig/',[],20);exit;"],
-				universal_newlines=True)
-			S.communicate()
+		if type == 'matlab'		:		self._vis_matlab		(models)
+		if type == 'matlab_corr': 		self._vis_matlab_corr	(models)
+		if type == 'python'		:		self._vis_python		(models)
 
 		if os.stat('error.err').st_size >= 6: exit()
+
+# -----------------------------------------------------------------------------
+# Visualisation sub functions
+	def _vis_matlab(self,models):
+		if isinstance(models,str): models = str.split(models,sep=',')
+		mod = ''
+		for m in models: mod += "'" + m + "',"
+		models = mod[0:-1]
+
+		S = subprocess.Popen(
+			['matlab','-wait','-nodesktop','-nosplash','-r',
+			"addpath('"+self.MAT+"');"+
+			"displayRegistration({"+models+"},'dat/','fig/',[],20);exit;"],
+			universal_newlines=True)
+		S.communicate()
+
+	def _vis_matlab_corr(self,models):
+		if not isinstance(models,str):
+			mod = ''
+			for m in models: mod += "'" + m + "',"
+			models = mod[0:-1]
+
+		S = subprocess.Popen(
+			['matlab','-wait','-nodesktop','-nosplash','-r',
+			"addpath('"+self.MAT+"');"+
+			"displayCorrespondences({"+models+"},'dat/','fig/',true);exit;"],
+			universal_newlines=True)
+		S.communicate()
+
+	def _vis_python(self,models):
+		if isinstance(models,str):
+			models = str.split(models,sep=',')
+
+		for mod in models: 
+			P = display()
+			for f in os.listdir('dat/'):
+				f = os.path.splitext(f)[0]
+				if mod in f:
+					P.read_data('dat/'+ f + '.ply')
+				
+			P.pointcloud()
+			P.export(FileName = mod)
+
+
 
 #==============================================================================
 # Define Finalize
