@@ -74,7 +74,7 @@ class Testing:
 		models = mod[0:-1]
 
 		S = subprocess.Popen(
-			['matlab','-wait','-nodesktop','-nosplash','-r',
+			['matlab ' + '-wait -nodesktop -nosplash -r '+
 			"addpath('"+self.MAT+"');"+
 			"displayRegistration({"+models+"},'dat/','fig/',[],20);exit;"],
 			universal_newlines=True)
