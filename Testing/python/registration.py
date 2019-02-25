@@ -1,6 +1,11 @@
-# =============================================================================
-# WRITE MY DESCRIPTION
-
+'''
+registration.ply
+	Class designed to call the PointCloudRegistration system developed here. It 
+	will open a subprocess and run the program for the inputs defined by the 
+	user. Applying specific settings are done through a number of inputs for 
+	the initialisation of the class, or by calling the method "set_enviroment".
+	The method compute run the computation.
+'''
 # =============================================================================
 # Import definitions
 import sys

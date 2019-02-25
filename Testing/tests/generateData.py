@@ -1,11 +1,8 @@
 '''
-runtest.sh TESTNAME [TESTNAME ...]
-	This script works as a function which run tests for the executables
-	implementated in the PointCloudRegistration folder of the project.
- 
-	The <TESTNAME> variable refers to the filename of the TESTNAME.sh files
-	located in the folder tests. These TESTNAME.sh files contain the 
-	definition of the test which should be run.
+generateData.py
+	This test uses the Bunny data set. The test produce visual examples of using
+	the program "GenerateData.exe". Each of the capabilities of the program are 
+	visualised in the exported images.
 '''
 
 # =============================================================================

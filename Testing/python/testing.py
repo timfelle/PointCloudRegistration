@@ -1,12 +1,8 @@
 '''
-runtest.sh TESTNAME [TESTNAME ...]
-
-This script works as a function which run tests for the executables
-implementated in the PointCloudRegistration folder of the project.
- 
-The <TESTNAME> variable refers to the filename of the TESTNAME.sh files
-located in the folder tests. These TESTNAME.sh files contain the 
-definition of the test which should be run.
+testing.ply
+	Class designed to handle testing of the PointCloudRegistration system 
+	developed here. It is used to Prepare the folders and files needed for 
+	testing, call the appropriate visualisation and cleanup all temporary files.
 '''
 
 # =============================================================================

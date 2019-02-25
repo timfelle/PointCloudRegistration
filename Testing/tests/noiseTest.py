@@ -1,11 +1,9 @@
 '''
-runtest.sh TESTNAME [TESTNAME ...]
-This script works as a function which run tests for the executables
-implementated in the PointCloudRegistration folder of the project.
-
-The <TESTNAME> variable refers to the filename of the TESTNAME.sh files
-located in the folder tests. These TESTNAME.sh files contain the 
-definition of the test which should be run.
+noiseTest.py
+	This test uses the Bunny data set. The test attempts to align two parts 
+	of the dataset to eachother under addition of various amounts and types 
+	of noise. The result is then saved as a figure of before and after 
+	registration.
 '''
 
 # =============================================================================
