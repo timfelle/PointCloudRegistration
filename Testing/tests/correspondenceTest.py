@@ -37,6 +37,6 @@ Registration(export_correspondences='true').compute( 'bunny' )
 # =============================================================================
 
 print(seperator)
-T.Visualise("'bunny','result'"); T.Finalize()
+T.Visualise(['bunny','result']); T.Finalize()
 
 # =============================================================================

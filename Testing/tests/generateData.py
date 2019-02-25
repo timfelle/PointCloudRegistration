@@ -31,7 +31,7 @@ T.Prepare('bunny.ply')
 # Define the actual test part of the script 
 Gen = GenerateData()
 Gen.compute('bunny.ply', 'bunnyClean.ply')
-models="'bunnyClean', "
+models='bunnyClean,'
 
 # Test the Gaussian noise
 print("   Gaussian noise.")
@@ -41,7 +41,7 @@ Gen = GenerateData(
 )
 Gen.compute('bunnyClean.ply', 'bunnyGaussian.ply')
 
-models+="'bunnyGaussian', "
+models+='bunnyGaussian,'
 
 # Test the Outlier noise
 print("   Outlier addition.")
@@ -51,7 +51,7 @@ Gen = GenerateData(
 )
 Gen.compute('bunnyClean.ply', 'bunnyOutliers.ply')
 
-models+="'bunnyOutliers', "
+models+='bunnyOutliers,'
 
 # Test combination noise
 print("   Combined noise and outlier.")
@@ -62,7 +62,7 @@ Gen = GenerateData(
 )
 Gen.compute('bunnyClean.ply', 'bunnyNoise.ply')
 
-models+="'bunnyNoise', "
+models+='bunnyNoise,'
 
 # Test transformation
 print("   Transformation.")
@@ -73,7 +73,7 @@ Gen = GenerateData(
 )
 Gen.compute('bunnyClean.ply', 'bunnyTransform.ply')
 
-models+="'bunnyTransform' "
+models+='bunnyTransform'
 
 # =============================================================================
 

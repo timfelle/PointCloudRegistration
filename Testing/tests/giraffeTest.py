@@ -26,15 +26,15 @@ T = Testing(TNAME)
 print(seperator)
 # =============================================================================
 # Specify the data needed
-T.Prepare(['armadilloPartial1.ply','armadilloPartial2.ply'])
+T.Prepare(['giraffePartial1.ply','giraffePartial2.ply'])
 
-GenerateData(rotation="1.6,1.6,0.0").compute(
-	'armadilloPartial1.ply', 'armadilloPartial1.ply')
-Registration(alpha=0.0).compute('armadillo')
+GenerateData(rotation='1.6,1.6,0.0').compute(
+	'giraffePartial1.ply', 'giraffePartial1.ply')
+Registration(alpha=0.5).compute('giraffe')
 
 # =============================================================================
 
 print(seperator)
-T.Visualise(['armadillo','result']); T.Finalize()
+T.Visualise('giraffe,result'); T.Finalize()
 
 # =============================================================================

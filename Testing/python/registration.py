@@ -21,6 +21,7 @@ class Registration:
 			input_path 	= 'dat/',
 			output_path = 'dat/',
 			output_name = 'result',
+			export_correspondences = '',
 			# Feature settings
 			fpfh_version= '',
 			min_r 		= '', 
@@ -46,6 +47,9 @@ class Registration:
 		if input_path: 	self.environment['INPUT_PATH'] 	= str(input_path)
 		if output_path:	self.environment['OUTPUT_PATH']	= str(output_path)
 		if output_name:	self.environment['OUTPUT_NAME']	= str(output_name)
+		if export_correspondences:	
+			self.environment['EXPORT_CORRESPONDENCES']	= str(
+				export_correspondences)
 
 		# Feature settings
 		if fpfh_version:self.environment['FPFH_VERSION']= str(fpfh_version)
@@ -63,10 +67,14 @@ class Registration:
 	# Change environment
 	def set_exec_path(self,path):
 		self.exec_path = path
+		return self
 
 	def set_environment(self,key,value):
-		#TODO expand this to handle lists
-		self.environment[key] = str(value)
+		if not isinstance(key,(list,)):
+			key = [key]; value = [value]
+		for i in range(0,len(key)):
+			self.environment[key[i]] = str(value[i])
+		return self
 
 	# -------------------------------------------------------------------------
 	# Compute registration of data
@@ -90,6 +98,7 @@ class Registration:
 		if self._err 	: print( self._err ); exit()
 		
 		self._computed = True
+		return self
 	
 	# -------------------------------------------------------------------------
 	

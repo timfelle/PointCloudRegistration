@@ -31,7 +31,7 @@ T.Prepare(['bikePartial1.ply','bikePartial2.ply','bikePartial3.ply'])
 GenerateData(rotation="1.6,-1.0,0.0").compute(
 	'bikePartial1.ply', 'bikePartial1.ply'
 )
-GenerateData(rtation='5.6,5,4', translation='30,1,1').compute(
+GenerateData(rotation='5.6,5,4', translation='30,1,1').compute(
 	'bikePartial3.ply', 'bikePartial3.ply'
 )
 Registration().compute('bike')
@@ -39,6 +39,6 @@ Registration().compute('bike')
 # =============================================================================
 
 print(seperator)
-T.Visualise("'bike','result'"); T.Finalize()
+T.Visualise('bike,result'); T.Finalize()
 
 # =============================================================================

@@ -59,11 +59,14 @@ class GenerateData:
 	# Change environment
 	def set_exec_path(self,path):
 		self.exec_path = path
+		return self
 
 	def set_environment(self,key,value):
-		#TODO expand this to handle lists
-		self.environment[key] = str(value)
-
+		if not isinstance(key,(list,)):
+			key = [key]; value = [value]
+		for i in range(0,len(key)):
+			self.environment[key[i]] = str(value[i])
+		return self
 	# -------------------------------------------------------------------------
 	# Compute GenerateData of data
 	def compute(self, input_data, output_data):
@@ -79,13 +82,14 @@ class GenerateData:
 		if self._err 	: print( self._err ); exit()
 		
 		self._computed = True
+		return self
 	
 	# -------------------------------------------------------------------------
 	
 
 	# -------------------------------------------------------------------------
 	# Utility functions
-	def print(self): print( self._out )
+	def print(self): print( self._out ); return self
 	
 	# -------------------------------------------------------------------------
 	# Private functions

@@ -29,14 +29,14 @@ print(seperator)
 T.Prepare(['bunnyPartial1.ply','bunnyPartial2.ply'])
 
 # -----------------------------------------------------------------------------
-print("Clean")
+print('Clean')
 
 Gen = Gen = GenerateData()
 Gen.compute('bunnyPartial1.ply', 'bunnyClean.ply')
 
-Gen = Gen = GenerateData( rotation="0.52,0.52,0.79", translation="0.05,0.0,-0.01" )
+Gen = Gen = GenerateData(rotation='0.52,0.52,0.79',translation='0.05,0.0,-0.01')
 Gen.compute('bunnyPartial2.ply', 'bunnyTransform.ply')
-models ="'bunny',"
+models ='bunny,'
 
 Reg = Registration(
 	output_name='resultClean',
@@ -45,10 +45,10 @@ Reg = Registration(
 	max_r=0.01 
 )
 Reg.compute(['bunnyClean.ply','bunnyTransform.ply'])
-models += "'" + Reg.output_name + "',"
+models += Reg.output_name + ','
 
 # -----------------------------------------------------------------------------
-print("Gaussian")
+print('Gaussian')
 
 # 0.01 Gaussian noise
 Gen = GenerateData( noise_type='gaussian', noise_strength=0.01 )
@@ -64,7 +64,7 @@ Reg = Registration(
 	num_r=10
 )
 Reg.compute(['gaussianBunny1.ply', 'gaussianBunny2.ply'])
-models += "'" + Reg.output_name + "',"
+models += Reg.output_name + ','
 
 # 0.05 Gaussian noise
 Gen = GenerateData( noise_type='gaussian', noise_strength=0.05 )
@@ -79,10 +79,10 @@ Reg = Registration(
 	max_r=0.08
 )
 Reg.compute(['gaussianBunny3.ply', 'gaussianBunny4.ply'])
-models += "'" + Reg.output_name + "',"
+models += Reg.output_name + ','
 
 # -----------------------------------------------------------------------------
-print("Outliers")
+print('Outliers')
 
 # 1% outliers
 Gen = GenerateData( noise_type='outliers', outlier_amount=1.0 )
@@ -92,7 +92,7 @@ Gen.compute('bunnyTransform.ply', 'outlierBunny2.ply' )
 
 Reg = Registration( output_name='resultOut1' )
 Reg.compute(['outlierBunny1.ply', 'outlierBunny2.ply' ])
-models += "'" + Reg.output_name + "',"
+models += Reg.output_name + ','
 
 # 5% outliers
 Gen = GenerateData( noise_type='outliers', outlier_amount=5.0 )
@@ -102,7 +102,7 @@ Gen.compute('bunnyTransform.ply','outlierBunny4.ply' )
 
 Reg = Registration( output_name='resultOut2' )
 Reg.compute(['outlierBunny3.ply','outlierBunny4.ply'])
-models += "'" + Reg.output_name + "',"
+models += Reg.output_name + ','
 
 # 10% outliers
 Gen = GenerateData( noise_type='outliers', outlier_amount=10.0 )
@@ -112,7 +112,7 @@ Gen.compute('bunnyTransform.ply', 'outlierBunny6.ply' )
 
 Reg = Registration( output_name='resultOut3' )
 Reg.compute(['outlierBunny5.ply', 'outlierBunny6.ply' ])
-models += "'" + Reg.output_name + "'"
+models += Reg.output_name
 
 # =============================================================================
 
