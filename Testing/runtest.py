@@ -116,7 +116,7 @@ for test in tests:
 # Ensure tests complete and print errors
 index = 0
 for s in S:
-	s.communicate()
+	s.communicate('exit()')
 print( '\nTests finished \n' + seperator ) 
 
 # Print errors for all unfinished tests
