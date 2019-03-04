@@ -105,7 +105,7 @@ for test in tests:
 	with open(path + 'output.out',"wb") as out, \
 		open(path + 'error.err',"wb") as err:
 		S.append(subprocess.Popen(
-			['python3', test+ '.py'],
+			['python', test+ '.py'],
 			stdout=out, stderr=err,
 			cwd=path,
 			universal_newlines=True,
