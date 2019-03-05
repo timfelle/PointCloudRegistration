@@ -75,8 +75,8 @@ class Testing:
 
 		S = subprocess.Popen(
 			['matlab', '-wait', '-nodesktop', '-nosplash', '-r',
-			"\"addpath('"+self.MAT+"');"+
-			"displayRegistration({"+models+"},'dat/','fig/',[],20);exit;\""],
+			"addpath('"+self.MAT+"');"+
+			"displayRegistration({"+models+"},'dat/','fig/',[],20);exit;"],
 			universal_newlines=True)
 		S.communicate()
 
@@ -88,8 +88,8 @@ class Testing:
 
 		S = subprocess.Popen(
 			['matlab', '-wait', '-nodesktop', '-nosplash', '-r',
-			"\"addpath('"+self.MAT+"');"+
-			"displayCorrespondences({"+models+"},'dat/','fig/',true);exit;\""],
+			"addpath('"+self.MAT+"');"+
+			"displayCorrespondences({"+models+"},'dat/','fig/',true);exit;"],
 			universal_newlines=True)
 		S.communicate()
 

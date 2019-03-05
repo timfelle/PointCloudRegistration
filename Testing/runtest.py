@@ -52,12 +52,17 @@ if len(tests) == 0 :
 # Ensure the excecutables exists
 if not ('GenerateData.exe' in os.listdir(EPATH) and 
 	'Registration.exe' in os.listdir(EPATH)):
-	S = subprocess.Popen(['make'], 
+	SR = subprocess.Popen(['make'], 
 		stdout=subprocess.PIPE, 
 		cwd=EPATH,
 		universal_newlines=True)
+	SG = subprocess.Popen(['make','-f','Makefile.GenerateData'],
+		stdout=subprocess.PIPE,
+        cwd=EPATH,
+        universal_newlines=True)
 	out = 'Executables not found, attempting make. Output:\n'
-	out+= seperator + S.communicate()[0] + seperator
+	out+= seperator + SR.communicate()[0] + seperator
+	out+= seperator + SG.communicate()[0] + seperator
 	print(out)
 
 if not 'GenerateData.exe' in os.listdir(EPATH):
@@ -105,11 +110,10 @@ for test in tests:
 	with open(path + 'output.out',"wb") as out, \
 		open(path + 'error.err',"wb") as err:
 		S.append(subprocess.Popen(
-			['python', test+ '.py'],
+			['python', test + '.py'],
 			stdout=out, stderr=err,
 			cwd=path,
-			universal_newlines=True,
-			shell=True))
+			universal_newlines=True))
 	print('  {:s}'.format(test))
 
 # =============================================================================

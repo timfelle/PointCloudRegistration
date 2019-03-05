@@ -82,7 +82,7 @@ set(A,'XLim',get(A(1),'XLim'),'YLim',get(A(1),'YLim'),'ZLim',get(A(1),'ZLim'));
 if ~isunix
 		ExportFigures(F,exportLocation,'asp',1);
 	else
-		ExportFigures([F{:}],exportLocation,'asp',1,'ext','png','dpi',600);
+		ExportFigures(F,exportLocation,'asp',1,'ext','png','dpi',600);
 	end
 end
 
