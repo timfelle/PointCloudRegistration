@@ -57,14 +57,8 @@ OBJECTS += $(addprefix $(OBJDIR)/, $(addsuffix .o, $(REGIS)))
 #==============================================================================
 # -- Compilations                             (Avoid changes beyond this point)
 
-# - Define the Dependencies
-DEPENDENCIES : 
-	@echo -e "make: dependencies."
-	@make -f Makefile.GenerateData
-
-
 # - Main
-$(EXEC) : DEPENDENCIES $(OBJECTS) 
+$(EXEC) : $(OBJECTS) 
 	$(CXX) -o $(EXEC) $(OBJECTS) -I$(LIBDIR) $(LFLAGS)
 	@echo -e "make: '$(EXEC)' was build sucessfully."
 
